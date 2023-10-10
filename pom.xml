@@ -4,19 +4,18 @@
 	<parent>
 		<groupId>se.sundsvall.dept44</groupId>
 		<artifactId>dept44-service-parent</artifactId>
-		<version>2.1.3</version>
+		<version>3.1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>se.sundsvall</groupId>
-	<artifactId>template-spring-boot</artifactId>
-	<version>1.0</version>
-	<name>template</name>
+	<artifactId>api-service-document</artifactId>
+	<version>0.1</version>
+	<name>api-service-document</name>
 	<properties>
 		<!-- Pipeline properties -->
-		<docker.image.name>ms-template</docker.image.name>
-		<exposed.app.port>8080</exposed.app.port>
-		<published.container.port.test>xxx</published.container.port.test>
-		<published.container.port.production>xxx</published.container.port.production>
+		<docker.image.name>ms-document</docker.image.name>
+		<published.container.port.test>8800</published.container.port.test>
+		<published.container.port.production>8800</published.container.port.production>
 	</properties>
 	<dependencies>
 		<dependency>
