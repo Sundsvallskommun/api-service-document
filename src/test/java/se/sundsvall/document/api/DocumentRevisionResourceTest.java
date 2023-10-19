@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import se.sundsvall.document.Application;
-import se.sundsvall.document.api.model.DocumentHeader;
+import se.sundsvall.document.api.model.Document;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -29,7 +29,7 @@ class DocumentRevisionResourceTest {
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
-			.expectBodyList(DocumentHeader.class)
+			.expectBodyList(Document.class)
 			.returnResult()
 			.getResponseBody();
 
@@ -49,7 +49,7 @@ class DocumentRevisionResourceTest {
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
-			.expectBody(DocumentHeader.class)
+			.expectBody(Document.class)
 			.returnResult()
 			.getResponseBody();
 

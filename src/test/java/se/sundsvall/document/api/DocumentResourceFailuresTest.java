@@ -22,7 +22,7 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import org.zalando.problem.violations.Violation;
 
 import se.sundsvall.document.Application;
-import se.sundsvall.document.api.model.DocumentHeader;
+import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentMetadata;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
@@ -33,11 +33,40 @@ class DocumentResourceFailuresTest {
 	private WebTestClient webTestClient;
 
 	@Test
+	void createWithMissingDocumentFile() {
+
+		// Arrange
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("document", Document.create());
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/documents")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getDetail()).isEqualTo("Required part 'documentFile' is not present.");
+
+		// TODO: Add verification
+		// verifyNoInteractions(serviceMock);
+	}
+
+	@Test
 	void createWithMissingDocument() {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentHeader", DocumentHeader.create());
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 
 		// Act
 		final var response = webTestClient.post()
@@ -62,39 +91,10 @@ class DocumentResourceFailuresTest {
 	}
 
 	@Test
-	void createWithMissingDocumentHeader() {
-
-		// Arrange
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("document", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-
-		// Act
-		final var response = webTestClient.post()
-			.uri("/documents")
-			.contentType(MULTIPART_FORM_DATA)
-			.body(fromMultipartData(multipartBodyBuilder.build()))
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(Problem.class)
-			.returnResult()
-			.getResponseBody();
-
-		// Assert
-		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getDetail()).isEqualTo("Required part 'documentHeader' is not present.");
-
-		// TODO: Add verification
-		// verifyNoInteractions(serviceMock);
-	}
-
-	@Test
 	void updateWithBlankKeyInMetaData() {
 
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentHeader", DocumentHeader.create()
+		multipartBodyBuilder.part("document", Document.create()
 			.withMetadataList(List.of(
 				DocumentMetadata.create()
 					.withKey(" ")
@@ -127,7 +127,7 @@ class DocumentResourceFailuresTest {
 	void updateWithBlankValueInMetaData() {
 
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentHeader", DocumentHeader.create()
+		multipartBodyBuilder.part("document", Document.create()
 			.withMetadataList(List.of(
 				DocumentMetadata.create()
 					.withKey("key")

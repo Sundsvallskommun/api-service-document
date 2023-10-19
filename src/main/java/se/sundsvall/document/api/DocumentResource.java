@@ -41,7 +41,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validation;
-import se.sundsvall.document.api.model.DocumentHeader;
+import se.sundsvall.document.api.model.Document;
 
 @RestController
 @Validated
@@ -59,14 +59,14 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<Void> create(
 		final UriComponentsBuilder uriComponentsBuilder,
-		@Valid @RequestPart("documentHeader") @Schema(description = "ID of the document", implementation = DocumentHeader.class) String documentHeaderString,
-		@RequestPart(value = "document") MultipartFile document) throws JsonProcessingException {
+		@Valid @RequestPart("document") @Schema(description = "Document", implementation = Document.class) String documentString,
+		@RequestPart(value = "documentFile") MultipartFile documentFile) throws JsonProcessingException {
 
-		final var documentHeader = mapper.readValue(documentHeaderString, DocumentHeader.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
-		validate(documentHeader);
+		final var document = mapper.readValue(documentString, Document.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
+		validate(document);
 
 		// TODO: Call service layer.
-		final var id = documentHeader.getId();
+		final var id = document.getId();
 
 		return created(uriComponentsBuilder.path("/documents/{id}").buildAndExpand(id).toUri()).header(CONTENT_TYPE, ALL_VALUE).build();
 	}
@@ -75,27 +75,27 @@ public class DocumentResource {
 	@Operation(summary = "Update document.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<DocumentHeader> update(
+	public ResponseEntity<Document> update(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Valid @RequestPart(value = "documentHeader", required = false) @Schema(description = "ID of the document", implementation = DocumentHeader.class) String documentHeaderString,
-		@RequestPart(value = "document", required = false) MultipartFile document) throws JsonProcessingException {
+		@Valid @RequestPart(value = "document", required = false) @Schema(description = "Document", implementation = Document.class) String documentString,
+		@RequestPart(value = "documentFile", required = false) MultipartFile documentFile) throws JsonProcessingException {
 
-		final var documentHeader = mapper.readValue(documentHeaderString, DocumentHeader.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
-		validate(documentHeader);
+		final var document = mapper.readValue(documentString, Document.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
+		validate(document);
 
 		// TODO: Call service layer.
-		return ok(DocumentHeader.create());
+		return ok(Document.create());
 	}
 
 	@GetMapping(path = "/{registrationNumber}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Read document (latest revision).")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<DocumentHeader> read(
+	public ResponseEntity<Document> read(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber) {
 
 		// TODO: Call service layer.
-		return ok(DocumentHeader.create());
+		return ok(Document.create());
 	}
 
 	@GetMapping(path = "/{registrationNumber}/file", produces = { APPLICATION_PROBLEM_JSON_VALUE })

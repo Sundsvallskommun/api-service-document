@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 
 @Schema(description = "Document model.")
-public class DocumentHeader {
+public class Document {
 
 	@Schema(description = "ID of the document.", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String id;
@@ -24,18 +24,18 @@ public class DocumentHeader {
 	@Schema(description = "Document revision.", example = "2", accessMode = READ_ONLY)
 	private int revision;
 
-	@Schema(description = "Timestamp when document version was created.", example = "2023-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when document revision was created.", example = "2023-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime created;
 
-	@Schema(description = "Person that created this version.", example = "UserName", accessMode = READ_ONLY)
+	@Schema(description = "Actor that created this revision.", example = "username123", accessMode = READ_ONLY)
 	private String createdBy;
 
 	@Schema(description = "List of DocumentMetadata objects.")
 	private List<@Valid DocumentMetadata> metadataList;
 
-	public static DocumentHeader create() {
-		return new DocumentHeader();
+	public static Document create() {
+		return new Document();
 	}
 
 	public String getId() {
@@ -46,7 +46,7 @@ public class DocumentHeader {
 		this.id = id;
 	}
 
-	public DocumentHeader withId(String id) {
+	public Document withId(String id) {
 		this.id = id;
 		return this;
 	}
@@ -59,7 +59,7 @@ public class DocumentHeader {
 		this.registrationNumber = registrationNumber;
 	}
 
-	public DocumentHeader withRegistrationNumber(String registrationNumber) {
+	public Document withRegistrationNumber(String registrationNumber) {
 		this.registrationNumber = registrationNumber;
 		return this;
 	}
@@ -72,7 +72,7 @@ public class DocumentHeader {
 		this.revision = revision;
 	}
 
-	public DocumentHeader withRevision(int revision) {
+	public Document withRevision(int revision) {
 		this.revision = revision;
 		return this;
 	}
@@ -85,7 +85,7 @@ public class DocumentHeader {
 		this.created = created;
 	}
 
-	public DocumentHeader withCreated(OffsetDateTime created) {
+	public Document withCreated(OffsetDateTime created) {
 		this.created = created;
 		return this;
 	}
@@ -98,7 +98,7 @@ public class DocumentHeader {
 		this.createdBy = createdBy;
 	}
 
-	public DocumentHeader withCreatedBy(String createdBy) {
+	public Document withCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 		return this;
 	}
@@ -111,7 +111,7 @@ public class DocumentHeader {
 		this.metadataList = metadataList;
 	}
 
-	public DocumentHeader withMetadataList(List<DocumentMetadata> metadataList) {
+	public Document withMetadataList(List<DocumentMetadata> metadataList) {
 		this.metadataList = metadataList;
 		return this;
 	}
@@ -124,7 +124,7 @@ public class DocumentHeader {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentHeader other)) { return false; }
+		if (!(obj instanceof final Document other)) { return false; }
 		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(id, other.id) && Objects.equals(metadataList, other.metadataList) && Objects.equals(registrationNumber, other.registrationNumber)
 			&& (revision == other.revision);
 	}
@@ -132,8 +132,8 @@ public class DocumentHeader {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentHeader [id=").append(id).append(", registrationNumber=").append(registrationNumber).append(", revision=").append(revision).append(", created=").append(created).append(", createdBy=").append(createdBy).append(
-			", metadataList=").append(metadataList).append("]");
+		builder.append("Document [id=").append(id).append(", registrationNumber=").append(registrationNumber).append(", revision=").append(revision).append(", created=").append(created).append(", createdBy=").append(createdBy).append(", metadataList=")
+			.append(metadataList).append("]");
 		return builder.toString();
 	}
 }
