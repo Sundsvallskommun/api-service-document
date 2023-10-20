@@ -22,7 +22,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import se.sundsvall.document.api.model.DocumentHeader;
+import jakarta.validation.constraints.Min;
+import se.sundsvall.document.api.model.Document;
 
 @RestController
 @Validated
@@ -35,23 +36,23 @@ public class DocumentRevisionResource {
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Read document revisions.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
-	public ResponseEntity<List<DocumentHeader>> readRevisions(
+	public ResponseEntity<List<Document>> readRevisions(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber) {
 
 		// TODO: Call service layer.
-		return ok(List.of(DocumentHeader.create()));
+		return ok(List.of(Document.create()));
 	}
 
 	@GetMapping(path = "/{revision}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Read document revision.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<DocumentHeader> readRevision(
+	public ResponseEntity<Document> readRevision(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "revision", description = "Document revision", example = "2") @PathVariable("revision") final int revision) {
+		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") final int revision) {
 
 		// TODO: Call service layer.
-		return ok(DocumentHeader.create());
+		return ok(Document.create());
 	}
 
 	@GetMapping(path = "/{revision}/file", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -60,7 +61,7 @@ public class DocumentRevisionResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> readFileRevision(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "revision", description = "Document revision", example = "2") @PathVariable("revision") final int revision,
+		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") final int revision,
 		HttpServletResponse response) {
 
 		// TODO: Call service layer.

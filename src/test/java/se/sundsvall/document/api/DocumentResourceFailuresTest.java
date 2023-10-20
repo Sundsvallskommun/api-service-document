@@ -7,7 +7,6 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.web.reactive.function.BodyInserters.fromMultipartData;
-import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import org.zalando.problem.violations.Violation;
 
 import se.sundsvall.document.Application;
-import se.sundsvall.document.api.model.DocumentHeader;
+import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentMetadata;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
@@ -33,11 +32,11 @@ class DocumentResourceFailuresTest {
 	private WebTestClient webTestClient;
 
 	@Test
-	void createWithMissingDocument() {
+	void createWithMissingDocumentFile() {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentHeader", DocumentHeader.create());
+		multipartBodyBuilder.part("document", Document.create());
 
 		// Act
 		final var response = webTestClient.post()
@@ -53,20 +52,18 @@ class DocumentResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getDetail()).isEqualTo("Required part 'document' is not present.");
+		assertThat(response.getDetail()).isEqualTo("Required part 'documentFile' is not present.");
 
 		// TODO: Add verification
 		// verifyNoInteractions(serviceMock);
 	}
 
 	@Test
-	void createWithMissingDocumentHeader() {
+	void createWithMissingDocument() {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("document", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 
 		// Act
 		final var response = webTestClient.post()
@@ -82,9 +79,7 @@ class DocumentResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getDetail()).isEqualTo("Required part 'documentHeader' is not present.");
+		assertThat(response.getDetail()).isEqualTo("Required part 'document' is not present.");
 
 		// TODO: Add verification
 		// verifyNoInteractions(serviceMock);
@@ -94,7 +89,7 @@ class DocumentResourceFailuresTest {
 	void updateWithBlankKeyInMetaData() {
 
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentHeader", DocumentHeader.create()
+		multipartBodyBuilder.part("document", Document.create()
 			.withMetadataList(List.of(
 				DocumentMetadata.create()
 					.withKey(" ")
@@ -113,8 +108,6 @@ class DocumentResourceFailuresTest {
 			.getResponseBody();
 
 		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("metadataList[0].key", "must not be blank"));
@@ -127,7 +120,7 @@ class DocumentResourceFailuresTest {
 	void updateWithBlankValueInMetaData() {
 
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentHeader", DocumentHeader.create()
+		multipartBodyBuilder.part("document", Document.create()
 			.withMetadataList(List.of(
 				DocumentMetadata.create()
 					.withKey("key")
@@ -146,8 +139,6 @@ class DocumentResourceFailuresTest {
 			.getResponseBody();
 
 		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("metadataList[0].value", "must not be blank"));

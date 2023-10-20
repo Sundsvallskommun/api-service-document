@@ -1,4 +1,4 @@
-package se.sundsvall.document.api.model;
+package se.sundsvall.document.integration.db.model;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
@@ -20,7 +20,7 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class DocumentHeaderTest {
+class DocumentEntityTest {
 
 	@BeforeAll
 	static void setup() {
@@ -29,7 +29,7 @@ class DocumentHeaderTest {
 
 	@Test
 	void testBean() {
-		assertThat(DocumentHeader.class, allOf(
+		assertThat(DocumentEntity.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -42,31 +42,34 @@ class DocumentHeaderTest {
 
 		final var created = now(systemDefault());
 		final var createdBy = "user";
+		final var documentData = DocumentDataEntity.create();
 		final var id = randomUUID().toString();
-		final var metadataList = List.of(DocumentMetadata.create());
+		final var metadata = List.of(DocumentMetadata.create());
 		final var registrationNumber = "12345";
 		final var revision = 5;
 
-		final var bean = DocumentHeader.create()
+		final var bean = DocumentEntity.create()
 			.withCreated(created)
 			.withCreatedBy(createdBy)
+			.withDocumentData(documentData)
 			.withId(id)
-			.withMetadataList(metadataList)
+			.withMetadata(metadata)
 			.withRegistrationNumber(registrationNumber)
 			.withRevision(revision);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
+		assertThat(bean.getDocumentData()).isEqualTo(documentData);
 		assertThat(bean.getId()).isEqualTo(id);
-		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
+		assertThat(bean.getMetadata()).isEqualTo(metadata);
 		assertThat(bean.getRegistrationNumber()).isEqualTo(registrationNumber);
 		assertThat(bean.getRevision()).isEqualTo(revision);
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentHeader.create()).hasAllNullFieldsOrPropertiesExcept("revision");
-		assertThat(new DocumentHeader()).hasAllNullFieldsOrPropertiesExcept("revision");
+		assertThat(DocumentEntity.create()).hasAllNullFieldsOrPropertiesExcept("revision");
+		assertThat(new DocumentEntity()).hasAllNullFieldsOrPropertiesExcept("revision");
 	}
 }

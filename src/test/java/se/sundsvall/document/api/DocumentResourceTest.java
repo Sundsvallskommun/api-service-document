@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import se.sundsvall.document.Application;
-import se.sundsvall.document.api.model.DocumentHeader;
+import se.sundsvall.document.api.model.Document;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -31,8 +31,8 @@ class DocumentResourceTest {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("document", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("documentHeader", DocumentHeader.create());
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", Document.create());
 
 		// Act
 		final var response = webTestClient.post()
@@ -57,8 +57,8 @@ class DocumentResourceTest {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("document", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("documentHeader", DocumentHeader.create());
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", Document.create());
 
 		// Act
 		final var response = webTestClient.patch()
