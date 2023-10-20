@@ -12,7 +12,7 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 class DocumentEntityListenerTest {
 
 	@Test
-	void prePerist() {
+	void prePersist() {
 
 		// Arrange
 		final var listener = new DocumentEntityListener();

@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.Min;
 import se.sundsvall.document.api.model.Document;
 
 @RestController
@@ -48,7 +49,7 @@ public class DocumentRevisionResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Document> readRevision(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "revision", description = "Document revision", example = "2") @PathVariable("revision") final int revision) {
+		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") final int revision) {
 
 		// TODO: Call service layer.
 		return ok(Document.create());
@@ -60,7 +61,7 @@ public class DocumentRevisionResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> readFileRevision(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "revision", description = "Document revision", example = "2") @PathVariable("revision") final int revision,
+		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") final int revision,
 		HttpServletResponse response) {
 
 		// TODO: Call service layer.

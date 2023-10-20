@@ -39,7 +39,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
 import jakarta.validation.Validation;
 import se.sundsvall.document.api.model.Document;
 
@@ -59,7 +58,7 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<Void> create(
 		final UriComponentsBuilder uriComponentsBuilder,
-		@Valid @RequestPart("document") @Schema(description = "Document", implementation = Document.class) String documentString,
+		@RequestPart("document") @Schema(description = "Document", implementation = Document.class) String documentString,
 		@RequestPart(value = "documentFile") MultipartFile documentFile) throws JsonProcessingException {
 
 		final var document = mapper.readValue(documentString, Document.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
@@ -77,7 +76,7 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Document> update(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Valid @RequestPart(value = "document", required = false) @Schema(description = "Document", implementation = Document.class) String documentString,
+		@RequestPart(value = "document", required = false) @Schema(description = "Document", implementation = Document.class) String documentString,
 		@RequestPart(value = "documentFile", required = false) MultipartFile documentFile) throws JsonProcessingException {
 
 		final var document = mapper.readValue(documentString, Document.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.

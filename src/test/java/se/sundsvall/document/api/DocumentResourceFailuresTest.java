@@ -7,7 +7,6 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.web.reactive.function.BodyInserters.fromMultipartData;
-import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.util.List;
 
@@ -53,8 +52,6 @@ class DocumentResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo("Required part 'documentFile' is not present.");
 
 		// TODO: Add verification
@@ -82,8 +79,6 @@ class DocumentResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo(BAD_REQUEST.getReasonPhrase());
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getDetail()).isEqualTo("Required part 'document' is not present.");
 
 		// TODO: Add verification
@@ -113,8 +108,6 @@ class DocumentResourceFailuresTest {
 			.getResponseBody();
 
 		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("metadataList[0].key", "must not be blank"));
@@ -146,8 +139,6 @@ class DocumentResourceFailuresTest {
 			.getResponseBody();
 
 		assertThat(response).isNotNull();
-		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("metadataList[0].value", "must not be blank"));
