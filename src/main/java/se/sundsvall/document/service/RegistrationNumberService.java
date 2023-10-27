@@ -6,7 +6,6 @@ import static java.time.ZoneId.systemDefault;
 
 import java.time.OffsetDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -31,8 +30,11 @@ public class RegistrationNumberService {
 	private static final int SEQUENCE_START = 1;
 	private static final String REGISTRATION_NUMBER_TEMPLATE = "%s-%s-%s"; // [YYYY-MUNICIPALITY_ID-SEQUENCE]
 
-	@Autowired
-	private RegistrationNumberSequenceRepository registrationNumberSequenceRepository;
+	private final RegistrationNumberSequenceRepository registrationNumberSequenceRepository;
+
+	public RegistrationNumberService(RegistrationNumberSequenceRepository registrationNumberSequenceRepository) {
+		this.registrationNumberSequenceRepository = registrationNumberSequenceRepository;
+	}
 
 	public String generateRegistrationNumber(String municipalityId) {
 

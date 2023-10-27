@@ -6,7 +6,6 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +34,11 @@ import se.sundsvall.document.service.DocumentService;
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class DocumentRevisionResource {
 
-	@Autowired
-	private DocumentService documentService;
+	private final DocumentService documentService;
+
+	public DocumentRevisionResource(DocumentService documentService) {
+		this.documentService = documentService;
+	}
 
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Read document revisions.")

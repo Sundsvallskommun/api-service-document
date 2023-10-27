@@ -7,7 +7,6 @@ import java.sql.Blob;
 import java.util.Optional;
 
 import org.hibernate.Session;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,8 +15,11 @@ import jakarta.persistence.EntityManager;
 @Component
 public class DatabaseHelper {
 
-	@Autowired
-	private EntityManager entityManager;
+	private final EntityManager entityManager;
+
+	public DatabaseHelper(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 
 	public Blob convertToBlob(MultipartFile multipartFile) {
 		return Optional.ofNullable(multipartFile)

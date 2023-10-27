@@ -24,7 +24,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,14 +43,15 @@ public class DocumentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentService.class);
 
-	@Autowired
-	private DocumentRepository documentRepository;
+	private final DatabaseHelper databaseHelper;
+	private final DocumentRepository documentRepository;
+	private final RegistrationNumberService registrationNumberService;
 
-	@Autowired
-	private RegistrationNumberService registrationNumberService;
-
-	@Autowired
-	private DatabaseHelper databaseHelper;
+	public DocumentService(DatabaseHelper databaseHelper, DocumentRepository documentRepository, RegistrationNumberService registrationNumberService) {
+		this.databaseHelper = databaseHelper;
+		this.documentRepository = documentRepository;
+		this.registrationNumberService = registrationNumberService;
+	}
 
 	public Document create(DocumentCreateRequest documentCreateRequest, MultipartFile documentFile) {
 

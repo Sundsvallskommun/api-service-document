@@ -13,12 +13,12 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @Schema(description = "DocumentCreateRequest model.")
 public class DocumentCreateRequest {
 
-	@Schema(description = "Municipality ID", example = "2281", requiredMode = REQUIRED)
 	@ValidMunicipalityId
+	@Schema(description = "Municipality ID", example = "2281", requiredMode = REQUIRED)
 	private String municipalityId;
 
-	@Schema(description = "Actor that created this revision.", example = "username123", requiredMode = REQUIRED)
 	@NotBlank
+	@Schema(description = "Actor that created this revision.", example = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
 	@Schema(description = "List of DocumentMetadata objects.")

@@ -1,5 +1,6 @@
 package se.sundsvall.document.api;
 
+import static jakarta.validation.Validation.buildDefaultValidatorFactory;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.ALL_VALUE;
@@ -11,7 +12,6 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +39,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
@@ -53,11 +52,13 @@ import se.sundsvall.document.service.DocumentService;
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class DocumentResource {
 
-	@Autowired
-	private DocumentService documentService;
+	private final DocumentService documentService;
+	private final ObjectMapper objectMapper;
 
-	@Autowired
-	private ObjectMapper mapper;
+	public DocumentResource(DocumentService documentService, ObjectMapper objectMapper) {
+		this.documentService = documentService;
+		this.objectMapper = objectMapper;
+	}
 
 	@PostMapping(consumes = { MULTIPART_FORM_DATA_VALUE }, produces = { ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Create document.")
@@ -67,7 +68,7 @@ public class DocumentResource {
 		@RequestPart("document") @Schema(description = "Document", implementation = DocumentCreateRequest.class) String documentString,
 		@RequestPart(value = "documentFile") MultipartFile documentFile) throws JsonProcessingException {
 
-		final var documentCreateRequest = mapper.readValue(documentString, DocumentCreateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
+		final var documentCreateRequest = objectMapper.readValue(documentString, DocumentCreateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		validate(documentCreateRequest);
 
 		final var registrationNumber = documentService.create(documentCreateRequest, documentFile).getRegistrationNumber();
@@ -84,7 +85,7 @@ public class DocumentResource {
 		@RequestPart(value = "document", required = false) @Schema(description = "Document", implementation = DocumentUpdateRequest.class) String documentString,
 		@RequestPart(value = "documentFile", required = false) MultipartFile documentFile) throws JsonProcessingException {
 
-		final var documentUpdateRequest = mapper.readValue(documentString, DocumentUpdateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
+		final var documentUpdateRequest = objectMapper.readValue(documentString, DocumentUpdateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		validate(documentUpdateRequest);
 
 		return ok(documentService.update(registrationNumber, documentUpdateRequest, documentFile));
@@ -113,7 +114,7 @@ public class DocumentResource {
 	}
 
 	private <T> void validate(T t) {
-		final var validator = Validation.buildDefaultValidatorFactory().getValidator();
+		final var validator = buildDefaultValidatorFactory().getValidator();
 		final Set<ConstraintViolation<T>> violations = validator.validate(t);
 		if (!violations.isEmpty()) {
 			throw new ConstraintViolationException(violations);

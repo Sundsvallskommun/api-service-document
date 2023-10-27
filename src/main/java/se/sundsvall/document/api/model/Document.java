@@ -1,7 +1,6 @@
 package se.sundsvall.document.api.model;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
-import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_WRITE;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -34,7 +33,7 @@ public class Document {
 	@Schema(description = "Actor that created this revision.", example = "username123", accessMode = READ_ONLY)
 	private String createdBy;
 
-	@Schema(description = "List of DocumentMetadata objects.", accessMode = READ_WRITE)
+	@Schema(description = "List of DocumentMetadata objects.", accessMode = READ_ONLY)
 	private List<DocumentMetadata> metadataList;
 
 	public static Document create() {
