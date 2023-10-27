@@ -1,6 +1,7 @@
 package se.sundsvall.document.api.model;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_WRITE;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -10,15 +11,17 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
 
-@Schema(description = "Document model.")
+@Schema(description = "Document model.", accessMode = READ_ONLY)
 public class Document {
 
 	@Schema(description = "ID of the document.", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
 	private String id;
 
-	@Schema(description = "Registration number on the format [YYYY-nn].", example = "2023-1337", accessMode = READ_ONLY)
+	@Schema(description = "Municipality ID", example = "2281", accessMode = READ_ONLY)
+	private String municipalityId;
+
+	@Schema(description = "Registration number on the format [YYYY-nn].", example = "2023-2281-1337", accessMode = READ_ONLY)
 	private String registrationNumber;
 
 	@Schema(description = "Document revision.", example = "2", accessMode = READ_ONLY)
@@ -31,8 +34,8 @@ public class Document {
 	@Schema(description = "Actor that created this revision.", example = "username123", accessMode = READ_ONLY)
 	private String createdBy;
 
-	@Schema(description = "List of DocumentMetadata objects.")
-	private List<@Valid DocumentMetadata> metadataList;
+	@Schema(description = "List of DocumentMetadata objects.", accessMode = READ_WRITE)
+	private List<DocumentMetadata> metadataList;
 
 	public static Document create() {
 		return new Document();
@@ -48,6 +51,19 @@ public class Document {
 
 	public Document withId(String id) {
 		this.id = id;
+		return this;
+	}
+
+	public String getMunicipalityId() {
+		return municipalityId;
+	}
+
+	public void setMunicipalityId(String municipalityId) {
+		this.municipalityId = municipalityId;
+	}
+
+	public Document withMunicipalityId(String municipalityId) {
+		this.municipalityId = municipalityId;
 		return this;
 	}
 
@@ -118,22 +134,22 @@ public class Document {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(created, createdBy, id, metadataList, registrationNumber, revision);
+		return Objects.hash(created, createdBy, id, metadataList, municipalityId, registrationNumber, revision);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final Document other)) { return false; }
-		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(id, other.id) && Objects.equals(metadataList, other.metadataList) && Objects.equals(registrationNumber, other.registrationNumber)
-			&& (revision == other.revision);
+		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(id, other.id) && Objects.equals(metadataList, other.metadataList) && Objects.equals(municipalityId, other.municipalityId) && Objects
+			.equals(registrationNumber, other.registrationNumber) && (revision == other.revision);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("Document [id=").append(id).append(", registrationNumber=").append(registrationNumber).append(", revision=").append(revision).append(", created=").append(created).append(", createdBy=").append(createdBy).append(", metadataList=")
-			.append(metadataList).append("]");
+		builder.append("Document [id=").append(id).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", revision=").append(revision).append(", created=").append(created).append(
+			", createdBy=").append(createdBy).append(", metadataList=").append(metadataList).append("]");
 		return builder.toString();
 	}
 }
