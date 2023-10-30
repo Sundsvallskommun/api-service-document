@@ -5,10 +5,10 @@ INSERT INTO document_data (id, file) VALUES
 	('8f7be4bb-ef79-4a16-95bf-a0619e320745', '89504E470D0A1A0A0000000D494844520000001000000010080200000090916836000000017352474200AECE1CE90000000467414D410000B18F0BFC6105000000097048597300000EC300000EC301C76FA8640000001E49444154384F6350DAE843126220493550F1A80662426C349406472801006AC91F1040F796BD0000000049454E44AE426082'); -- Document-2, revision 1
 	
 INSERT INTO document (id, revision, created, created_by, document_data_id, registration_number) VALUES
-	('159c10bf-1b32-471b-b2d3-c4b4b13ea152', 1, '2023-06-28 12:01:00.000', "User1", 'faa3547e-f775-4799-9ac0-e07fab1df362', '2023-123'), -- Document-1, revision 1
-	('8efd63a3-b525-4581-8b0b-9759f381a5a5', 2, '2023-06-28 12:02:00.000', "User1", '50167fa9-6b50-428e-9383-b6cbfaffc63b', '2023-123'), -- Document-1, revision 2
-	('612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2', 3, '2023-06-28 12:03:00.000', "User1", '4f0a04af-942d-4ad2-b2d9-151887fc995c', '2023-123'), -- Document-1, revision 3
-	('03d33a6a-bc8c-410c-95f6-2c890822967d', 1, '2023-06-28 12:01:00.000', "User1", '8f7be4bb-ef79-4a16-95bf-a0619e320745', '2024-999'); -- Document-2, revision 1
+	('159c10bf-1b32-471b-b2d3-c4b4b13ea152', 1, '2023-06-28 12:01:00.000', "User1", 'faa3547e-f775-4799-9ac0-e07fab1df362', '2023-2281-123'), -- Document-1, revision 1
+	('8efd63a3-b525-4581-8b0b-9759f381a5a5', 2, '2023-06-28 12:02:00.000', "User1", '50167fa9-6b50-428e-9383-b6cbfaffc63b', '2023-2281-123'), -- Document-1, revision 2
+	('612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2', 3, '2023-06-28 12:03:00.000', "User1", '4f0a04af-942d-4ad2-b2d9-151887fc995c', '2023-2281-123'), -- Document-1, revision 3
+	('03d33a6a-bc8c-410c-95f6-2c890822967d', 1, '2023-06-28 12:01:00.000', "User1", '8f7be4bb-ef79-4a16-95bf-a0619e320745', '2024-2281-999'); -- Document-2, revision 1
 	
 INSERT INTO document_metadata (document_id, `key`, value) VALUES
 	('159c10bf-1b32-471b-b2d3-c4b4b13ea152', "document1-key1", "value-1"), -- Document 1, revision 1
@@ -24,3 +24,6 @@ INSERT INTO document_metadata (document_id, `key`, value) VALUES
 	('03d33a6a-bc8c-410c-95f6-2c890822967d', "document2-key1", "value-1"), -- Document-2, revision 1
 	('03d33a6a-bc8c-410c-95f6-2c890822967d', "document2-key2", "value-2"), -- Document-2, revision 1
 	('03d33a6a-bc8c-410c-95f6-2c890822967d', "document2-key3", "value-3"); -- Document-2, revision 1
+
+INSERT INTO registration_number_sequence (sequence_number, created, modified, id, municipality_id) VALUES
+	(665, '2023-06-28 12:01:00.000', '2023-06-28 12:01:00.000', 'b734c963-b8d1-4ca0-b392-067f6f217794', '2321');

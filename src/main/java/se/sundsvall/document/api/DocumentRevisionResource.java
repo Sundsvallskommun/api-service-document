@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.Min;
 import se.sundsvall.document.api.model.Document;
+import se.sundsvall.document.service.DocumentService;
 
 @RestController
 @Validated
@@ -33,14 +34,19 @@ import se.sundsvall.document.api.model.Document;
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class DocumentRevisionResource {
 
+	private final DocumentService documentService;
+
+	public DocumentRevisionResource(DocumentService documentService) {
+		this.documentService = documentService;
+	}
+
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Read document revisions.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<List<Document>> readRevisions(
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber) {
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber) {
 
-		// TODO: Call service layer.
-		return ok(List.of(Document.create()));
+		return ok(documentService.readAll(registrationNumber));
 	}
 
 	@GetMapping(path = "/{revision}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -48,11 +54,10 @@ public class DocumentRevisionResource {
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Document> readRevision(
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") final int revision) {
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
+		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") int revision) {
 
-		// TODO: Call service layer.
-		return ok(Document.create());
+		return ok(documentService.read(registrationNumber, revision));
 	}
 
 	@GetMapping(path = "/{revision}/file", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -60,11 +65,11 @@ public class DocumentRevisionResource {
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> readFileRevision(
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") final int revision,
-		HttpServletResponse response) {
+		HttpServletResponse response,
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
+		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") int revision) {
 
-		// TODO: Call service layer.
+		documentService.readFile(registrationNumber, revision, response);
 		return ok().build();
 	}
 }

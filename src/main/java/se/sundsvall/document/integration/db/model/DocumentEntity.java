@@ -48,7 +48,10 @@ public class DocumentEntity {
 	@Column(name = "revision")
 	private int revision;
 
-	@Column(name = "registration_number")
+	@Column(name = "municipality_id")
+	private String municipalityId;
+
+	@Column(name = "registration_number", nullable = false, updatable = false)
 	private String registrationNumber;
 
 	@Column(name = "created_by")
@@ -74,7 +77,7 @@ public class DocumentEntity {
 			name = "document_id",
 			referencedColumnName = "id",
 			foreignKey = @ForeignKey(name = "fk_document_metadata_document")))
-	private List<DocumentMetadata> metadata;
+	private List<DocumentMetadataEmbeddable> metadata;
 
 	public static DocumentEntity create() {
 		return new DocumentEntity();
@@ -103,6 +106,19 @@ public class DocumentEntity {
 
 	public DocumentEntity withRevision(int revision) {
 		this.revision = revision;
+		return this;
+	}
+
+	public String getMunicipalityId() {
+		return municipalityId;
+	}
+
+	public void setMunicipalityId(String municipalityId) {
+		this.municipalityId = municipalityId;
+	}
+
+	public DocumentEntity withMunicipalityId(String municipalityId) {
+		this.municipalityId = municipalityId;
 		return this;
 	}
 
@@ -158,37 +174,37 @@ public class DocumentEntity {
 		return this;
 	}
 
-	public List<DocumentMetadata> getMetadata() {
+	public List<DocumentMetadataEmbeddable> getMetadata() {
 		return metadata;
 	}
 
-	public void setMetadata(List<DocumentMetadata> metadata) {
+	public void setMetadata(List<DocumentMetadataEmbeddable> metadata) {
 		this.metadata = metadata;
 	}
 
-	public DocumentEntity withMetadata(List<DocumentMetadata> metadata) {
+	public DocumentEntity withMetadata(List<DocumentMetadataEmbeddable> metadata) {
 		this.metadata = metadata;
 		return this;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(created, createdBy, documentData, id, metadata, registrationNumber, revision);
+		return Objects.hash(created, createdBy, documentData, id, metadata, municipalityId, registrationNumber, revision);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final DocumentEntity other)) { return false; }
-		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(documentData, other.documentData) && Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(
-			registrationNumber, other.registrationNumber) && (revision == other.revision);
+		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(documentData, other.documentData) && Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata)
+			&& (municipalityId == other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && (revision == other.revision);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", registrationNumber=").append(registrationNumber).append(", createdBy=").append(createdBy).append(", created=").append(created).append(
-			", documentData=").append(documentData).append(", metadata=").append(metadata).append("]");
+		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", createdBy=").append(createdBy).append(
+			", created=").append(created).append(", documentData=").append(documentData).append(", metadata=").append(metadata).append("]");
 		return builder.toString();
 	}
 }

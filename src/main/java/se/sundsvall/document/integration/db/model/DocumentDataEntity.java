@@ -20,6 +20,12 @@ public class DocumentDataEntity {
 	@Column(name = "id")
 	private String id;
 
+	@Column(name = "mime_type")
+	private String mimeType;
+
+	@Column(name = "file_name")
+	private String fileName;
+
 	@Lob
 	@Column(name = "file", columnDefinition = "longblob")
 	private Blob file;
@@ -41,6 +47,32 @@ public class DocumentDataEntity {
 		return this;
 	}
 
+	public String getMimeType() {
+		return mimeType;
+	}
+
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
+	}
+
+	public DocumentDataEntity withMimeType(String mimeType) {
+		this.mimeType = mimeType;
+		return this;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public DocumentDataEntity withFileName(String fileName) {
+		this.fileName = fileName;
+		return this;
+	}
+
 	public Blob getFile() {
 		return file;
 	}
@@ -56,20 +88,20 @@ public class DocumentDataEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(file, id);
+		return Objects.hash(file, fileName, id, mimeType);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final DocumentDataEntity other)) { return false; }
-		return Objects.equals(file, other.file) && Objects.equals(id, other.id);
+		return Objects.equals(file, other.file) && Objects.equals(fileName, other.fileName) && Objects.equals(id, other.id) && Objects.equals(mimeType, other.mimeType);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentDataEntity [id=").append(id).append(", file=").append(file).append("]");
+		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", file=").append(file).append("]");
 		return builder.toString();
 	}
 }

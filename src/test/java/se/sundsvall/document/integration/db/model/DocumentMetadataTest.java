@@ -15,7 +15,7 @@ class DocumentMetadataTest {
 
 	@Test
 	void testBean() {
-		assertThat(DocumentMetadata.class, allOf(
+		assertThat(DocumentMetadataEmbeddable.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -29,7 +29,7 @@ class DocumentMetadataTest {
 		final var key = "key";
 		final var value = "value";
 
-		final var bean = DocumentMetadata.create()
+		final var bean = DocumentMetadataEmbeddable.create()
 			.withKey(key)
 			.withValue(value);
 
@@ -40,7 +40,7 @@ class DocumentMetadataTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentMetadata.create()).hasAllNullFieldsOrProperties();
-		assertThat(new DocumentMetadata()).hasAllNullFieldsOrProperties();
+		assertThat(DocumentMetadataEmbeddable.create()).hasAllNullFieldsOrProperties();
+		assertThat(new DocumentMetadataEmbeddable()).hasAllNullFieldsOrProperties();
 	}
 }

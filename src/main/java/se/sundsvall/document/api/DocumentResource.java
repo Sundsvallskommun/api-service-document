@@ -1,5 +1,6 @@
 package se.sundsvall.document.api;
 
+import static jakarta.validation.Validation.buildDefaultValidatorFactory;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.ALL_VALUE;
@@ -11,7 +12,6 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,8 +39,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
 import se.sundsvall.document.api.model.Document;
+import se.sundsvall.document.api.model.DocumentCreateRequest;
+import se.sundsvall.document.api.model.DocumentUpdateRequest;
+import se.sundsvall.document.service.DocumentService;
 
 @RestController
 @Validated
@@ -50,24 +52,28 @@ import se.sundsvall.document.api.model.Document;
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class DocumentResource {
 
-	@Autowired
-	private ObjectMapper mapper;
+	private final DocumentService documentService;
+	private final ObjectMapper objectMapper;
+
+	public DocumentResource(DocumentService documentService, ObjectMapper objectMapper) {
+		this.documentService = documentService;
+		this.objectMapper = objectMapper;
+	}
 
 	@PostMapping(consumes = { MULTIPART_FORM_DATA_VALUE }, produces = { ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Create document.")
 	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<Void> create(
-		final UriComponentsBuilder uriComponentsBuilder,
-		@RequestPart("document") @Schema(description = "Document", implementation = Document.class) String documentString,
+		UriComponentsBuilder uriComponentsBuilder,
+		@RequestPart("document") @Schema(description = "Document", implementation = DocumentCreateRequest.class) String documentString,
 		@RequestPart(value = "documentFile") MultipartFile documentFile) throws JsonProcessingException {
 
-		final var document = mapper.readValue(documentString, Document.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
-		validate(document);
+		final var documentCreateRequest = objectMapper.readValue(documentString, DocumentCreateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
+		validate(documentCreateRequest);
 
-		// TODO: Call service layer.
-		final var id = document.getId();
+		final var registrationNumber = documentService.create(documentCreateRequest, documentFile).getRegistrationNumber();
 
-		return created(uriComponentsBuilder.path("/documents/{id}").buildAndExpand(id).toUri()).header(CONTENT_TYPE, ALL_VALUE).build();
+		return created(uriComponentsBuilder.path("/documents/{registrationNumber}").buildAndExpand(registrationNumber).toUri()).header(CONTENT_TYPE, ALL_VALUE).build();
 	}
 
 	@PatchMapping(path = "/{registrationNumber}", consumes = { MULTIPART_FORM_DATA_VALUE }, produces = { ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -75,15 +81,14 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Document> update(
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@RequestPart(value = "document", required = false) @Schema(description = "Document", implementation = Document.class) String documentString,
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
+		@RequestPart(value = "document", required = false) @Schema(description = "Document", implementation = DocumentUpdateRequest.class) String documentString,
 		@RequestPart(value = "documentFile", required = false) MultipartFile documentFile) throws JsonProcessingException {
 
-		final var document = mapper.readValue(documentString, Document.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
-		validate(document);
+		final var documentUpdateRequest = objectMapper.readValue(documentString, DocumentUpdateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
+		validate(documentUpdateRequest);
 
-		// TODO: Call service layer.
-		return ok(Document.create());
+		return ok(documentService.update(registrationNumber, documentUpdateRequest, documentFile));
 	}
 
 	@GetMapping(path = "/{registrationNumber}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -91,10 +96,9 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Document> read(
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber) {
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber) {
 
-		// TODO: Call service layer.
-		return ok(Document.create());
+		return ok(documentService.read(registrationNumber));
 	}
 
 	@GetMapping(path = "/{registrationNumber}/file", produces = { APPLICATION_PROBLEM_JSON_VALUE })
@@ -102,15 +106,15 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> readFile(
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-1337") @PathVariable("registrationNumber") String registrationNumber,
-		HttpServletResponse response) {
+		HttpServletResponse response,
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber) {
 
-		// TODO: Call service layer.
+		documentService.readFile(registrationNumber, response);
 		return ok().build();
 	}
 
 	private <T> void validate(T t) {
-		final var validator = Validation.buildDefaultValidatorFactory().getValidator();
+		final var validator = buildDefaultValidatorFactory().getValidator();
 		final Set<ConstraintViolation<T>> violations = validator.validate(t);
 		if (!violations.isEmpty()) {
 			throw new ConstraintViolationException(violations);

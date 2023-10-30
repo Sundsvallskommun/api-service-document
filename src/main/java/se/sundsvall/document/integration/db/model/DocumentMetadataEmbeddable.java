@@ -6,7 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public class DocumentMetadata {
+public class DocumentMetadataEmbeddable {
 
 	@Column(name = "`key`")
 	private String key;
@@ -14,8 +14,8 @@ public class DocumentMetadata {
 	@Column(name = "value")
 	private String value;
 
-	public static DocumentMetadata create() {
-		return new DocumentMetadata();
+	public static DocumentMetadataEmbeddable create() {
+		return new DocumentMetadataEmbeddable();
 	}
 
 	public String getKey() {
@@ -26,7 +26,7 @@ public class DocumentMetadata {
 		this.key = key;
 	}
 
-	public DocumentMetadata withKey(String key) {
+	public DocumentMetadataEmbeddable withKey(String key) {
 		this.key = key;
 		return this;
 	}
@@ -39,7 +39,7 @@ public class DocumentMetadata {
 		this.value = value;
 	}
 
-	public DocumentMetadata withValue(String value) {
+	public DocumentMetadataEmbeddable withValue(String value) {
 		this.value = value;
 		return this;
 	}
@@ -52,14 +52,14 @@ public class DocumentMetadata {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentMetadata other)) { return false; }
+		if (!(obj instanceof final DocumentMetadataEmbeddable other)) { return false; }
 		return Objects.equals(key, other.key) && Objects.equals(value, other.value);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentMetadata [key=").append(key).append(", value=").append(value).append("]");
+		builder.append("DocumentMetadataEmbeddable [key=").append(key).append(", value=").append(value).append("]");
 		return builder.toString();
 	}
 }

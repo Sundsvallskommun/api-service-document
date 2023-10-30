@@ -16,14 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.sundsvall.document.integration.db.model.DocumentEntity;
-import se.sundsvall.document.integration.db.model.DocumentMetadata;
+import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 
 /**
  * DocumentRepository tests
@@ -63,7 +61,7 @@ class DocumentRepositoryTest {
 		assertThat(result.getRegistrationNumber()).isEqualTo(REGISTRATION_NUMBER);
 		assertThat(result.getCreatedBy()).isEqualTo(CREATED_BY);
 		assertThat(result.getMetadata())
-			.extracting(DocumentMetadata::getKey, DocumentMetadata::getValue)
+			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
 			.containsExactly(
 				tuple("key1", "value1"),
 				tuple("key2", "value2"));
@@ -76,24 +74,24 @@ class DocumentRepositoryTest {
 		final var entity = documentRepository.findById(DOCUMENT_ENTITY_ID).orElseThrow();
 		assertThat(entity).isNotNull();
 		assertThat(entity.getCreated()).isEqualTo(OffsetDateTime.parse("2023-06-28T12:01:00.000+02:00"));
-		assertThat(entity.getRegistrationNumber()).isEqualTo("2023-123");
+		assertThat(entity.getRegistrationNumber()).isEqualTo("2023-2281-123");
 		assertThat(entity.getCreatedBy()).isEqualTo("User1");
 		assertThat(entity.getMetadata())
-			.extracting(DocumentMetadata::getKey, DocumentMetadata::getValue)
+			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
 			.containsExactly(tuple("document1-key1", "value-1"));
 
 		// Act
-		entity.withMetadata(new ArrayList<>(List.of(DocumentMetadata.create().withKey("UpdatedKey").withValue("UpdatedValue"))));
+		entity.withMetadata(new ArrayList<>(List.of(DocumentMetadataEmbeddable.create().withKey("UpdatedKey").withValue("UpdatedValue"))));
 		final var result = documentRepository.save(entity);
 
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(isValidUUID(result.getId())).isTrue();
 		assertThat(entity.getCreated()).isEqualTo(OffsetDateTime.parse("2023-06-28T12:01:00.000+02:00"));
-		assertThat(result.getRegistrationNumber()).isEqualTo("2023-123");
+		assertThat(result.getRegistrationNumber()).isEqualTo("2023-2281-123");
 		assertThat(result.getCreatedBy()).isEqualTo("User1");
 		assertThat(result.getMetadata())
-			.extracting(DocumentMetadata::getKey, DocumentMetadata::getValue)
+			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
 			.containsExactly(tuple("UpdatedKey", "UpdatedValue"));
 	}
 
@@ -101,7 +99,7 @@ class DocumentRepositoryTest {
 	void findTopByRegistrationNumberOrderByRevisionDesc() {
 
 		// Arrange
-		final var registrationNumber = "2023-123";
+		final var registrationNumber = "2023-2281-123";
 
 		// Act
 		final var result = documentRepository.findTopByRegistrationNumberOrderByRevisionDesc(registrationNumber).orElseThrow();
@@ -114,7 +112,7 @@ class DocumentRepositoryTest {
 		assertThat(result.getRegistrationNumber()).isEqualTo(registrationNumber);
 		assertThat(result.getCreatedBy()).isEqualTo("User1");
 		assertThat(result.getMetadata())
-			.extracting(DocumentMetadata::getKey, DocumentMetadata::getValue)
+			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
 			.containsExactly(
 				tuple("document1-key1", "value-1"),
 				tuple("document1-key2", "value-2"),
@@ -126,45 +124,45 @@ class DocumentRepositoryTest {
 	void findByRegistrationNumber() {
 
 		// Arrange
-		final var registrationNumber = "2023-123";
+		final var registrationNumber = "2023-2281-123";
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumber(registrationNumber, PageRequest.of(0, 20, Sort.Direction.ASC, "revision"));
+		final var result = documentRepository.findByRegistrationNumberOrderByRevisionAsc(registrationNumber);
 
 		// Assert
 		assertThat(result)
 			.hasSize(3)
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
 			.containsExactly(
-				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-123", "User1"),
-				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-123", "User1"),
-				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-123", "User1"));
+				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-2281-123", "User1"),
+				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User1"),
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User1"));
 	}
 
 	@Test
 	void findByRegistrationNumberInReversedOrder() {
 
 		// Arrange
-		final var registrationNumber = "2023-123";
+		final var registrationNumber = "2023-2281-123";
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumber(registrationNumber, PageRequest.of(0, 20, Sort.Direction.DESC, "revision"));
+		final var result = documentRepository.findByRegistrationNumberOrderByRevisionAsc(registrationNumber);
 
 		// Assert
 		assertThat(result)
 			.hasSize(3)
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
 			.containsExactly(
-				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-123", "User1"),
-				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-123", "User1"),
-				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-123", "User1"));
+				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-2281-123", "User1"),
+				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User1"),
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User1"));
 	}
 
 	@Test
 	void findByRegistrationNumberAndRevision() {
 
 		// Arrange
-		final var registrationNumber = "2023-123";
+		final var registrationNumber = "2023-2281-123";
 		final var revision = 2;
 
 		// Act
@@ -174,15 +172,15 @@ class DocumentRepositoryTest {
 		assertThat(result)
 			.isNotNull()
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
-			.containsExactly("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-123", "User1");
+			.containsExactly("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User1");
 	}
 
 	private static DocumentEntity createDocumentEntity() {
 		return DocumentEntity.create()
 			.withCreatedBy(CREATED_BY)
 			.withMetadata(List.of(
-				DocumentMetadata.create().withKey("key1").withValue("value1"),
-				DocumentMetadata.create().withKey("key2").withValue("value2")))
+				DocumentMetadataEmbeddable.create().withKey("key1").withValue("value1"),
+				DocumentMetadataEmbeddable.create().withKey("key2").withValue("value2")))
 			.withRegistrationNumber(REGISTRATION_NUMBER)
 			.withRevision(0);
 	}

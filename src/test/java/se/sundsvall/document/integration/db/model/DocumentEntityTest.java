@@ -44,7 +44,8 @@ class DocumentEntityTest {
 		final var createdBy = "user";
 		final var documentData = DocumentDataEntity.create();
 		final var id = randomUUID().toString();
-		final var metadata = List.of(DocumentMetadata.create());
+		final var metadata = List.of(DocumentMetadataEmbeddable.create());
+		final var municipalityId = "municipalityId";
 		final var registrationNumber = "12345";
 		final var revision = 5;
 
@@ -54,6 +55,7 @@ class DocumentEntityTest {
 			.withDocumentData(documentData)
 			.withId(id)
 			.withMetadata(metadata)
+			.withMunicipalityId(municipalityId)
 			.withRegistrationNumber(registrationNumber)
 			.withRevision(revision);
 
@@ -63,6 +65,7 @@ class DocumentEntityTest {
 		assertThat(bean.getDocumentData()).isEqualTo(documentData);
 		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getMetadata()).isEqualTo(metadata);
+		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(bean.getRegistrationNumber()).isEqualTo(registrationNumber);
 		assertThat(bean.getRevision()).isEqualTo(revision);
 	}
