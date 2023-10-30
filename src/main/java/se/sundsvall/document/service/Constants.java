@@ -1,6 +1,6 @@
 package se.sundsvall.document.service;
 
-public class Constants {
+public final class Constants {
 
 	private Constants() {}
 

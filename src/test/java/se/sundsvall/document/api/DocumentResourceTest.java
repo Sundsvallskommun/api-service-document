@@ -12,6 +12,8 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.web.reactive.function.BodyInserters.fromMultipartData;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
+import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.service.DocumentService;
 
@@ -47,7 +50,10 @@ class DocumentResourceTest {
 		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
-			.withMunicipalityId("2281"));
+			.withMunicipalityId("2281")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value"))));
 
 		when(documentServiceMock.create(any(), any())).thenReturn(Document.create());
 
@@ -74,7 +80,11 @@ class DocumentResourceTest {
 		final var registrationNumber = "2023-1337";
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("document", DocumentUpdateRequest.create().withCreatedBy("user"));
+		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+			.withCreatedBy("user")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value"))));
 
 		when(documentServiceMock.update(any(), any(), any())).thenReturn(Document.create());
 

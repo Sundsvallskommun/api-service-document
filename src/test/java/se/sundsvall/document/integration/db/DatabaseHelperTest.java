@@ -1,5 +1,6 @@
 package se.sundsvall.document.integration.db;
 
+import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,13 +17,13 @@ import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 
-import org.apache.commons.io.IOUtils;
 import org.hibernate.LobHelper;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -32,49 +33,47 @@ import jakarta.persistence.EntityManager;
 class DatabaseHelperTest {
 
 	@Mock
-	private EntityManager entityManager;
+	private EntityManager entityManagerMock;
 
 	@Mock
-	private Session session;
+	private LobHelper lobHelperMock;
 
 	@Mock
-	private LobHelper lobHelper;
-
-	@Mock
-	private Blob blob;
+	private Blob blobMock;
 
 	@InjectMocks
 	private DatabaseHelper databaseHelper;
 
 	@Test
-	void convertToBlob() throws IOException, SQLException {
+	void convertToBlob() throws IOException {
 
 		// Arrange
-		when(session.getLobHelper()).thenReturn(lobHelper);
-		when(entityManager.unwrap(Session.class)).thenReturn(session);
-		when(lobHelper.createBlob(any(), anyLong())).thenReturn(blob);
+		final var sessionMock = Mockito.mock(Session.class);
+		when(sessionMock.getLobHelper()).thenReturn(lobHelperMock);
+		when(entityManagerMock.unwrap(Session.class)).thenReturn(sessionMock);
+		when(lobHelperMock.createBlob(any(), anyLong())).thenReturn(blobMock);
 
 		final var file = new File("src/test/resources/files/image.png");
-		final var multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(new FileInputStream(file)));
+		final var multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
 
 		// Act
 		final var result = databaseHelper.convertToBlob(multipartFile);
 
 		// Assert
 		assertThat(result).isNotNull();
-		verify(entityManager).unwrap(Session.class);
-		verify(session).getLobHelper();
-		verify(lobHelper).createBlob(any(InputStream.class), eq(multipartFile.getSize()));
+		verify(entityManagerMock).unwrap(Session.class);
+		verify(sessionMock).getLobHelper();
+		verify(lobHelperMock).createBlob(any(InputStream.class), eq(multipartFile.getSize()));
 	}
 
 	@Test
-	void convertToBlobWhenExceptionThrown() throws IOException, SQLException {
+	void convertToBlobWhenExceptionThrown() throws IOException {
 
 		// Arrange
-		when(entityManager.unwrap(Session.class)).thenThrow(new RuntimeException("An error occured"));
+		when(entityManagerMock.unwrap(any())).thenThrow(new RuntimeException("An error occured"));
 
 		final var file = new File("src/test/resources/files/image.png");
-		final var multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(new FileInputStream(file)));
+		final var multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
 
 		// Act
 		final var exception = assertThrows(RuntimeException.class, () -> databaseHelper.convertToBlob(multipartFile));
@@ -82,8 +81,8 @@ class DatabaseHelperTest {
 		// Assert
 		assertThat(exception).isNotNull();
 		assertThat(exception.getMessage()).isEqualTo("An error occured");
-		verify(entityManager).unwrap(Session.class);
-		verifyNoInteractions(session, lobHelper);
+		verify(entityManagerMock).unwrap(Session.class);
+		verifyNoInteractions(lobHelperMock);
 	}
 
 	@Test
@@ -94,6 +93,6 @@ class DatabaseHelperTest {
 
 		// Assert
 		assertThat(result).isNull();
-		verifyNoInteractions(entityManager, session, lobHelper);
+		verifyNoInteractions(entityManagerMock, lobHelperMock);
 	}
 }

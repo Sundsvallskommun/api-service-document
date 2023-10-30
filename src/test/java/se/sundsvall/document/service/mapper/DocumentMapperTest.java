@@ -164,6 +164,11 @@ class DocumentMapperTest {
 	}
 
 	@Test
+	void toDocumentListWhenInputIsNull() {
+		assertThat(DocumentMapper.toDocumentList(null)).isEmpty();
+	}
+
+	@Test
 	void toDocument() {
 
 		// Arrange

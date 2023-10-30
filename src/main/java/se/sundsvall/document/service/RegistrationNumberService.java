@@ -3,6 +3,7 @@ package se.sundsvall.document.service;
 import static java.lang.String.format;
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
+import static org.apache.commons.lang3.ObjectUtils.allNull;
 
 import java.time.OffsetDateTime;
 
@@ -15,7 +16,7 @@ import se.sundsvall.document.integration.db.model.RegistrationNumberSequenceEnti
 /**
  * Class responsible for generating unique registration numbers.
  *
- * Registration numbers are created with the following pattern: [YYYY-MUNICIPALITY_ID-SEQUENCE]
+ * Registration numbers are created with the following format: [YYYY-MUNICIPALITY_ID-SEQUENCE]
  *
  * Example:
  * If a registrationNumber is created on date 2022-10-26 for "Sundsvall municipality" (municipalityID: 2281), for the
@@ -40,7 +41,6 @@ public class RegistrationNumberService {
 
 		final var sequenceEntity = registrationNumberSequenceRepository.findByMunicipalityId(municipalityId)
 			.orElse(RegistrationNumberSequenceEntity.create()
-				.withCreated(now(systemDefault()))
 				.withMunicipalityId(municipalityId));
 
 		// Reset sequence every year.
@@ -58,6 +58,9 @@ public class RegistrationNumberService {
 	}
 
 	private OffsetDateTime getLastTouched(RegistrationNumberSequenceEntity sequenceEntity) {
+		if (allNull(sequenceEntity.getModified(), sequenceEntity.getCreated())) {
+			return now(systemDefault()); // Newly created object, return now.
+		}
 		return sequenceEntity.getModified() == null ? sequenceEntity.getCreated() : sequenceEntity.getModified();
 	}
 

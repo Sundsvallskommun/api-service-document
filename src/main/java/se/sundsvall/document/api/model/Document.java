@@ -14,26 +14,26 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Document model.", accessMode = READ_ONLY)
 public class Document {
 
-	@Schema(description = "ID of the document.", example = "0d64c132-3aea-11ec-8d3d-0242ac130003", accessMode = READ_ONLY)
+	@Schema(description = "ID of the document.", example = "0d64c132-3aea-11ec-8d3d-0242ac130003")
 	private String id;
 
-	@Schema(description = "Municipality ID", example = "2281", accessMode = READ_ONLY)
+	@Schema(description = "Municipality ID", example = "2281")
 	private String municipalityId;
 
-	@Schema(description = "Registration number on the format [YYYY-nn].", example = "2023-2281-1337", accessMode = READ_ONLY)
+	@Schema(description = "Registration number on the format [YYYY-nnnn-nnnn].", example = "2023-2281-1337")
 	private String registrationNumber;
 
-	@Schema(description = "Document revision.", example = "2", accessMode = READ_ONLY)
+	@Schema(description = "Document revision.", example = "2")
 	private int revision;
 
-	@Schema(description = "Timestamp when document revision was created.", example = "2023-08-31T01:30:00.000+02:00", accessMode = READ_ONLY)
+	@Schema(description = "Timestamp when document revision was created.", example = "2023-08-31T01:30:00.000+02:00")
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime created;
 
-	@Schema(description = "Actor that created this revision.", example = "username123", accessMode = READ_ONLY)
+	@Schema(description = "Actor that created this revision.", example = "username123")
 	private String createdBy;
 
-	@Schema(description = "List of DocumentMetadata objects.", accessMode = READ_ONLY)
+	@Schema(description = "List of DocumentMetadata objects.")
 	private List<DocumentMetadata> metadataList;
 
 	public static Document create() {

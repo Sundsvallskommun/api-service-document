@@ -1,5 +1,6 @@
 package se.sundsvall.document.api;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -96,7 +97,11 @@ class DocumentResourceFailuresTest {
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("document", DocumentCreateRequest.create().withCreatedBy("user"));
+		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
+			.withCreatedBy("user")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value"))));
 
 		// Act
 		final var response = webTestClient.post()
@@ -120,6 +125,69 @@ class DocumentResourceFailuresTest {
 	}
 
 	@Test
+	void createWithEmptyMetadata() {
+
+		// Arrange
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
+			.withCreatedBy("user")
+			.withMunicipalityId("2281")
+			.withMetadataList(emptyList()));
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/documents")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("metadataList", "must not be empty"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void createWithMissingMetadata() {
+
+		// Arrange
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
+			.withCreatedBy("user")
+			.withMunicipalityId("2281"));
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/documents")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("metadataList", "must not be empty"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
 	void createWithInvalidMunicipalityId() {
 
 		// Arrange
@@ -127,7 +195,10 @@ class DocumentResourceFailuresTest {
 		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
-			.withMunicipalityId("666")); // Invalid municipalityId
+			.withMunicipalityId("666") // Invalid municipalityId
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value"))));
 
 		// Act
 		final var response = webTestClient.post()
@@ -146,6 +217,61 @@ class DocumentResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void updateWithMissingMetaData() {
+
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+			.withCreatedBy("user"));
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri("/documents/2023-1337")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("metadataList", "must not be empty"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void updateWithEmptyMetaData() {
+
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+			.withCreatedBy("user")
+			.withMetadataList(emptyList()));
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri("/documents/2023-1337")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("metadataList", "must not be empty"));
 
 		verifyNoInteractions(documentServiceMock);
 	}

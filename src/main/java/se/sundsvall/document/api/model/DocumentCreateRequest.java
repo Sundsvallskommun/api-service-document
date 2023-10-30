@@ -8,6 +8,7 @@ import java.util.Objects;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 @Schema(description = "DocumentCreateRequest model.")
@@ -21,6 +22,7 @@ public class DocumentCreateRequest {
 	@Schema(description = "Actor that created this revision.", example = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
+	@NotEmpty
 	@Schema(description = "List of DocumentMetadata objects.")
 	private List<@Valid DocumentMetadata> metadataList;
 
