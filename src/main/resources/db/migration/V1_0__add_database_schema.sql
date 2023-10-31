@@ -11,6 +11,7 @@
     ) engine=InnoDB;
 
     create table document_data (
+        file_size_in_bytes bigint,
         file_name varchar(255),
         id varchar(255) not null,
         mime_type varchar(255),
@@ -38,6 +39,9 @@
 
     create index ix_created_by 
        on document (created_by);
+
+    create index municipality_id 
+       on document (municipality_id);
 
     alter table if exists document 
        add constraint uq_revision_and_registration_number unique (revision, registration_number);

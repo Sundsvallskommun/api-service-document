@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,18 +129,19 @@ class DocumentRepositoryTest {
 
 		// Arrange
 		final var registrationNumber = "2023-2281-123";
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberOrderByRevisionAsc(registrationNumber);
+		final var result = documentRepository.findByRegistrationNumber(registrationNumber, pageRequest);
 
 		// Assert
 		assertThat(result)
 			.hasSize(3)
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
 			.containsExactly(
-				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-2281-123", "User1"),
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User1"),
 				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User1"),
-				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User1"));
+				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-2281-123", "User1"));
 	}
 
 	@Test
@@ -144,9 +149,10 @@ class DocumentRepositoryTest {
 
 		// Arrange
 		final var registrationNumber = "2023-2281-123";
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberOrderByRevisionAsc(registrationNumber);
+		final var result = documentRepository.findByRegistrationNumber(registrationNumber, pageRequest);
 
 		// Assert
 		assertThat(result)
@@ -173,6 +179,40 @@ class DocumentRepositoryTest {
 			.isNotNull()
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
 			.containsExactly("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User1");
+	}
+
+	@Test
+	void search() {
+
+		// Arrange
+		final var search = "*key3";
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
+
+		// Act
+		final var result = documentRepository.search(search, pageRequest);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(result.getContent())
+			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
+			.containsExactly(
+				tuple("03d33a6a-bc8c-410c-95f6-2c890822967d", 1, "2024-2281-999", "User1"),
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User1"));
+	}
+
+	@Test
+	void searchNoMatches() {
+
+		// Arrange
+		final var search = "this-string-does-not-exists";
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
+
+		// Act
+		final var result = documentRepository.search(search, pageRequest);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(result.getContent()).isEmpty();
 	}
 
 	private static DocumentEntity createDocumentEntity() {

@@ -2,9 +2,11 @@ package se.sundsvall.document.service.mapper;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
+import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,14 +14,17 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mariadb.jdbc.MariaDbBlob;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 
+import se.sundsvall.dept44.models.api.paging.PagingMetaData;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentMetadata;
@@ -209,7 +214,7 @@ class DocumentMapperTest {
 		final var mimeType = "image/png";
 		final var file = new File("src/test/resources/files/image.png");
 		final var fileName = file.getName();
-		final var multipartFile = new MockMultipartFile("file", fileName, mimeType, IOUtils.toByteArray(new FileInputStream(file)));
+		final var multipartFile = new MockMultipartFile("file", fileName, mimeType, toByteArray(new FileInputStream(file)));
 
 		when(databaseHelperMock.convertToBlob(multipartFile)).thenReturn(new MariaDbBlob());
 
@@ -235,7 +240,7 @@ class DocumentMapperTest {
 	}
 
 	@Test
-	void toDocumentDataEntityFromDocumentDataEntity() throws IOException {
+	void toDocumentDataEntityFromDocumentDataEntity() {
 
 		// Arrange
 		final var file = new MariaDbBlob();
@@ -258,6 +263,60 @@ class DocumentMapperTest {
 		assertThat(result.getMimeType()).isEqualTo(mimeType);
 		assertThat(result.getFile()).isEqualTo(file);
 		assertThat(result.getId()).isNull();
+	}
+
+	@Test
+	void toPagedDocumentResponse(@Mock Page<DocumentEntity> pageMock) {
+
+		// Arrange
+		final var page = 1;
+		final var pageSize = 20;
+		final var sort = Sort.by(ASC, "property");
+		final var pageable = PageRequest.of(page, pageSize, sort);
+
+		final var documentEntity = DocumentEntity.create()
+			.withCreated(CREATED)
+			.withCreatedBy(CREATED_BY)
+			.withId(ID)
+			.withMetadata(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withRegistrationNumber(REGISTRATION_NUMBER)
+			.withRevision(REVISION);
+
+		when(pageMock.getPageable()).thenReturn(pageable);
+		when(pageMock.getNumberOfElements()).thenReturn(11);
+		when(pageMock.getTotalElements()).thenReturn(22L);
+		when(pageMock.getTotalPages()).thenReturn(33);
+		when(pageMock.getContent()).thenReturn(List.of(documentEntity));
+
+		// Act
+		final var result = DocumentMapper.toPagedDocumentResponse(pageMock);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(result.getMetadata())
+			.extracting(PagingMetaData::getPage, PagingMetaData::getLimit, PagingMetaData::getCount, PagingMetaData::getTotalRecords, PagingMetaData::getTotalPages)
+			.containsExactly(page, pageSize, 11, 22L, 33);
+		assertThat(result.getDocuments())
+			.hasSize(1)
+			.containsExactly(Document.create()
+				.withCreated(CREATED)
+				.withCreatedBy(CREATED_BY)
+				.withId(ID)
+				.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+				.withMunicipalityId(MUNICIPALITY_ID)
+				.withRegistrationNumber(REGISTRATION_NUMBER)
+				.withRevision(REVISION));
+	}
+
+	@Test
+	void toPagedDocumentResponseWhenInputIsNull() {
+
+		// Act
+		final var result = DocumentMapper.toPagedDocumentResponse(null);
+
+		// Assert
+		assertThat(result).isNull();
 	}
 
 	@Test

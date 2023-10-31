@@ -26,6 +26,9 @@ public class DocumentDataEntity {
 	@Column(name = "file_name")
 	private String fileName;
 
+	@Column(name = "file_size_in_bytes")
+	private long fileSizeInBytes;
+
 	@Lob
 	@Column(name = "file", columnDefinition = "longblob")
 	private Blob file;
@@ -86,22 +89,35 @@ public class DocumentDataEntity {
 		return this;
 	}
 
+	public long getFileSizeInBytes() {
+		return fileSizeInBytes;
+	}
+
+	public void setFileSizeInBytes(long fileSizeInBytes) {
+		this.fileSizeInBytes = fileSizeInBytes;
+	}
+
+	public DocumentDataEntity withFileSizeInBytes(long fileSizeInBytes) {
+		this.fileSizeInBytes = fileSizeInBytes;
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(file, fileName, id, mimeType);
+		return Objects.hash(file, fileName, fileSizeInBytes, id, mimeType);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final DocumentDataEntity other)) { return false; }
-		return Objects.equals(file, other.file) && Objects.equals(fileName, other.fileName) && Objects.equals(id, other.id) && Objects.equals(mimeType, other.mimeType);
+		return Objects.equals(file, other.file) && Objects.equals(fileName, other.fileName) && (fileSizeInBytes == other.fileSizeInBytes) && Objects.equals(id, other.id) && Objects.equals(mimeType, other.mimeType);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", file=").append(file).append("]");
+		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", fileSizeInBytes=").append(fileSizeInBytes).append(", file=").append(file).append("]");
 		return builder.toString();
 	}
 }

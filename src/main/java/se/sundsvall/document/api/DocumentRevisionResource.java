@@ -4,8 +4,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
-import java.util.List;
-
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.Min;
 import se.sundsvall.document.api.model.Document;
+import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.service.DocumentService;
 
 @RestController
@@ -43,10 +44,11 @@ public class DocumentRevisionResource {
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Read document revisions.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
-	public ResponseEntity<List<Document>> readRevisions(
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber) {
+	public ResponseEntity<PagedDocumentResponse> readRevisions(
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
+		@ParameterObject Pageable pageable) {
 
-		return ok(documentService.readAll(registrationNumber));
+		return ok(documentService.readAll(registrationNumber, pageable));
 	}
 
 	@GetMapping(path = "/{revision}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })

@@ -367,4 +367,48 @@ class DocumentResourceFailuresTest {
 
 		verifyNoInteractions(documentServiceMock);
 	}
+
+	@Test
+	void searchWithMissingQuery() {
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents")
+				.build())
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getDetail()).isEqualTo("Required request parameter 'query' for method parameter type String is not present");
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void searchWithBlankQuery() {
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents")
+				.queryParam("query", " ")
+				.build())
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("search.query", "must not be blank"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
 }

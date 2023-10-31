@@ -14,12 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.Document;
+import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.service.DocumentService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
@@ -37,22 +39,25 @@ class DocumentRevisionResourceTest {
 
 		// Arrange
 		final var registrationNumber = "2023-2281-1337";
+		final var pageRequest = PageRequest.of(0, 20);
 
-		when(documentServiceMock.readAll(registrationNumber)).thenReturn(List.of(Document.create()));
+		when(documentServiceMock.readAll(any(), any()))
+			.thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents/" + registrationNumber + "/revisions")
+			.uri("/documents/" + registrationNumber + "/revisions?page=" + pageRequest.getPageNumber() + "&size=" + pageRequest.getPageSize())
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
-			.expectBodyList(Document.class)
+			.expectBody(PagedDocumentResponse.class)
 			.returnResult()
 			.getResponseBody();
 
 		// Assert
-		assertThat(response).isNotEmpty();
-		verify(documentServiceMock).readAll(registrationNumber);
+		assertThat(response).isNotNull();
+		assertThat(response.getDocuments()).hasSize(1);
+		verify(documentServiceMock).readAll(registrationNumber, pageRequest);
 	}
 
 	@Test

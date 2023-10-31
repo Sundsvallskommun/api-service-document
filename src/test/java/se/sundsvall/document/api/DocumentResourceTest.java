@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.data.domain.Sort.Order.asc;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
@@ -18,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.test.context.ActiveProfiles;
@@ -30,6 +33,7 @@ import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
+import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.service.DocumentService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
@@ -103,6 +107,37 @@ class DocumentResourceTest {
 		// Assert
 		assertThat(response).isNotNull();
 		verify(documentServiceMock).update(eq(registrationNumber), any(DocumentUpdateRequest.class), any(MultipartFile.class));
+	}
+
+	@Test
+	void search() {
+
+		// Arrange
+		final var query = "string";
+		final var page = 1;
+		final var size = 10;
+		final var sort = "created,asc";
+
+		when(documentServiceMock.search(any(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents")
+				.queryParam("query", query)
+				.queryParam("page", page)
+				.queryParam("size", size)
+				.queryParam("sort", sort)
+				.build())
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentType(APPLICATION_JSON)
+			.expectBody()
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		verify(documentServiceMock).search(query, PageRequest.of(page, size, Sort.by(asc("created"))));
 	}
 
 	@Test

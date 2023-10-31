@@ -15,15 +15,15 @@ import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REG
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocument;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntity;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentEntity;
-import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentList;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toPagedDocumentResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +33,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
+import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.integration.db.DatabaseHelper;
 import se.sundsvall.document.integration.db.DocumentRepository;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
@@ -78,8 +79,12 @@ public class DocumentService {
 		return toDocument(documentEntity);
 	}
 
-	public List<Document> readAll(String registrationNumber) {
-		return toDocumentList(documentRepository.findByRegistrationNumberOrderByRevisionAsc(registrationNumber));
+	public PagedDocumentResponse readAll(String registrationNumber, Pageable pageable) {
+		return toPagedDocumentResponse(documentRepository.findByRegistrationNumber(registrationNumber, pageable));
+	}
+
+	public PagedDocumentResponse search(String query, Pageable pageable) {
+		return toPagedDocumentResponse(documentRepository.search(query, pageable));
 	}
 
 	public void readFile(String registrationNumber, HttpServletResponse response) {
