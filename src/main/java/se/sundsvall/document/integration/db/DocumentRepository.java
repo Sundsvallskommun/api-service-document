@@ -1,6 +1,6 @@
 package se.sundsvall.document.integration.db;
 
-import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchPhrase;
+import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchQuery;
 
 import java.util.Optional;
 
@@ -42,13 +42,13 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	Optional<DocumentEntity> findByRegistrationNumberAndRevision(String registrationNumber, int revision);
 
 	/**
-	 * Performs a search in the DocumentEntitties.
+	 * Performs a search in the DocumentEntities.
 	 *
 	 * @param  query    the string to search for.
 	 * @param  pageable the pageable object.
 	 * @return          a Page of DocumentEntity objects that matches the search string.
 	 */
 	default Page<DocumentEntity> search(String query, Pageable pageable) {
-		return this.findAll(withSearchPhrase(query), pageable);
+		return this.findAll(withSearchQuery(query), pageable);
 	}
 }

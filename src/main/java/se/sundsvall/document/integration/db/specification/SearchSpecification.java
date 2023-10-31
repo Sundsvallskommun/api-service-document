@@ -18,7 +18,7 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 
 public interface SearchSpecification {
 
-	static Specification<DocumentEntity> withSearchPhrase(String query) {
+	static Specification<DocumentEntity> withSearchQuery(String query) {
 
 		final var q = isBlank(query) ? EMPTY : query.toLowerCase().replace('*', '%');
 		return (documentEntity, cq, cb) -> cb.or(

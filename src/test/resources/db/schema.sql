@@ -40,7 +40,7 @@
     create index ix_created_by 
        on document (created_by);
 
-    create index municipality_id 
+    create index ix_municipality_id 
        on document (municipality_id);
 
     alter table if exists document 

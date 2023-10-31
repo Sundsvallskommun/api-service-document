@@ -36,7 +36,7 @@ import se.sundsvall.document.integration.db.model.listener.DocumentEntityListene
 	indexes = {
 		@Index(name = "ix_registration_number", columnList = "registration_number"),
 		@Index(name = "ix_created_by", columnList = "created_by"),
-		@Index(name = "municipality_id", columnList = "municipality_id")
+		@Index(name = "ix_municipality_id", columnList = "municipality_id")
 	})
 @EntityListeners(DocumentEntityListener.class)
 public class DocumentEntity {
