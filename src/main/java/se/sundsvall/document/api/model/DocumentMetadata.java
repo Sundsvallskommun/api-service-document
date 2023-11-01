@@ -1,5 +1,7 @@
 package se.sundsvall.document.api.model;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,11 +11,11 @@ import jakarta.validation.constraints.NotBlank;
 public class DocumentMetadata {
 
 	@NotBlank
-	@Schema(description = "Metadata key", example = "Some key")
+	@Schema(description = "Metadata key", example = "Some key", requiredMode = REQUIRED)
 	private String key;
 
 	@NotBlank
-	@Schema(description = "Metadata value", example = "Some value")
+	@Schema(description = "Metadata value", example = "Some value", requiredMode = REQUIRED)
 	private String value;
 
 	public static DocumentMetadata create() {

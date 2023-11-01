@@ -41,12 +41,12 @@ class DocumentRevisionResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("readRevision.revision", "must be greater than or equal to 0"));
 
-		// Assert
 		verifyNoInteractions(documentServiceMock);
 	}
 
@@ -63,12 +63,12 @@ class DocumentRevisionResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("readFileRevision.revision", "must be greater than or equal to 0"));
 
-		// Assert
 		verifyNoInteractions(documentServiceMock);
 	}
 }

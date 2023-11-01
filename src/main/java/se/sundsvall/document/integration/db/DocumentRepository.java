@@ -42,7 +42,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	Optional<DocumentEntity> findByRegistrationNumberAndRevision(String registrationNumber, int revision);
 
 	/**
-	 * Performs a search in the DocumentEntities.
+	 * Performs a search in DocumentEntities.
 	 *
 	 * @param  query    the string to search for.
 	 * @param  pageable the pageable object.

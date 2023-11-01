@@ -240,6 +240,7 @@ class DocumentResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
@@ -268,6 +269,7 @@ class DocumentResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
@@ -299,6 +301,7 @@ class DocumentResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
@@ -330,6 +333,7 @@ class DocumentResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
@@ -360,6 +364,7 @@ class DocumentResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
@@ -404,6 +409,7 @@ class DocumentResourceFailuresTest {
 			.returnResult()
 			.getResponseBody();
 
+		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)

@@ -111,14 +111,16 @@ public class DocumentMapper {
 	}
 
 	public static Document toDocument(DocumentEntity documentEntity) {
-		return Optional.ofNullable(documentEntity).map(docEntity -> Document.create()
-			.withCreated(docEntity.getCreated())
-			.withCreatedBy(docEntity.getCreatedBy())
-			.withId(docEntity.getId())
-			.withMetadataList(toDocumentMetadataList(docEntity.getMetadata()))
-			.withMunicipalityId(docEntity.getMunicipalityId())
-			.withRegistrationNumber(docEntity.getRegistrationNumber())
-			.withRevision(docEntity.getRevision())).orElse(null);
+		return Optional.ofNullable(documentEntity)
+			.map(docEntity -> Document.create()
+				.withCreated(docEntity.getCreated())
+				.withCreatedBy(docEntity.getCreatedBy())
+				.withId(docEntity.getId())
+				.withMetadataList(toDocumentMetadataList(docEntity.getMetadata()))
+				.withMunicipalityId(docEntity.getMunicipalityId())
+				.withRegistrationNumber(docEntity.getRegistrationNumber())
+				.withRevision(docEntity.getRevision()))
+			.orElse(null);
 	}
 
 	private static List<DocumentMetadata> toDocumentMetadataList(List<DocumentMetadataEmbeddable> documentMetadataEmbeddableList) {

@@ -18,7 +18,7 @@ public class DocumentUpdateRequest {
 	private String createdBy;
 
 	@NotEmpty
-	@Schema(description = "List of DocumentMetadata objects.")
+	@Schema(description = "List of DocumentMetadata objects.", requiredMode = REQUIRED)
 	private List<@Valid DocumentMetadata> metadataList;
 
 	public static DocumentUpdateRequest create() {

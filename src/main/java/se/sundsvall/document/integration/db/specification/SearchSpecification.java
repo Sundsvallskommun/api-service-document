@@ -1,7 +1,6 @@
 package se.sundsvall.document.integration.db.specification;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.FILE_NAME;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.MIME_TYPE;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.CREATED_BY;
@@ -12,6 +11,8 @@ import static se.sundsvall.document.integration.db.model.DocumentEntity_.REGISTR
 import static se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable_.KEY;
 import static se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable_.VALUE;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import se.sundsvall.document.integration.db.model.DocumentEntity;
@@ -20,7 +21,11 @@ public interface SearchSpecification {
 
 	static Specification<DocumentEntity> withSearchQuery(String query) {
 
-		final var q = isBlank(query) ? EMPTY : query.toLowerCase().replace('*', '%');
+		final var q = Optional.ofNullable(query)
+			.map(String::trim)
+			.map(str -> str.toLowerCase().replace('*', '%'))
+			.orElse(EMPTY);
+
 		return (documentEntity, cq, cb) -> cb.or(
 
 			// Search in document.
