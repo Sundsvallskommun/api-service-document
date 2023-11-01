@@ -1,12 +1,12 @@
 package se.sundsvall.document.integration.db;
 
 import static java.lang.String.format;
+import static java.nio.file.Files.readString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -30,7 +30,7 @@ class SchemaVerificationTest {
 	void verifySchemaUpdates() throws IOException, URISyntaxException {
 
 		final var storedSchema = getResourceString(STORED_SCHEMA_FILE);
-		final var generatedSchema = Files.readString(Path.of(generatedSchemaFile));
+		final var generatedSchema = readString(Path.of(generatedSchemaFile));
 
 		assertThat(storedSchema)
 			.as(format("Please reflect modifications to entities in file: %s", STORED_SCHEMA_FILE))
@@ -38,6 +38,6 @@ class SchemaVerificationTest {
 	}
 
 	private String getResourceString(final String fileName) throws IOException, URISyntaxException {
-		return Files.readString(Paths.get(getClass().getClassLoader().getResource(fileName).toURI()));
+		return readString(Paths.get(getClass().getClassLoader().getResource(fileName).toURI()));
 	}
 }

@@ -15,6 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -35,6 +36,9 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 import org.zalando.problem.ThrowableProblem;
 
@@ -78,6 +82,9 @@ class DocumentServiceTest {
 
 	@Mock
 	private ServletOutputStream servletOutputStreamMock;
+
+	@Mock
+	private Page<DocumentEntity> pageMock;
 
 	@InjectMocks
 	private DocumentService documentService;
@@ -198,33 +205,42 @@ class DocumentServiceTest {
 	void readAll() {
 
 		// Arrange
-		when(documentRepositoryMock.findByRegistrationNumberOrderByRevisionAsc(REGISTRATION_NUMBER)).thenReturn(List.of(createDocumentEntity()));
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
+
+		when(pageMock.getContent()).thenReturn(List.of(createDocumentEntity()));
+		when(pageMock.getPageable()).thenReturn(pageRequest);
+		when(documentRepositoryMock.findByRegistrationNumber(REGISTRATION_NUMBER, pageRequest)).thenReturn(pageMock);
 
 		// Act
-		final var result = documentService.readAll(REGISTRATION_NUMBER);
+		final var result = documentService.readAll(REGISTRATION_NUMBER, pageRequest);
 
 		// Assert
-		assertThat(result)
-			.hasSize(1)
+		assertThat(result).isNotNull();
+		assertThat(result.getDocuments())
 			.extracting(Document::getCreated, Document::getCreatedBy, Document::getId, Document::getMunicipalityId, Document::getRegistrationNumber, Document::getRevision)
 			.containsExactly(tuple(CREATED, CREATED_BY, ID, MUNICIPALITY_ID, REGISTRATION_NUMBER, REVISION));
 
-		verify(documentRepositoryMock).findByRegistrationNumberOrderByRevisionAsc(REGISTRATION_NUMBER);
+		verify(documentRepositoryMock).findByRegistrationNumber(REGISTRATION_NUMBER, pageRequest);
 	}
 
 	@Test
 	void readAllNotFound() {
 
 		// Arrange
-		when(documentRepositoryMock.findByRegistrationNumberOrderByRevisionAsc(REGISTRATION_NUMBER)).thenReturn(emptyList());
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
+
+		when(pageMock.getContent()).thenReturn(emptyList());
+		when(pageMock.getPageable()).thenReturn(pageRequest);
+		when(documentRepositoryMock.findByRegistrationNumber(REGISTRATION_NUMBER, pageRequest)).thenReturn(pageMock);
 
 		// Act
-		final var result = documentService.readAll(REGISTRATION_NUMBER);
+		final var result = documentService.readAll(REGISTRATION_NUMBER, pageRequest);
 
 		// Assert
-		assertThat(result).isEmpty();
+		assertThat(result).isNotNull();
+		assertThat(result.getDocuments()).isEmpty();
 
-		verify(documentRepositoryMock).findByRegistrationNumberOrderByRevisionAsc(REGISTRATION_NUMBER);
+		verify(documentRepositoryMock).findByRegistrationNumber(REGISTRATION_NUMBER, pageRequest);
 	}
 
 	@Test
@@ -361,6 +377,29 @@ class DocumentServiceTest {
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevision(REGISTRATION_NUMBER, REVISION);
 		verifyNoInteractions(httpServletResponseMock);
+	}
+
+	@Test
+	void search() {
+
+		// Arrange
+		final var search = "search-string";
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
+
+		when(pageMock.getContent()).thenReturn(List.of(createDocumentEntity()));
+		when(pageMock.getPageable()).thenReturn(pageRequest);
+		when(documentRepositoryMock.search(any(), any())).thenReturn(pageMock);
+
+		// Act
+		final var result = documentService.search(search, pageRequest);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(result.getDocuments())
+			.extracting(Document::getCreated, Document::getCreatedBy, Document::getId, Document::getMunicipalityId, Document::getRegistrationNumber, Document::getRevision)
+			.containsExactly(tuple(CREATED, CREATED_BY, ID, MUNICIPALITY_ID, REGISTRATION_NUMBER, REVISION));
+
+		verify(documentRepositoryMock).search(search, pageRequest);
 	}
 
 	@Test

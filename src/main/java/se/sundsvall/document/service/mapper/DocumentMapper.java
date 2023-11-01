@@ -5,12 +5,15 @@ import static java.util.Collections.emptyList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import se.sundsvall.dept44.models.api.paging.PagingMetaData;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
+import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.integration.db.DatabaseHelper;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
@@ -61,7 +64,8 @@ public class DocumentMapper {
 			.map(file -> DocumentDataEntity.create()
 				.withMimeType(file.getContentType())
 				.withFile(databaseHelper.convertToBlob(file))
-				.withFileName(file.getOriginalFilename()))
+				.withFileName(file.getOriginalFilename())
+				.withFileSizeInBytes(file.getSize()))
 			.orElse(null);
 	}
 
@@ -70,7 +74,8 @@ public class DocumentMapper {
 			.map(doc -> DocumentDataEntity.create()
 				.withMimeType(doc.getMimeType())
 				.withFile(doc.getFile())
-				.withFileName(doc.getFileName()))
+				.withFileName(doc.getFileName())
+				.withFileSizeInBytes(doc.getFileSizeInBytes()))
 			.orElse(null);
 	}
 
@@ -92,15 +97,30 @@ public class DocumentMapper {
 			.toList();
 	}
 
+	public static PagedDocumentResponse toPagedDocumentResponse(Page<DocumentEntity> documentEntityPage) {
+		return Optional.ofNullable(documentEntityPage)
+			.map(page -> PagedDocumentResponse.create()
+				.withDocuments(toDocumentList(page.getContent()))
+				.withMetaData(PagingMetaData.create()
+					.withPage(page.getPageable().getPageNumber())
+					.withLimit(page.getPageable().getPageSize())
+					.withCount(page.getNumberOfElements())
+					.withTotalRecords(page.getTotalElements())
+					.withTotalPages(page.getTotalPages())))
+			.orElse(null);
+	}
+
 	public static Document toDocument(DocumentEntity documentEntity) {
-		return Optional.ofNullable(documentEntity).map(docEntity -> Document.create()
-			.withCreated(docEntity.getCreated())
-			.withCreatedBy(docEntity.getCreatedBy())
-			.withId(docEntity.getId())
-			.withMetadataList(toDocumentMetadataList(docEntity.getMetadata()))
-			.withMunicipalityId(docEntity.getMunicipalityId())
-			.withRegistrationNumber(docEntity.getRegistrationNumber())
-			.withRevision(docEntity.getRevision())).orElse(null);
+		return Optional.ofNullable(documentEntity)
+			.map(docEntity -> Document.create()
+				.withCreated(docEntity.getCreated())
+				.withCreatedBy(docEntity.getCreatedBy())
+				.withId(docEntity.getId())
+				.withMetadataList(toDocumentMetadataList(docEntity.getMetadata()))
+				.withMunicipalityId(docEntity.getMunicipalityId())
+				.withRegistrationNumber(docEntity.getRegistrationNumber())
+				.withRevision(docEntity.getRevision()))
+			.orElse(null);
 	}
 
 	private static List<DocumentMetadata> toDocumentMetadataList(List<DocumentMetadataEmbeddable> documentMetadataEmbeddableList) {
