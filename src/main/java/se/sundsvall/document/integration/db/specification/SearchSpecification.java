@@ -23,7 +23,8 @@ public interface SearchSpecification {
 
 		final var q = Optional.ofNullable(query)
 			.map(String::trim)
-			.map(str -> str.toLowerCase().replace('*', '%'))
+			.map(String::toLowerCase)
+			.map(str -> str.replace('*', '%'))
 			.orElse(EMPTY);
 
 		return (documentEntity, cq, cb) -> cb.or(
