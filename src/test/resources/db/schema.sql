@@ -11,7 +11,7 @@
     ) engine=InnoDB;
 
     create table document_data (
-        file_size_in_bytes bigint,
+        file_size_in_bytes bigint default 0,
         file_name varchar(255),
         id varchar(255) not null,
         mime_type varchar(255),

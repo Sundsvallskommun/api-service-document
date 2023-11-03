@@ -1,0 +1,10 @@
+{
+	"municipalityId": "2281",
+	"createdBy": "username123",
+	"metadataList": [
+		{
+			"key": "Some key",
+			"value": "Some value"
+		}
+	]
+}
