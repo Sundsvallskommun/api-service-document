@@ -1,5 +1,6 @@
 package se.sundsvall.document.integration.db.specification;
 
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.springframework.data.jpa.domain.Specification.where;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.FILE_NAME;
@@ -21,52 +22,53 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 public interface SearchSpecification {
 
 	static Specification<DocumentEntity> withSearchQuery(String query) {
-		return where(matchesCreatedBy(query))
-			.or(matchesMunicipalityId(query))
-			.or(matchesRegistrationNumber(query))
-			.or(matchesFileName(query))
-			.or(matchesMimeType(query))
-			.or(matchesMetadataKey(query))
-			.or(matchesMetadataValue(query))
+		final var queryString = toQueryString(query);
+		return where(matchesCreatedBy(queryString))
+			.or(matchesMunicipalityId(queryString))
+			.or(matchesRegistrationNumber(queryString))
+			.or(matchesFileName(queryString))
+			.or(matchesMimeType(queryString))
+			.or(matchesMetadataKey(queryString))
+			.or(matchesMetadataValue(queryString))
 			.and(distinct());
 	}
 
-	static Specification<DocumentEntity> matchesCreatedBy(String query) {
-		return (documentEntity, cq, cb) -> cb.like(cb.lower(documentEntity.get(CREATED_BY)), withQueryString(query));
+	private static Specification<DocumentEntity> matchesCreatedBy(String query) {
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(CREATED_BY)), query);
 	}
 
-	static Specification<DocumentEntity> matchesMunicipalityId(String query) {
-		return (documentEntity, cq, cb) -> cb.like(cb.lower(documentEntity.get(MUNICIPALITY_ID)), withQueryString(query));
+	private static Specification<DocumentEntity> matchesMunicipalityId(String query) {
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(MUNICIPALITY_ID)), query);
 	}
 
-	static Specification<DocumentEntity> matchesRegistrationNumber(String query) {
-		return (documentEntity, cq, cb) -> cb.like(cb.lower(documentEntity.get(REGISTRATION_NUMBER)), withQueryString(query));
+	private static Specification<DocumentEntity> matchesRegistrationNumber(String query) {
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(REGISTRATION_NUMBER)), query);
 	}
 
-	static Specification<DocumentEntity> matchesFileName(String query) {
-		return (documentEntity, cq, cb) -> cb.like(cb.lower(documentEntity.join(DOCUMENT_DATA).get(FILE_NAME)), withQueryString(query));
+	private static Specification<DocumentEntity> matchesFileName(String query) {
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATA, LEFT).get(FILE_NAME)), query);
 	}
 
-	static Specification<DocumentEntity> matchesMimeType(String query) {
-		return (documentEntity, cq, cb) -> cb.like(cb.lower(documentEntity.join(DOCUMENT_DATA).get(MIME_TYPE)), withQueryString(query));
+	private static Specification<DocumentEntity> matchesMimeType(String query) {
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATA, LEFT).get(MIME_TYPE)), query);
 	}
 
-	static Specification<DocumentEntity> matchesMetadataKey(String query) {
-		return (documentEntity, cq, cb) -> cb.like(cb.lower(documentEntity.join(METADATA).get(KEY)), withQueryString(query));
+	private static Specification<DocumentEntity> matchesMetadataKey(String query) {
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(METADATA, LEFT).get(KEY)), query);
 	}
 
-	static Specification<DocumentEntity> matchesMetadataValue(String query) {
-		return (documentEntity, cq, cb) -> cb.like(cb.lower(documentEntity.join(METADATA).get(VALUE)), withQueryString(query));
+	private static Specification<DocumentEntity> matchesMetadataValue(String query) {
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(METADATA, LEFT).get(VALUE)), query);
 	}
 
-	static Specification<DocumentEntity> distinct() {
-		return (documentEntity, cq, cb) -> {
+	private static Specification<DocumentEntity> distinct() {
+		return (entity, cq, cb) -> {
 			cq.distinct(true);
 			return null;
 		};
 	}
 
-	static String withQueryString(String query) {
+	private static String toQueryString(String query) {
 		return Optional.ofNullable(query)
 			.map(String::trim)
 			.map(String::toLowerCase)

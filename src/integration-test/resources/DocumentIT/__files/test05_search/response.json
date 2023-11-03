@@ -5,7 +5,7 @@
 			"registrationNumber": "2023-2281-123",
 			"revision": 3,
 			"created": "2023-06-28T12:03:00+02:00",
-			"createdBy": "User1",
+			"createdBy": "User3",
 			"metadataList": [
 				{
 					"key": "document1-key1",
@@ -23,14 +23,20 @@
 					"key": "document1-key4",
 					"value": "value-4"
 				}
-			]
+			],
+			"documentData": {
+				"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
+				"fileName": "file3.jpg",
+				"mimeType": "image/jpeg",
+				"fileSizeInBytes": 5068
+			}
 		},
 		{
 			"id": "03d33a6a-bc8c-410c-95f6-2c890822967d",
 			"registrationNumber": "2024-2281-999",
 			"revision": 1,
 			"created": "2023-06-28T12:01:00+02:00",
-			"createdBy": "User1",
+			"createdBy": "User4",
 			"metadataList": [
 				{
 					"key": "document2-key1",
@@ -44,7 +50,13 @@
 					"key": "document2-key3",
 					"value": "value-3"
 				}
-			]
+			],
+			"documentData": {
+				"id": "8f7be4bb-ef79-4a16-95bf-a0619e320745",
+				"fileName": "file4.jpg",
+				"mimeType": "image/jpeg",
+				"fileSizeInBytes": 5068
+			}
 		}
 	],
 	"_meta": {

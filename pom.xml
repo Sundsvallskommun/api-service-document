@@ -19,7 +19,6 @@
 		<!-- Service properties -->
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<faux-pas.version>0.9.0</faux-pas.version>
-		<hibernate-jpamodelgen.version>6.3.1.Final</hibernate-jpamodelgen.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -54,9 +53,8 @@
 			<version>${faux-pas.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-jpamodelgen</artifactId>
-			<version>${hibernate-jpamodelgen.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		

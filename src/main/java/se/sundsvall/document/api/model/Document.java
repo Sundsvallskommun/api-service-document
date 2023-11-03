@@ -36,6 +36,9 @@ public class Document {
 	@Schema(description = "List of DocumentMetadata objects.")
 	private List<DocumentMetadata> metadataList;
 
+	@Schema(description = "Document data")
+	private DocumentData documentData;
+
 	public static Document create() {
 		return new Document();
 	}
@@ -131,24 +134,37 @@ public class Document {
 		return this;
 	}
 
+	public DocumentData getDocumentData() {
+		return documentData;
+	}
+
+	public void setDocumentData(DocumentData documentData) {
+		this.documentData = documentData;
+	}
+
+	public Document withDocumentData(DocumentData documentData) {
+		this.documentData = documentData;
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(created, createdBy, id, metadataList, municipalityId, registrationNumber, revision);
+		return Objects.hash(created, createdBy, documentData, id, metadataList, municipalityId, registrationNumber, revision);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final Document other)) { return false; }
-		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(id, other.id) && Objects.equals(metadataList, other.metadataList) && Objects.equals(municipalityId, other.municipalityId) && Objects
-			.equals(registrationNumber, other.registrationNumber) && (revision == other.revision);
+		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(documentData, other.documentData) && Objects.equals(id, other.id) && Objects.equals(metadataList, other.metadataList) && Objects.equals(
+			municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && (revision == other.revision);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("Document [id=").append(id).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", revision=").append(revision).append(", created=").append(created).append(
-			", createdBy=").append(createdBy).append(", metadataList=").append(metadataList).append("]");
+			", createdBy=").append(createdBy).append(", metadataList=").append(metadataList).append(", documentData=").append(documentData).append("]");
 		return builder.toString();
 	}
 }

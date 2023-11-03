@@ -107,10 +107,10 @@ public class DocumentResource {
 	}
 
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Search documents. Use asterisk-character [*] as wildcard.")
+	@Operation(summary = "Search documents.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<PagedDocumentResponse> search(
-		@Parameter(name = "query", description = "Search query", example = "hello*") @RequestParam(value = "query", required = true) @NotBlank String query,
+		@Parameter(name = "query", description = "Search query. Use asterisk-character [*] as wildcard.", example = "hello*") @RequestParam(value = "query", required = true) @NotBlank String query,
 		@ParameterObject Pageable pageable) {
 
 		return ok(documentService.search(query, pageable));

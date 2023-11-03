@@ -50,6 +50,7 @@ import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.integration.db.DatabaseHelper;
 import se.sundsvall.document.integration.db.DocumentRepository;
+import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
@@ -259,7 +260,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER);
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.jpg\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 	}
 
@@ -319,7 +320,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER);
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.jpg\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 	}
 
@@ -339,7 +340,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevision(REGISTRATION_NUMBER, REVISION);
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.jpg\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 	}
 
@@ -465,7 +466,7 @@ class DocumentServiceTest {
 		try {
 			final var documentDataEntity = DocumentDataEntity.create()
 				.withId("some-uuid")
-				.withFile(new MariaDbBlob(toByteArray(new FileInputStream(new File("src/test/resources/files/image.png")))))
+				.withDocumentDataBinary(DocumentDataBinaryEntity.create().withBinaryFile(new MariaDbBlob(toByteArray(new FileInputStream(new File("src/test/resources/files/image.png"))))))
 				.withFileName(FILE_NAME)
 				.withMimeType(MIME_TYPE);
 

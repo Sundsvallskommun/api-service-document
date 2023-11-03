@@ -6,6 +6,7 @@ import static java.time.ZoneId.systemDefault;
 import static org.apache.commons.lang3.ObjectUtils.allNull;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -40,8 +41,7 @@ public class RegistrationNumberService {
 	public String generateRegistrationNumber(String municipalityId) {
 
 		final var sequenceEntity = registrationNumberSequenceRepository.findByMunicipalityId(municipalityId)
-			.orElse(RegistrationNumberSequenceEntity.create()
-				.withMunicipalityId(municipalityId));
+			.orElse(RegistrationNumberSequenceEntity.create().withMunicipalityId(municipalityId));
 
 		// Reset sequence every year.
 		if (getLastTouched(sequenceEntity).getYear() < getCurrentYear()) {
@@ -59,9 +59,9 @@ public class RegistrationNumberService {
 
 	private OffsetDateTime getLastTouched(RegistrationNumberSequenceEntity sequenceEntity) {
 		if (allNull(sequenceEntity.getModified(), sequenceEntity.getCreated())) {
-			return now(systemDefault()); // Newly created object, return now.
+			return now(systemDefault()); // RegistrationNumberSequenceEntity is not persisted yet (newly created object), return now.
 		}
-		return sequenceEntity.getModified() == null ? sequenceEntity.getCreated() : sequenceEntity.getModified();
+		return Optional.ofNullable(sequenceEntity.getModified()).orElse(sequenceEntity.getCreated());
 	}
 
 	private String createRegistrationNumber(RegistrationNumberSequenceEntity sequenceEntity) {

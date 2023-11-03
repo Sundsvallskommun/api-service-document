@@ -27,9 +27,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import se.sundsvall.dept44.models.api.paging.PagingMetaData;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
+import se.sundsvall.document.api.model.DocumentData;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.integration.db.DatabaseHelper;
+import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
@@ -39,9 +41,12 @@ class DocumentMapperTest {
 
 	private static final OffsetDateTime CREATED = now(systemDefault());
 	private static final String CREATED_BY = "createdBy";
+	private static final String FILE_NAME = "filename.txt";
+	private static final long FILE_SIZE_IN_BYTES = 1000;
 	private static final String ID = "id";
 	private static final String METADATA_KEY = "key";
 	private static final String METADATA_VALUE = "value";
+	private static final String MIME_TYPE = "text/plain";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String REGISTRATION_NUMBER = "reistrationNumber";
 	private static final int REVISION = 666;
@@ -50,48 +55,14 @@ class DocumentMapperTest {
 	private DatabaseHelper databaseHelperMock;
 
 	@Test
-	void toDocumentEntityFromDocument() {
-
-		// Arrange
-		final var document = Document.create()
-			.withCreated(CREATED)
-			.withCreatedBy(CREATED_BY)
-			.withId(ID)
-			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
-			.withMunicipalityId(MUNICIPALITY_ID)
-			.withRegistrationNumber(REGISTRATION_NUMBER)
-			.withRevision(REVISION);
-
-		// Act
-		final var result = DocumentMapper.toDocumentEntity(document);
-
-		// Assert
-		assertThat(result)
-			.isNotNull()
-			.isEqualTo(DocumentEntity.create()
-				.withCreated(CREATED)
-				.withCreatedBy(CREATED_BY)
-				.withId(ID)
-				.withMetadata(List.of(DocumentMetadataEmbeddable.create()
-					.withKey(METADATA_KEY)
-					.withValue(METADATA_VALUE)))
-				.withMunicipalityId(MUNICIPALITY_ID)
-				.withRegistrationNumber(REGISTRATION_NUMBER)
-				.withRevision(REVISION));
-	}
-
-	@Test
-	void toDocumentEntityFromDocumentWhenInputIsNull() {
-		assertThat(DocumentMapper.toDocumentEntity((Document) null)).isNull();
-	}
-
-	@Test
 	void toDocumentEntityFromDocumentCreateRequest() {
 
 		// Arrange
 		final var documentCreateRequest = DocumentCreateRequest.create()
 			.withCreatedBy(CREATED_BY)
-			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey(METADATA_KEY)
+				.withValue(METADATA_VALUE)))
 			.withMunicipalityId(MUNICIPALITY_ID);
 
 		// Act
@@ -119,7 +90,9 @@ class DocumentMapperTest {
 		// Arrange
 		final var documentUpdateRequest = DocumentUpdateRequest.create()
 			.withCreatedBy(CREATED_BY)
-			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey(METADATA_KEY)
+				.withValue(METADATA_VALUE)));
 
 		// Act
 		final var result = DocumentMapper.toDocumentEntity(documentUpdateRequest);
@@ -146,8 +119,15 @@ class DocumentMapperTest {
 		final var documentEntity = DocumentEntity.create()
 			.withCreated(CREATED)
 			.withCreatedBy(CREATED_BY)
+			.withDocumentData(DocumentDataEntity.create()
+				.withFileName(FILE_NAME)
+				.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
+				.withId(ID)
+				.withMimeType(MIME_TYPE))
 			.withId(ID)
-			.withMetadata(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
+				.withKey(METADATA_KEY)
+				.withValue(METADATA_VALUE)))
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withRegistrationNumber(REGISTRATION_NUMBER)
 			.withRevision(REVISION);
@@ -161,8 +141,15 @@ class DocumentMapperTest {
 			.containsExactly(Document.create()
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
+				.withDocumentData(DocumentData.create()
+					.withFileName(FILE_NAME)
+					.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
+					.withId(ID)
+					.withMimeType(MIME_TYPE))
 				.withId(ID)
-				.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+				.withMetadataList(List.of(DocumentMetadata.create()
+					.withKey(METADATA_KEY)
+					.withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)
 				.withRegistrationNumber(REGISTRATION_NUMBER)
 				.withRevision(REVISION));
@@ -180,8 +167,15 @@ class DocumentMapperTest {
 		final var documentEntity = DocumentEntity.create()
 			.withCreated(CREATED)
 			.withCreatedBy(CREATED_BY)
+			.withDocumentData(DocumentDataEntity.create()
+				.withFileName(FILE_NAME)
+				.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
+				.withId(ID)
+				.withMimeType(MIME_TYPE))
 			.withId(ID)
-			.withMetadata(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
+				.withKey(METADATA_KEY)
+				.withValue(METADATA_VALUE)))
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withRegistrationNumber(REGISTRATION_NUMBER)
 			.withRevision(REVISION);
@@ -195,8 +189,15 @@ class DocumentMapperTest {
 			.isEqualTo(Document.create()
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
+				.withDocumentData(DocumentData.create()
+					.withFileName(FILE_NAME)
+					.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
+					.withId(ID)
+					.withMimeType(MIME_TYPE))
 				.withId(ID)
-				.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+				.withMetadataList(List.of(DocumentMetadata.create()
+					.withKey(METADATA_KEY)
+					.withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)
 				.withRegistrationNumber(REGISTRATION_NUMBER)
 				.withRevision(REVISION));
@@ -225,7 +226,8 @@ class DocumentMapperTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getFileName()).isEqualTo(fileName);
 		assertThat(result.getMimeType()).isEqualTo(mimeType);
-		assertThat(result.getFile()).isNotNull();
+		assertThat(result.getDocumentDataBinary()).isNotNull();
+		assertThat(result.getDocumentDataBinary().getBinaryFile()).isNotNull();
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 	}
 
@@ -244,12 +246,13 @@ class DocumentMapperTest {
 
 		// Arrange
 		final var file = new MariaDbBlob();
+		final var documentDataBinary = DocumentDataBinaryEntity.create().withBinaryFile(file);
 		final var fileName = "fileName";
 		final var id = "id";
 		final var mimeType = "image/png";
 
 		final var source = DocumentDataEntity.create()
-			.withFile(file)
+			.withDocumentDataBinary(documentDataBinary)
 			.withFileName(fileName)
 			.withId(id)
 			.withMimeType(mimeType);
@@ -259,9 +262,10 @@ class DocumentMapperTest {
 
 		// Assert
 		assertThat(result).isNotNull();
-		assertThat(result.getFileName()).isEqualTo(fileName);
+		assertThat(result.getDocumentDataBinary()).isEqualTo(documentDataBinary);
+		assertThat(result.getDocumentDataBinary().getBinaryFile()).isEqualTo(file);
 		assertThat(result.getMimeType()).isEqualTo(mimeType);
-		assertThat(result.getFile()).isEqualTo(file);
+		assertThat(result.getFileName()).isEqualTo(fileName);
 		assertThat(result.getId()).isNull();
 	}
 
@@ -278,7 +282,9 @@ class DocumentMapperTest {
 			.withCreated(CREATED)
 			.withCreatedBy(CREATED_BY)
 			.withId(ID)
-			.withMetadata(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
+				.withKey(METADATA_KEY)
+				.withValue(METADATA_VALUE)))
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withRegistrationNumber(REGISTRATION_NUMBER)
 			.withRevision(REVISION);
@@ -303,7 +309,9 @@ class DocumentMapperTest {
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
 				.withId(ID)
-				.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+				.withMetadataList(List.of(DocumentMetadata.create()
+					.withKey(METADATA_KEY)
+					.withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)
 				.withRegistrationNumber(REGISTRATION_NUMBER)
 				.withRevision(REVISION));
