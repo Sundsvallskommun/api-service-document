@@ -3,6 +3,7 @@ package se.sundsvall.document.integration.db.model;
 import java.sql.Blob;
 import java.util.Objects;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Column;
@@ -27,6 +28,7 @@ public class DocumentDataEntity {
 	private String fileName;
 
 	@Column(name = "file_size_in_bytes")
+	@ColumnDefault("0")
 	private long fileSizeInBytes;
 
 	@Lob
