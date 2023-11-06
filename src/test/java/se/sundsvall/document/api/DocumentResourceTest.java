@@ -170,16 +170,14 @@ class DocumentResourceTest {
 		final var registrationNumber = "2023-1337";
 
 		// Act
-		final var response = webTestClient.get()
+		webTestClient.get()
 			.uri("/documents/" + registrationNumber + "/file")
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody()
-			.returnResult()
-			.getResponseBody();
+			.isEmpty();
 
 		// Assert
-		assertThat(response).isNull();
 		verify(documentServiceMock).readFile(eq(registrationNumber), any(HttpServletResponse.class));
 	}
 }

@@ -91,8 +91,6 @@ class DocumentRevisionResourceTest {
 		final var registrationNumber = "2023-2281-1337";
 		final var revision = 2;
 
-		when(documentServiceMock.read(registrationNumber, revision)).thenReturn(Document.create());
-
 		// Act
 		webTestClient.get()
 			.uri("/documents/" + registrationNumber + "/revisions/" + revision + "/file")

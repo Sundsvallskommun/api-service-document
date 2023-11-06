@@ -42,6 +42,7 @@ class DocumentTest {
 
 		final var created = now(systemDefault());
 		final var createdBy = "user";
+		final var documentData = DocumentData.create();
 		final var id = randomUUID().toString();
 		final var metadataList = List.of(DocumentMetadata.create());
 		final var municipalityId = "municipalityId";
@@ -51,6 +52,7 @@ class DocumentTest {
 		final var bean = Document.create()
 			.withCreated(created)
 			.withCreatedBy(createdBy)
+			.withDocumentData(documentData)
 			.withId(id)
 			.withMetadataList(metadataList)
 			.withMunicipalityId(municipalityId)
@@ -60,6 +62,7 @@ class DocumentTest {
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
+		assertThat(bean.getDocumentData()).isEqualTo(documentData);
 		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
 		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);

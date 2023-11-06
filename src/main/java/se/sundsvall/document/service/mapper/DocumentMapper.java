@@ -11,10 +11,12 @@ import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.dept44.models.api.paging.PagingMetaData;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
+import se.sundsvall.document.api.model.DocumentData;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.integration.db.DatabaseHelper;
+import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
@@ -26,19 +28,6 @@ public class DocumentMapper {
 	/**
 	 * API to Database mappings.
 	 */
-
-	public static DocumentEntity toDocumentEntity(Document document) {
-		return Optional.ofNullable(document)
-			.map(doc -> DocumentEntity.create()
-				.withCreated(doc.getCreated())
-				.withCreatedBy(doc.getCreatedBy())
-				.withId(doc.getId())
-				.withMetadata(toDocumentMetadataEmbeddableList(doc.getMetadataList()))
-				.withMunicipalityId(doc.getMunicipalityId())
-				.withRegistrationNumber(doc.getRegistrationNumber())
-				.withRevision(doc.getRevision()))
-			.orElse(null);
-	}
 
 	public static DocumentEntity toDocumentEntity(DocumentCreateRequest documentCreateRequest) {
 		return Optional.ofNullable(documentCreateRequest)
@@ -62,8 +51,8 @@ public class DocumentMapper {
 	public static DocumentDataEntity toDocumentDataEntity(MultipartFile multipartFile, DatabaseHelper databaseHelper) {
 		return Optional.ofNullable(multipartFile)
 			.map(file -> DocumentDataEntity.create()
+				.withDocumentDataBinary(toDocumentDataBinaryEntity(multipartFile, databaseHelper))
 				.withMimeType(file.getContentType())
-				.withFile(databaseHelper.convertToBlob(file))
 				.withFileName(file.getOriginalFilename())
 				.withFileSizeInBytes(file.getSize()))
 			.orElse(null);
@@ -73,9 +62,23 @@ public class DocumentMapper {
 		return Optional.ofNullable(documentDataEntity)
 			.map(doc -> DocumentDataEntity.create()
 				.withMimeType(doc.getMimeType())
-				.withFile(doc.getFile())
 				.withFileName(doc.getFileName())
-				.withFileSizeInBytes(doc.getFileSizeInBytes()))
+				.withFileSizeInBytes(doc.getFileSizeInBytes())
+				.withDocumentDataBinary(toDocumentDataBinaryEntity(doc.getDocumentDataBinary())))
+			.orElse(null);
+	}
+
+	private static DocumentDataBinaryEntity toDocumentDataBinaryEntity(DocumentDataBinaryEntity documentDataFileEntity) {
+		return Optional.ofNullable(documentDataFileEntity)
+			.map(docData -> DocumentDataBinaryEntity.create()
+				.withBinaryFile(docData.getBinaryFile()))
+			.orElse(null);
+	}
+
+	private static DocumentDataBinaryEntity toDocumentDataBinaryEntity(MultipartFile multipartFile, DatabaseHelper databaseHelper) {
+		return Optional.ofNullable(multipartFile)
+			.map(file -> DocumentDataBinaryEntity.create()
+				.withBinaryFile(databaseHelper.convertToBlob(file)))
 			.orElse(null);
 	}
 
@@ -115,6 +118,7 @@ public class DocumentMapper {
 			.map(docEntity -> Document.create()
 				.withCreated(docEntity.getCreated())
 				.withCreatedBy(docEntity.getCreatedBy())
+				.withDocumentData(toDocumentData(docEntity.getDocumentData()))
 				.withId(docEntity.getId())
 				.withMetadataList(toDocumentMetadataList(docEntity.getMetadata()))
 				.withMunicipalityId(docEntity.getMunicipalityId())
@@ -129,5 +133,15 @@ public class DocumentMapper {
 				.withKey(docMetadataEmbeddable.getKey())
 				.withValue(docMetadataEmbeddable.getValue()))
 			.toList();
+	}
+
+	private static DocumentData toDocumentData(DocumentDataEntity documentDataEntity) {
+		return Optional.ofNullable(documentDataEntity)
+			.map(docDataEntity -> DocumentData.create()
+				.withFileName(docDataEntity.getFileName())
+				.withFileSizeInBytes(docDataEntity.getFileSizeInBytes())
+				.withId(docDataEntity.getId())
+				.withMimeType(docDataEntity.getMimeType()))
+			.orElse(null);
 	}
 }

@@ -10,5 +10,11 @@
 			"key": "Some key",
 			"value": "Some value"
 		}
-	]
+	],
+	"documentData": {
+		"id": "${json-unit.any-string}",
+		"fileName": "image.png",
+		"mimeType": "image/png",
+		"fileSizeInBytes": 227546
+	}
 }

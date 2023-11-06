@@ -1,19 +1,29 @@
 package se.sundsvall.document.integration.db.model;
 
-import java.sql.Blob;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.LAZY;
+
 import java.util.Objects;
+import java.util.Optional;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "document_data")
+@Table(
+	name = "document_data",
+	uniqueConstraints = {
+		@UniqueConstraint(name = "uq_document_data_binary_id", columnNames = { "document_data_binary_id" }),
+	})
 public class DocumentDataEntity {
 
 	@Id
@@ -31,9 +41,12 @@ public class DocumentDataEntity {
 	@ColumnDefault("0")
 	private long fileSizeInBytes;
 
-	@Lob
-	@Column(name = "file", columnDefinition = "longblob")
-	private Blob file;
+	@OneToOne(fetch = LAZY, cascade = ALL, orphanRemoval = true)
+	@JoinColumn(
+		name = "document_data_binary_id",
+		referencedColumnName = "id",
+		foreignKey = @ForeignKey(name = "fk_document_data_document_data_binary"))
+	private DocumentDataBinaryEntity documentDataBinary;
 
 	public static DocumentDataEntity create() {
 		return new DocumentDataEntity();
@@ -78,19 +91,6 @@ public class DocumentDataEntity {
 		return this;
 	}
 
-	public Blob getFile() {
-		return file;
-	}
-
-	public void setFile(Blob file) {
-		this.file = file;
-	}
-
-	public DocumentDataEntity withFile(Blob file) {
-		this.file = file;
-		return this;
-	}
-
 	public long getFileSizeInBytes() {
 		return fileSizeInBytes;
 	}
@@ -104,22 +104,37 @@ public class DocumentDataEntity {
 		return this;
 	}
 
+	public DocumentDataBinaryEntity getDocumentDataBinary() {
+		return documentDataBinary;
+	}
+
+	public void setDocumentDataBinary(DocumentDataBinaryEntity documentDataBinary) {
+		this.documentDataBinary = documentDataBinary;
+	}
+
+	public DocumentDataEntity withDocumentDataBinary(DocumentDataBinaryEntity documentDataBinary) {
+		this.documentDataBinary = documentDataBinary;
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(file, fileName, fileSizeInBytes, id, mimeType);
+		return Objects.hash(documentDataBinary, fileName, fileSizeInBytes, id, mimeType);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final DocumentDataEntity other)) { return false; }
-		return Objects.equals(file, other.file) && Objects.equals(fileName, other.fileName) && (fileSizeInBytes == other.fileSizeInBytes) && Objects.equals(id, other.id) && Objects.equals(mimeType, other.mimeType);
+		return Objects.equals(documentDataBinary, other.documentDataBinary) && Objects.equals(fileName, other.fileName) && (fileSizeInBytes == other.fileSizeInBytes) && Objects.equals(id, other.id) && Objects.equals(mimeType, other.mimeType);
 	}
 
 	@Override
 	public String toString() {
+		final var documentDataBinaryId = Optional.ofNullable(documentDataBinary).map(DocumentDataBinaryEntity::getId).orElse(null);
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", fileSizeInBytes=").append(fileSizeInBytes).append(", file=").append(file).append("]");
+		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", fileSizeInBytes=").append(fileSizeInBytes).append(", documentDataBinary=").append(documentDataBinaryId)
+			.append("]");
 		return builder.toString();
 	}
 }

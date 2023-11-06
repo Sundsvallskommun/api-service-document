@@ -92,7 +92,7 @@ public class DocumentService {
 		final var documentEntity = documentRepository.findTopByRegistrationNumberOrderByRevisionDesc(registrationNumber)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber)));
 
-		if (isNull(documentEntity.getDocumentData()) || isNull(documentEntity.getDocumentData().getFile())) {
+		if (isNull(documentEntity.getDocumentData())) {
 			throw Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber));
 		}
 
@@ -104,7 +104,7 @@ public class DocumentService {
 		final var documentEntity = documentRepository.findByRegistrationNumberAndRevision(registrationNumber, revision)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision)));
 
-		if (isNull(documentEntity.getDocumentData()) || isNull(documentEntity.getDocumentData().getFile())) {
+		if (isNull(documentEntity.getDocumentData())) {
 			throw Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision));
 		}
 
@@ -131,7 +131,7 @@ public class DocumentService {
 	private void addFileContentToResponse(DocumentDataEntity documentDataEntity, HttpServletResponse response) {
 
 		try {
-			final var file = documentDataEntity.getFile();
+			final var file = documentDataEntity.getDocumentDataBinary().getBinaryFile();
 			response.addHeader(CONTENT_TYPE, documentDataEntity.getMimeType());
 			response.addHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", documentDataEntity.getFileName()));
 			response.setContentLength((int) file.length());

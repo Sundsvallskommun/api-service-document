@@ -114,7 +114,7 @@ class DocumentRepositoryTest {
 		assertThat(result.getRevision()).isEqualTo(3);
 		assertThat(result.getCreated()).isEqualTo(OffsetDateTime.parse("2023-06-28T12:03:00.000+02:00"));
 		assertThat(result.getRegistrationNumber()).isEqualTo(registrationNumber);
-		assertThat(result.getCreatedBy()).isEqualTo("User1");
+		assertThat(result.getCreatedBy()).isEqualTo("User3");
 		assertThat(result.getMetadata())
 			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
 			.containsExactly(
@@ -139,8 +139,8 @@ class DocumentRepositoryTest {
 			.hasSize(3)
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
 			.containsExactly(
-				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User1"),
-				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User1"),
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User3"),
+				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User2"),
 				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-2281-123", "User1"));
 	}
 
@@ -160,8 +160,8 @@ class DocumentRepositoryTest {
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
 			.containsExactly(
 				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-2281-123", "User1"),
-				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User1"),
-				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User1"));
+				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User2"),
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User3"));
 	}
 
 	@Test
@@ -178,7 +178,7 @@ class DocumentRepositoryTest {
 		assertThat(result)
 			.isNotNull()
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
-			.containsExactly("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User1");
+			.containsExactly("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User2");
 	}
 
 	@Test
@@ -196,8 +196,8 @@ class DocumentRepositoryTest {
 		assertThat(result.getContent())
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
 			.containsExactly(
-				tuple("03d33a6a-bc8c-410c-95f6-2c890822967d", 1, "2024-2281-999", "User1"),
-				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User1"));
+				tuple("03d33a6a-bc8c-410c-95f6-2c890822967d", 1, "2024-2281-999", "User4"),
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User3"));
 	}
 
 	@Test

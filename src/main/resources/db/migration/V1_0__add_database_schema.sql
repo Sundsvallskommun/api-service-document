@@ -12,10 +12,16 @@
 
     create table document_data (
         file_size_in_bytes bigint default 0,
+        document_data_binary_id varchar(255),
         file_name varchar(255),
         id varchar(255) not null,
         mime_type varchar(255),
-        file longblob,
+        primary key (id)
+    ) engine=InnoDB;
+
+    create table document_data_binary (
+        id varchar(255) not null,
+        binary_file longblob,
         primary key (id)
     ) engine=InnoDB;
 
@@ -49,6 +55,9 @@
     alter table if exists document 
        add constraint UK_dte6vwi6c7hh3rcta5ace6k3t unique (document_data_id);
 
+    alter table if exists document_data 
+       add constraint UK_pk8e8r0wijpujsxn25gob65si unique (document_data_binary_id);
+
     create index ix_key 
        on document_metadata (`key`);
 
@@ -62,6 +71,11 @@
        add constraint fk_document_document_data 
        foreign key (document_data_id) 
        references document_data (id);
+
+    alter table if exists document_data 
+       add constraint fk_document_data_document_data_binary 
+       foreign key (document_data_binary_id) 
+       references document_data_binary (id);
 
     alter table if exists document_metadata 
        add constraint fk_document_metadata_document 

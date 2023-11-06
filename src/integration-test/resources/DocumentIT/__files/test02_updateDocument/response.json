@@ -9,5 +9,11 @@
 			"key": "Updated key",
 			"value": "Updated value"
 		}
-	]
+	],
+	"documentData": {
+		"id": "${json-unit.any-string}",
+		"fileName": "image.png",
+		"mimeType": "image/png",
+		"fileSizeInBytes": 227546
+	}
 }

@@ -2,7 +2,6 @@ package se.sundsvall.document.integration.db.model;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.EAGER;
-import static jakarta.persistence.FetchType.LAZY;
 import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
 import java.time.OffsetDateTime;
@@ -62,7 +61,7 @@ public class DocumentEntity {
 	@TimeZoneStorage(NORMALIZE)
 	private OffsetDateTime created;
 
-	@OneToOne(fetch = LAZY, cascade = ALL, orphanRemoval = true)
+	@OneToOne(cascade = ALL, orphanRemoval = true)
 	@JoinColumn(
 		name = "document_data_id",
 		referencedColumnName = "id",
