@@ -14,8 +14,8 @@
 	<properties>
 		<!-- Pipeline properties -->
 		<docker.image.name>ms-document</docker.image.name>
-		<published.container.port.test>8800</published.container.port.test>
-		<published.container.port.production>8800</published.container.port.production>
+		<published.container.port.test>9125</published.container.port.test>
+		<published.container.port.production>9125</published.container.port.production>
 		<!-- Service properties -->
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<faux-pas.version>0.9.0</faux-pas.version>
