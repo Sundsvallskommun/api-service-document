@@ -1,0 +1,20 @@
+{
+	"id": "${json-unit.any-string}",
+	"municipalityId": "2281",
+	"registrationNumber": "2023-2281-1",
+	"revision": 0,
+	"created": "${json-unit.any-string}",
+	"createdBy": "username123",
+	"metadataList": [
+		{
+			"key": "Some key",
+			"value": "Some value"
+		}
+	],
+	"documentData": {
+		"id": "${json-unit.any-string}",
+		"fileName": "image.png",
+		"mimeType": "image/png",
+		"fileSizeInBytes": 227546
+	}
+}

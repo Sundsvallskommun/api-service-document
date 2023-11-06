@@ -1,0 +1,27 @@
+{
+	"id": "03d33a6a-bc8c-410c-95f6-2c890822967d",
+	"registrationNumber": "2024-2281-999",
+	"revision": 1,
+	"created": "2023-06-28T12:01:00+02:00",
+	"createdBy": "User4",
+	"metadataList": [
+		{
+			"key": "document2-key1",
+			"value": "value-1"
+		},
+		{
+			"key": "document2-key2",
+			"value": "value-2"
+		},
+		{
+			"key": "document2-key3",
+			"value": "value-3"
+		}
+	],
+	"documentData": {
+		"id": "8f7be4bb-ef79-4a16-95bf-a0619e320745",
+		"fileName": "file4.jpg",
+		"mimeType": "image/jpeg",
+		"fileSizeInBytes": 5068
+	}
+}

@@ -1,4 +1,4 @@
-package se.sundsvall.document.api.model;
+package se.sundsvall.document.integration.db.model;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
@@ -14,13 +14,12 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class DocumentHeaderTest {
+class RegistrationNumberSequenceEntityTest {
 
 	@BeforeAll
 	static void setup() {
@@ -29,7 +28,7 @@ class DocumentHeaderTest {
 
 	@Test
 	void testBean() {
-		assertThat(DocumentHeader.class, allOf(
+		assertThat(RegistrationNumberSequenceEntity.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -41,32 +40,29 @@ class DocumentHeaderTest {
 	void testBuilderMethods() {
 
 		final var created = now(systemDefault());
-		final var createdBy = "user";
 		final var id = randomUUID().toString();
-		final var metadataList = List.of(DocumentMetadata.create());
-		final var registrationNumber = "12345";
-		final var revision = 5;
+		final var modified = now(systemDefault());
+		final var municipalityId = "municipalityId";
+		final var sequenceNumber = 5;
 
-		final var bean = DocumentHeader.create()
+		final var bean = RegistrationNumberSequenceEntity.create()
 			.withCreated(created)
-			.withCreatedBy(createdBy)
 			.withId(id)
-			.withMetadataList(metadataList)
-			.withRegistrationNumber(registrationNumber)
-			.withRevision(revision);
+			.withModified(modified)
+			.withMunicipalityId(municipalityId)
+			.withSequenceNumber(sequenceNumber);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getCreated()).isEqualTo(created);
-		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 		assertThat(bean.getId()).isEqualTo(id);
-		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
-		assertThat(bean.getRegistrationNumber()).isEqualTo(registrationNumber);
-		assertThat(bean.getRevision()).isEqualTo(revision);
+		assertThat(bean.getModified()).isEqualTo(modified);
+		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);
+		assertThat(bean.getSequenceNumber()).isEqualTo(sequenceNumber);
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentHeader.create()).hasAllNullFieldsOrPropertiesExcept("revision");
-		assertThat(new DocumentHeader()).hasAllNullFieldsOrPropertiesExcept("revision");
+		assertThat(RegistrationNumberSequenceEntity.create()).hasAllNullFieldsOrPropertiesExcept("sequenceNumber");
+		assertThat(new RegistrationNumberSequenceEntity()).hasAllNullFieldsOrPropertiesExcept("sequenceNumber");
 	}
 }

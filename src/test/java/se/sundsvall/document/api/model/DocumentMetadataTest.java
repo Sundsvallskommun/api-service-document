@@ -36,7 +36,6 @@ class DocumentMetadataTest {
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getKey()).isEqualTo(key);
 		assertThat(bean.getValue()).isEqualTo(value);
-
 	}
 
 	@Test
