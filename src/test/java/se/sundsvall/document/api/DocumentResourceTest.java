@@ -54,6 +54,7 @@ class DocumentResourceTest {
 		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
+			.withDescription("description")
 			.withMunicipalityId("2281")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
