@@ -1,9 +1,9 @@
 package se.sundsvall.document.service;
 
 import static java.lang.String.format;
-import static java.util.Objects.isNull;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.springframework.util.StreamUtils.copy;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static org.zalando.problem.Status.NOT_FOUND;
@@ -13,7 +13,7 @@ import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REG
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_COULD_NOT_READ;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocument;
-import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntity;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntities;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentEntity;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toPagedDocumentResponse;
 
@@ -58,7 +58,7 @@ public class DocumentService {
 
 		final var documentEntity = toDocumentEntity(documentCreateRequest)
 			.withRegistrationNumber(registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId()))
-			.withDocumentData(toDocumentDataEntity(documentFile, databaseHelper));
+			.withDocumentDatas(toDocumentDataEntities(documentFile, databaseHelper));
 
 		return toDocument(documentRepository.save(documentEntity));
 	}
@@ -92,11 +92,11 @@ public class DocumentService {
 		final var documentEntity = documentRepository.findTopByRegistrationNumberOrderByRevisionDesc(registrationNumber)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber)));
 
-		if (isNull(documentEntity.getDocumentData())) {
+		if (isEmpty(documentEntity.getDocumentDatas())) {
 			throw Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber));
 		}
 
-		addFileContentToResponse(documentEntity.getDocumentData(), response);
+		addFileContentToResponse(documentEntity.getDocumentDatas().get(0), response);
 	}
 
 	public void readFile(String registrationNumber, int revision, HttpServletResponse response) {
@@ -104,11 +104,11 @@ public class DocumentService {
 		final var documentEntity = documentRepository.findByRegistrationNumberAndRevision(registrationNumber, revision)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision)));
 
-		if (isNull(documentEntity.getDocumentData())) {
+		if (isEmpty(documentEntity.getDocumentDatas())) {
 			throw Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision));
 		}
 
-		addFileContentToResponse(documentEntity.getDocumentData(), response);
+		addFileContentToResponse(documentEntity.getDocumentDatas().get(0), response);
 	}
 
 	public Document update(String registrationNumber, DocumentUpdateRequest documentUpdateRequest, MultipartFile documentFile) {
@@ -121,9 +121,9 @@ public class DocumentService {
 			.withMunicipalityId(existingDocumentEntity.getMunicipalityId())
 			.withRegistrationNumber(registrationNumber)
 			.withRevision(existingDocumentEntity.getRevision() + 1)
-			.withDocumentData(Optional.ofNullable(documentFile)
-				.map(file -> toDocumentDataEntity(documentFile, databaseHelper))
-				.orElse(toDocumentDataEntity(existingDocumentEntity.getDocumentData())));
+			.withDocumentDatas(Optional.ofNullable(documentFile)
+				.map(file -> toDocumentDataEntities(documentFile, databaseHelper))
+				.orElse(toDocumentDataEntities(Optional.ofNullable(existingDocumentEntity.getDocumentDatas()).map(l -> l.get(0)).orElse(null))));
 
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}

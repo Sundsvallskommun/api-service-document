@@ -260,7 +260,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER);
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.jpg\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentDatas().get(0).getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 	}
 
@@ -287,7 +287,7 @@ class DocumentServiceTest {
 		// Arrange
 		final var documentEntity = createDocumentEntity();
 
-		when(documentRepositoryMock.findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER)).thenReturn(Optional.of(documentEntity.withDocumentData(null)));
+		when(documentRepositoryMock.findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER)).thenReturn(Optional.of(documentEntity.withDocumentDatas(null)));
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.readFile(REGISTRATION_NUMBER, httpServletResponseMock));
@@ -320,7 +320,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER);
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.jpg\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentDatas().get(0).getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 	}
 
@@ -340,7 +340,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevision(REGISTRATION_NUMBER, REVISION);
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.jpg\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentDatas().get(0).getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 	}
 
@@ -367,7 +367,7 @@ class DocumentServiceTest {
 		// Arrange
 		final var documentEntity = createDocumentEntity();
 
-		when(documentRepositoryMock.findByRegistrationNumberAndRevision(REGISTRATION_NUMBER, REVISION)).thenReturn(Optional.of(documentEntity.withDocumentData(null)));
+		when(documentRepositoryMock.findByRegistrationNumberAndRevision(REGISTRATION_NUMBER, REVISION)).thenReturn(Optional.of(documentEntity.withDocumentDatas(null)));
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.readFile(REGISTRATION_NUMBER, REVISION, httpServletResponseMock));
@@ -473,7 +473,7 @@ class DocumentServiceTest {
 			return DocumentEntity.create()
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
-				.withDocumentData(documentDataEntity)
+				.withDocumentDatas(List.of(documentDataEntity))
 				.withId(ID)
 				.withMetadata(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)

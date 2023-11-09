@@ -4,7 +4,6 @@ import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.UuidGenerator;
@@ -13,7 +12,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -22,7 +23,9 @@ import jakarta.persistence.UniqueConstraint;
 @Table(
 	name = "document_data",
 	uniqueConstraints = {
-		@UniqueConstraint(name = "uq_document_data_binary_id", columnNames = { "document_data_binary_id" }),
+		@UniqueConstraint(name = "uq_document_data_binary_id", columnNames = { "document_data_binary_id" })
+	}, indexes = {
+		@Index(name = "ix_document_id", columnList = "document.id")
 	})
 public class DocumentDataEntity {
 
@@ -30,6 +33,10 @@ public class DocumentDataEntity {
 	@UuidGenerator
 	@Column(name = "id")
 	private String id;
+
+	@ManyToOne
+	@JoinColumn(name = "document.id", nullable = false, foreignKey = @ForeignKey(name = "fk_document_data_document"))
+	private DocumentEntity document;
 
 	@Column(name = "mime_type")
 	private String mimeType;
@@ -62,6 +69,19 @@ public class DocumentDataEntity {
 
 	public DocumentDataEntity withId(String id) {
 		this.id = id;
+		return this;
+	}
+
+	public DocumentEntity getDocument() {
+		return document;
+	}
+
+	public void setDocument(DocumentEntity document) {
+		this.document = document;
+	}
+
+	public DocumentDataEntity withDocument(DocumentEntity document) {
+		this.document = document;
 		return this;
 	}
 
@@ -119,22 +139,27 @@ public class DocumentDataEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(documentDataBinary, fileName, fileSizeInBytes, id, mimeType);
+		return Objects.hash(document, documentDataBinary, fileName, fileSizeInBytes, id, mimeType);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentDataEntity other)) { return false; }
-		return Objects.equals(documentDataBinary, other.documentDataBinary) && Objects.equals(fileName, other.fileName) && (fileSizeInBytes == other.fileSizeInBytes) && Objects.equals(id, other.id) && Objects.equals(mimeType, other.mimeType);
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof DocumentDataEntity)) {
+			return false;
+		}
+		DocumentDataEntity other = (DocumentDataEntity) obj;
+		return Objects.equals(document, other.document) && Objects.equals(documentDataBinary, other.documentDataBinary) && Objects.equals(fileName, other.fileName) && fileSizeInBytes == other.fileSizeInBytes && Objects.equals(id, other.id) && Objects
+			.equals(mimeType, other.mimeType);
 	}
 
 	@Override
 	public String toString() {
-		final var documentDataBinaryId = Optional.ofNullable(documentDataBinary).map(DocumentDataBinaryEntity::getId).orElse(null);
-		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", fileSizeInBytes=").append(fileSizeInBytes).append(", documentDataBinary=").append(documentDataBinaryId)
-			.append("]");
+		StringBuilder builder = new StringBuilder();
+		builder.append("DocumentDataEntity [id=").append(id).append(", document=").append(document).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", fileSizeInBytes=").append(fileSizeInBytes).append(
+			", documentDataBinary=").append(documentDataBinary).append("]");
 		return builder.toString();
 	}
 }
