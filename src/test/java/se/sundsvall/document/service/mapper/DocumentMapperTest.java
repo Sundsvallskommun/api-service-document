@@ -109,12 +109,7 @@ class DocumentMapperTest {
 		assertThat(result)
 			.isNotNull()
 			.isEqualTo(DocumentEntity.create()
-				.withConfidential(CONFIDENTIAL)
-				.withCreatedBy(CREATED_BY)
-				.withDescription(DESCRIPTION)
-				.withMetadata(List.of(DocumentMetadataEmbeddable.create()
-					.withKey(METADATA_KEY)
-					.withValue(METADATA_VALUE))));
+				.withCreatedBy(CREATED_BY));
 	}
 
 	@Test

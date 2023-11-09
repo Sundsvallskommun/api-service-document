@@ -37,6 +37,7 @@ import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.integration.db.DatabaseHelper;
 import se.sundsvall.document.integration.db.DocumentRepository;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
+import se.sundsvall.document.service.mapper.DocumentMapper;
 
 @Service
 @Transactional
@@ -121,6 +122,11 @@ public class DocumentService {
 			.withMunicipalityId(existingDocumentEntity.getMunicipalityId())
 			.withRegistrationNumber(registrationNumber)
 			.withRevision(existingDocumentEntity.getRevision() + 1)
+			.withConfidential(Optional.ofNullable(documentUpdateRequest.getConfidential()).orElse(existingDocumentEntity.isConfidential()))
+			.withDescription(Optional.ofNullable(documentUpdateRequest.getDescription()).orElse(existingDocumentEntity.getDescription()))
+			.withMetadata(Optional.ofNullable(documentUpdateRequest.getMetadataList())
+				.map(DocumentMapper::toDocumentMetadataEmbeddableList)
+				.orElse(existingDocumentEntity.getMetadata()))
 			.withDocumentDatas(Optional.ofNullable(documentFile)
 				.map(file -> toDocumentDataEntities(documentFile, databaseHelper))
 				.orElse(toDocumentDataEntities(Optional.ofNullable(existingDocumentEntity.getDocumentDatas()).map(l -> l.get(0)).orElse(null))));

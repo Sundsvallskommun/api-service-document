@@ -43,12 +43,7 @@ public class DocumentMapper {
 	public static DocumentEntity toDocumentEntity(DocumentUpdateRequest documentUpdateRequest) {
 		return Optional.ofNullable(documentUpdateRequest)
 			.map(doc -> DocumentEntity.create()
-				.withConfidential(doc.isConfidential())
-				.withCreatedBy(doc.getCreatedBy())
-				.withDescription(doc.getDescription())
-				.withMetadata(Optional.ofNullable(doc.getMetadataList())
-					.map(DocumentMapper::toDocumentMetadataEmbeddableList)
-					.orElse(null)))
+				.withCreatedBy(doc.getCreatedBy()))
 			.orElse(null);
 	}
 
@@ -88,7 +83,7 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	private static List<DocumentMetadataEmbeddable> toDocumentMetadataEmbeddableList(List<DocumentMetadata> documentMetadataList) {
+	public static List<DocumentMetadataEmbeddable> toDocumentMetadataEmbeddableList(List<DocumentMetadata> documentMetadataList) {
 		return Optional.ofNullable(documentMetadataList).orElse(emptyList()).stream()
 			.map(documentMetadata -> DocumentMetadataEmbeddable.create()
 				.withKey(documentMetadata.getKey())
