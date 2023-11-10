@@ -59,7 +59,7 @@ import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 
 @ExtendWith(MockitoExtension.class)
 
-// TODO: Add tests and verifications for includeConfidential=true
+// TODO: Add tests and verifications for includeConfidential=true. Also add test for update with multiple files (see test createWithMultipleFiles())
 class DocumentServiceTest {
 
 	private static final String FILE_NAME = "image.jpg";
@@ -126,6 +126,49 @@ class DocumentServiceTest {
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
+		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo(CREATED_BY);
+		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
+		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(MUNICIPALITY_ID);
+		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(REGISTRATION_NUMBER);
+	}
+
+	@Test
+	void createWithMultipleFiles() throws FileNotFoundException, IOException {
+
+		// Arrange
+		final var documentCreateRequest = DocumentCreateRequest.create()
+			.withCreatedBy(CREATED_BY)
+			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+			.withMunicipalityId(MUNICIPALITY_ID);
+
+		final var file1 = new File("src/test/resources/files/image.png");
+		final var file2 = new File("src/test/resources/files/readme.txt");
+		final var multipartFile1 = (MultipartFile) new MockMultipartFile("file1", file1.getName(), "image/png", toByteArray(new FileInputStream(file1)));
+		final var multipartFile2 = (MultipartFile) new MockMultipartFile("file2", file2.getName(), "text/plain", toByteArray(new FileInputStream(file2)));
+		final var multipartFiles = List.of(multipartFile1, multipartFile2);
+
+		when(registrationNumberServiceMock.generateRegistrationNumber(MUNICIPALITY_ID)).thenReturn(REGISTRATION_NUMBER);
+		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
+
+		// Act
+		final var result = documentService.create(documentCreateRequest, multipartFiles);
+
+		// Assert
+		assertThat(result).isNotNull();
+
+		verify(registrationNumberServiceMock).generateRegistrationNumber(MUNICIPALITY_ID);
+		verify(databaseHelperMock).convertToBlob(multipartFile1);
+		verify(databaseHelperMock).convertToBlob(multipartFile2);
+		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
+
+		final var capturedDocumentEntity = documentEntityCaptor.getValue();
+		assertThat(capturedDocumentEntity).isNotNull();
+		assertThat(capturedDocumentEntity.getDocumentData())
+			.hasSize(2)
+			.extracting(DocumentDataEntity::getMimeType, DocumentDataEntity::getFileName, DocumentDataEntity::getFileSizeInBytes)
+			.containsExactlyInAnyOrder(
+				tuple("text/plain", "readme.txt", 17L),
+				tuple("image/png", "image.png", 227546L));
 		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo(CREATED_BY);
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(MUNICIPALITY_ID);
