@@ -87,13 +87,14 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Document> update(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
+		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
 		@RequestPart(value = "document", required = false) @Schema(description = "Document", implementation = DocumentUpdateRequest.class) String documentString,
 		@RequestPart(value = "documentFile", required = false) MultipartFile documentFile) throws JsonProcessingException {
 
 		final var documentUpdateRequest = objectMapper.readValue(documentString, DocumentUpdateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		validate(documentUpdateRequest);
 
-		return ok(documentService.update(registrationNumber, documentUpdateRequest, documentFile));
+		return ok(documentService.update(registrationNumber, includeConfidential, documentUpdateRequest, documentFile));
 	}
 
 	@GetMapping(path = "/{registrationNumber}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -101,9 +102,10 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Document> read(
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber) {
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
+		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential) {
 
-		return ok(documentService.read(registrationNumber));
+		return ok(documentService.read(registrationNumber, includeConfidential));
 	}
 
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -111,9 +113,10 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<PagedDocumentResponse> search(
 		@Parameter(name = "query", description = "Search query. Use asterisk-character [*] as wildcard.", example = "hello*") @RequestParam(value = "query", required = true) @NotBlank String query,
+		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
 		@ParameterObject Pageable pageable) {
 
-		return ok(documentService.search(query, pageable));
+		return ok(documentService.search(query, includeConfidential, pageable));
 	}
 
 	@GetMapping(path = "/{registrationNumber}/file", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -122,9 +125,10 @@ public class DocumentResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> readFile(
 		HttpServletResponse response,
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber) {
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
+		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential) {
 
-		documentService.readFile(registrationNumber, response);
+		documentService.readFile(registrationNumber, includeConfidential, response);
 		return ok().build();
 	}
 

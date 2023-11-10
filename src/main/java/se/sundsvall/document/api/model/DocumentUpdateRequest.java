@@ -23,12 +23,12 @@ public class DocumentUpdateRequest {
 	@Schema(description = """
 		A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
 		If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
-		""", example = "false")
+		""", example = "false", defaultValue = "false")
 	@JsonSetter(nulls = Nulls.SKIP)
 	private boolean confidential;
 
 	@Size(max = 8192)
-	@Schema(description = "Document description", example = "A short text describing the content in this object. Maximum 8192 characters.")
+	@Schema(description = "Document description", example = "A brief description of this object. Maximum 8192 characters.")
 	private String description;
 
 	@Schema(description = "List of DocumentMetadata objects.")

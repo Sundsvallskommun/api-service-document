@@ -1,6 +1,7 @@
 package se.sundsvall.document.api;
 
 import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -155,6 +156,41 @@ class DocumentResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("description", "must not be blank"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void createWithTooLongDescription() {
+
+		// Arrange
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
+			.withDescription(repeat("x", 8193)) // 8192 is max length on description.
+			.withCreatedBy("user")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value")))
+			.withMunicipalityId("2281"));
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/documents")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("description", "size must be between 0 and 8192"));
 
 		verifyNoInteractions(documentServiceMock);
 	}
@@ -353,6 +389,39 @@ class DocumentResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("createdBy", "must not be blank"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void updateWithTooLongDescription() {
+
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+			.withCreatedBy("user")
+			.withDescription(repeat("x", 8193)) // 8192 is max length on description.
+			.withMetadataList(List.of(
+				DocumentMetadata.create()
+					.withKey("key")
+					.withValue("value"))));
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri("/documents/2023-1337")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("description", "size must be between 0 and 8192"));
 
 		verifyNoInteractions(documentServiceMock);
 	}

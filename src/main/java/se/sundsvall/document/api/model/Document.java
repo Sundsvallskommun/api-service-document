@@ -32,7 +32,7 @@ public class Document {
 		""", example = "false")
 	private boolean confidential;
 
-	@Schema(description = "Document description", example = "A short text describing the content in this object.")
+	@Schema(description = "Document description", example = "A brief description of this object.")
 	private String description;
 
 	@Schema(description = "Timestamp when document revision was created.", example = "2023-08-31T01:30:00.000+02:00")

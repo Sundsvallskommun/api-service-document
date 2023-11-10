@@ -2,6 +2,8 @@ package se.sundsvall.document.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,12 +43,15 @@ class DocumentRevisionResourceTest {
 		final var registrationNumber = "2023-2281-1337";
 		final var pageRequest = PageRequest.of(0, 20);
 
-		when(documentServiceMock.readAll(any(), any()))
+		when(documentServiceMock.readAll(any(), anyBoolean(), any()))
 			.thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents/" + registrationNumber + "/revisions?page=" + pageRequest.getPageNumber() + "&size=" + pageRequest.getPageSize())
+			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions")
+				.queryParam("page", pageRequest.getPageNumber())
+				.queryParam("size", pageRequest.getPageSize())
+				.build())
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -57,7 +62,38 @@ class DocumentRevisionResourceTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getDocuments()).hasSize(1);
-		verify(documentServiceMock).readAll(registrationNumber, pageRequest);
+		verify(documentServiceMock).readAll(registrationNumber, false, pageRequest);
+	}
+
+	@Test
+	void readAllWithIncludeConfidential() {
+
+		// Arrange
+		final var includeConfidential = true;
+		final var registrationNumber = "2023-2281-1337";
+		final var pageRequest = PageRequest.of(0, 20);
+
+		when(documentServiceMock.readAll(any(), anyBoolean(), any()))
+			.thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions")
+				.queryParam("page", pageRequest.getPageNumber())
+				.queryParam("size", pageRequest.getPageSize())
+				.queryParam("includeConfidential", includeConfidential)
+				.build())
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentType(APPLICATION_JSON)
+			.expectBody(PagedDocumentResponse.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getDocuments()).hasSize(1);
+		verify(documentServiceMock).readAll(registrationNumber, includeConfidential, pageRequest);
 	}
 
 	@Test
@@ -67,7 +103,7 @@ class DocumentRevisionResourceTest {
 		final var registrationNumber = "2023-2281-1337";
 		final var revision = 2;
 
-		when(documentServiceMock.read(registrationNumber, revision)).thenReturn(Document.create());
+		when(documentServiceMock.read(any(), anyInt(), anyBoolean())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.get()
@@ -81,7 +117,34 @@ class DocumentRevisionResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).read(registrationNumber, revision);
+		verify(documentServiceMock).read(registrationNumber, revision, false);
+	}
+
+	@Test
+	void readWithIncludeConfidential() {
+
+		// Arrange
+		final var includeConfidential = true;
+		final var registrationNumber = "2023-2281-1337";
+		final var revision = 2;
+
+		when(documentServiceMock.read(any(), anyInt(), anyBoolean())).thenReturn(Document.create());
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions/" + revision)
+				.queryParam("includeConfidential", includeConfidential)
+				.build())
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentType(APPLICATION_JSON)
+			.expectBody(Document.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		verify(documentServiceMock).read(registrationNumber, revision, includeConfidential);
 	}
 
 	@Test
@@ -100,6 +163,28 @@ class DocumentRevisionResourceTest {
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(false), any(HttpServletResponse.class));
+	}
+
+	@Test
+	void readFileWithIncludeConfidential() {
+
+		// Arrange
+		final var includeConfidential = true;
+		final var registrationNumber = "2023-2281-1337";
+		final var revision = 2;
+
+		// Act
+		webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions/" + revision + "/file")
+				.queryParam("includeConfidential", includeConfidential)
+				.build())
+			.exchange()
+			.expectStatus().isOk()
+			.expectBody()
+			.isEmpty();
+
+		// Assert
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(includeConfidential), any(HttpServletResponse.class));
 	}
 }
