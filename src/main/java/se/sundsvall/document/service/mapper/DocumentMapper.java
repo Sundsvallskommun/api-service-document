@@ -47,14 +47,15 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	public static List<DocumentDataEntity> toDocumentDataEntities(MultipartFile multipartFile, DatabaseHelper databaseHelper) {
-		return Optional.ofNullable(multipartFile)
-			.map(file -> DocumentDataEntity.create()
-				.withDocumentDataBinary(toDocumentDataBinaryEntity(multipartFile, databaseHelper))
-				.withMimeType(file.getContentType())
-				.withFileName(file.getOriginalFilename())
-				.withFileSizeInBytes(file.getSize()))
-			.map(List::of)
+	public static List<DocumentDataEntity> toDocumentDataEntities(List<MultipartFile> multipartFiles, DatabaseHelper databaseHelper) {
+		return Optional.ofNullable(multipartFiles)
+			.map(files -> files.stream()
+				.map(file -> DocumentDataEntity.create()
+					.withDocumentDataBinary(toDocumentDataBinaryEntity(file, databaseHelper))
+					.withMimeType(file.getContentType())
+					.withFileName(file.getOriginalFilename())
+					.withFileSizeInBytes(file.getSize()))
+				.toList())
 			.orElse(null);
 	}
 

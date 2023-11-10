@@ -10,6 +10,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springdoc.core.annotations.ParameterObject;
@@ -71,12 +72,12 @@ public class DocumentResource {
 	public ResponseEntity<Void> create(
 		UriComponentsBuilder uriComponentsBuilder,
 		@RequestPart("document") @Schema(description = "Document", implementation = DocumentCreateRequest.class) String documentString,
-		@RequestPart(value = "documentFile") MultipartFile documentFile) throws JsonProcessingException {
+		@RequestPart(value = "documentFiles") List<MultipartFile> documentFiles) throws JsonProcessingException {
 
 		final var documentCreateRequest = objectMapper.readValue(documentString, DocumentCreateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		validate(documentCreateRequest);
 
-		final var registrationNumber = documentService.create(documentCreateRequest, documentFile).getRegistrationNumber();
+		final var registrationNumber = documentService.create(documentCreateRequest, documentFiles).getRegistrationNumber();
 
 		return created(uriComponentsBuilder.path("/documents/{registrationNumber}").buildAndExpand(registrationNumber).toUri()).header(CONTENT_TYPE, ALL_VALUE).build();
 	}
@@ -89,12 +90,12 @@ public class DocumentResource {
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
 		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
 		@RequestPart(value = "document", required = false) @Schema(description = "Document", implementation = DocumentUpdateRequest.class) String documentString,
-		@RequestPart(value = "documentFile", required = false) MultipartFile documentFile) throws JsonProcessingException {
+		@RequestPart(value = "documentFiles", required = false) List<MultipartFile> documentFiles) throws JsonProcessingException {
 
 		final var documentUpdateRequest = objectMapper.readValue(documentString, DocumentUpdateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		validate(documentUpdateRequest);
 
-		return ok(documentService.update(registrationNumber, includeConfidential, documentUpdateRequest, documentFile));
+		return ok(documentService.update(registrationNumber, includeConfidential, documentUpdateRequest, documentFiles));
 	}
 
 	@GetMapping(path = "/{registrationNumber}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })

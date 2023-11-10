@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import se.sundsvall.dept44.models.api.paging.PagingMetaData;
 import se.sundsvall.document.api.model.Document;
@@ -228,12 +229,13 @@ class DocumentMapperTest {
 		final var mimeType = "image/png";
 		final var file = new File("src/test/resources/files/image.png");
 		final var fileName = file.getName();
-		final var multipartFile = new MockMultipartFile("file", fileName, mimeType, toByteArray(new FileInputStream(file)));
+		final var multipartFile = (MultipartFile) new MockMultipartFile("file", fileName, mimeType, toByteArray(new FileInputStream(file)));
+		final var multipartFiles = List.of(multipartFile);
 
 		when(databaseHelperMock.convertToBlob(multipartFile)).thenReturn(new MariaDbBlob());
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntities(multipartFile, databaseHelperMock);
+		final var result = DocumentMapper.toDocumentDataEntities(multipartFiles, databaseHelperMock);
 
 		// Assert
 		assertThat(result).isNotNull().isNotEmpty();

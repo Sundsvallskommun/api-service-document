@@ -17,6 +17,7 @@ import static org.springframework.web.reactive.function.BodyInserters.fromMultip
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -60,7 +61,8 @@ class DocumentResourceTest {
 				.withKey("key")
 				.withValue("value")));
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test2.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", documentCreateRequest);
 
 		when(documentServiceMock.create(any(), any())).thenReturn(Document.create());
@@ -78,7 +80,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).create(eq(documentCreateRequest), any(MultipartFile.class));
+		verify(documentServiceMock).create(eq(documentCreateRequest), ArgumentMatchers.<List<MultipartFile>>any());
 	}
 
 	@Test
@@ -110,7 +112,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).update(eq(registrationNumber), eq(false), any(DocumentUpdateRequest.class), any(MultipartFile.class));
+		verify(documentServiceMock).update(eq(registrationNumber), eq(false), any(DocumentUpdateRequest.class), ArgumentMatchers.<List<MultipartFile>>any());
 	}
 
 	@Test
@@ -120,7 +122,7 @@ class DocumentResourceTest {
 		final var includeConfidential = true;
 		final var registrationNumber = "2023-1337";
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
 			.withCreatedBy("user")
 			.withMetadataList(List.of(DocumentMetadata.create()
@@ -145,7 +147,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).update(eq(registrationNumber), eq(includeConfidential), any(DocumentUpdateRequest.class), any(MultipartFile.class));
+		verify(documentServiceMock).update(eq(registrationNumber), eq(includeConfidential), any(DocumentUpdateRequest.class), ArgumentMatchers.<List<MultipartFile>>any());
 	}
 
 	@Test

@@ -40,6 +40,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.ThrowableProblem;
 
 import jakarta.servlet.ServletOutputStream;
@@ -106,13 +107,14 @@ class DocumentServiceTest {
 			.withMunicipalityId(MUNICIPALITY_ID);
 
 		final var file = new File("src/test/resources/files/image.png");
-		final var multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
+		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
+		final var multipartFiles = List.of(multipartFile);
 
 		when(registrationNumberServiceMock.generateRegistrationNumber(MUNICIPALITY_ID)).thenReturn(REGISTRATION_NUMBER);
 		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
 
 		// Act
-		final var result = documentService.create(documentCreateRequest, multipartFile);
+		final var result = documentService.create(documentCreateRequest, multipartFiles);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -442,13 +444,14 @@ class DocumentServiceTest {
 			.withMetadataList(List.of(DocumentMetadata.create().withKey("changedKey").withValue("changedValue")));
 
 		final var file = new File("src/test/resources/files/image.png");
-		final var multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
+		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
+		final var multipartFiles = List.of(multipartFile);
 
 		when(documentRepositoryMock.findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER)).thenReturn(Optional.of(existingEntity));
 		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
 
 		// Act
-		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFile);
+		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFiles);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -478,13 +481,14 @@ class DocumentServiceTest {
 			.withMetadataList(List.of(DocumentMetadata.create().withKey("changedKey").withValue("changedValue")));
 
 		final var file = new File("src/test/resources/files/image.png");
-		final var multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
+		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
+		final var multipartFiles = List.of(multipartFile);
 
 		when(documentRepositoryMock.findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER)).thenReturn(Optional.of(existingEntity));
 		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
 
 		// Act
-		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFile);
+		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFiles);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -513,12 +517,13 @@ class DocumentServiceTest {
 			.withMetadataList(List.of(DocumentMetadata.create().withKey("changedKey").withValue("changedValue")));
 
 		final var file = new File("src/test/resources/files/image.png");
-		final var multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
+		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
+		final var multipartFiles = List.of(multipartFile);
 
 		when(documentRepositoryMock.findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER)).thenReturn(empty());
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFile));
+		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFiles));
 
 		// Assert
 		assertThat(exception).isNotNull();

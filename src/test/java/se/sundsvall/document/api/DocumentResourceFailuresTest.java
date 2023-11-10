@@ -41,7 +41,7 @@ class DocumentResourceFailuresTest {
 	private WebTestClient webTestClient;
 
 	@Test
-	void createWithMissingDocumentFile() {
+	void createWithMissingDocumentFiles() {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
@@ -61,7 +61,7 @@ class DocumentResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getDetail()).isEqualTo("Required part 'documentFile' is not present.");
+		assertThat(response.getDetail()).isEqualTo("Required part 'documentFiles' is not present.");
 
 		verifyNoInteractions(documentServiceMock);
 	}
@@ -71,7 +71,7 @@ class DocumentResourceFailuresTest {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 
 		// Act
 		final var response = webTestClient.post()
@@ -97,7 +97,7 @@ class DocumentResourceFailuresTest {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
 			.withDescription("description")
@@ -131,7 +131,7 @@ class DocumentResourceFailuresTest {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
 			.withMetadataList(List.of(DocumentMetadata.create()
@@ -165,7 +165,7 @@ class DocumentResourceFailuresTest {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withDescription(repeat("x", 8193)) // 8192 is max length on description.
 			.withCreatedBy("user")
@@ -200,7 +200,7 @@ class DocumentResourceFailuresTest {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
 			.withDescription("description")
@@ -233,7 +233,7 @@ class DocumentResourceFailuresTest {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withDescription("description")
 			.withCreatedBy("user")
@@ -265,7 +265,7 @@ class DocumentResourceFailuresTest {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
 			.withDescription("description")

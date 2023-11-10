@@ -19,6 +19,7 @@ import static se.sundsvall.document.service.mapper.DocumentMapper.toPagedDocumen
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class DocumentService {
 		this.registrationNumberService = registrationNumberService;
 	}
 
-	public Document create(DocumentCreateRequest documentCreateRequest, MultipartFile documentFile) {
+	public Document create(DocumentCreateRequest documentCreateRequest, List<MultipartFile> documentFile) {
 
 		final var documentEntity = toDocumentEntity(documentCreateRequest)
 			.withRegistrationNumber(registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId()))
@@ -112,7 +113,7 @@ public class DocumentService {
 		addFileContentToResponse(documentEntity.getDocumentDatas().get(0), response);
 	}
 
-	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, MultipartFile documentFile) {
+	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, List<MultipartFile> documentFiles) {
 
 		final var existingDocumentEntity = documentRepository.findTopByRegistrationNumberOrderByRevisionDesc(registrationNumber)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber)));
@@ -127,8 +128,8 @@ public class DocumentService {
 			.withMetadata(Optional.ofNullable(documentUpdateRequest.getMetadataList())
 				.map(DocumentMapper::toDocumentMetadataEmbeddableList)
 				.orElse(existingDocumentEntity.getMetadata()))
-			.withDocumentDatas(Optional.ofNullable(documentFile)
-				.map(file -> toDocumentDataEntities(documentFile, databaseHelper))
+			.withDocumentDatas(Optional.ofNullable(documentFiles)
+				.map(file -> toDocumentDataEntities(documentFiles, databaseHelper))
 				.orElse(toDocumentDataEntities(Optional.ofNullable(existingDocumentEntity.getDocumentDatas()).map(l -> l.get(0)).orElse(null))));
 
 		return toDocument(documentRepository.save(newDocumentEntity));
