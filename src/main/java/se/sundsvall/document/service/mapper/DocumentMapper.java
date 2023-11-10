@@ -32,7 +32,9 @@ public class DocumentMapper {
 	public static DocumentEntity toDocumentEntity(DocumentCreateRequest documentCreateRequest) {
 		return Optional.ofNullable(documentCreateRequest)
 			.map(doc -> DocumentEntity.create()
+				.withConfidential(doc.isConfidential())
 				.withCreatedBy(doc.getCreatedBy())
+				.withDescription(doc.getDescription())
 				.withMetadata(toDocumentMetadataEmbeddableList(doc.getMetadataList()))
 				.withMunicipalityId(doc.getMunicipalityId()))
 			.orElse(null);
@@ -41,30 +43,29 @@ public class DocumentMapper {
 	public static DocumentEntity toDocumentEntity(DocumentUpdateRequest documentUpdateRequest) {
 		return Optional.ofNullable(documentUpdateRequest)
 			.map(doc -> DocumentEntity.create()
-				.withCreatedBy(doc.getCreatedBy())
-				.withMetadata(Optional.ofNullable(doc.getMetadataList())
-					.map(DocumentMapper::toDocumentMetadataEmbeddableList)
-					.orElse(null)))
+				.withCreatedBy(doc.getCreatedBy()))
 			.orElse(null);
 	}
 
-	public static DocumentDataEntity toDocumentDataEntity(MultipartFile multipartFile, DatabaseHelper databaseHelper) {
+	public static List<DocumentDataEntity> toDocumentDataEntities(MultipartFile multipartFile, DatabaseHelper databaseHelper) {
 		return Optional.ofNullable(multipartFile)
 			.map(file -> DocumentDataEntity.create()
 				.withDocumentDataBinary(toDocumentDataBinaryEntity(multipartFile, databaseHelper))
 				.withMimeType(file.getContentType())
 				.withFileName(file.getOriginalFilename())
 				.withFileSizeInBytes(file.getSize()))
+			.map(List::of)
 			.orElse(null);
 	}
 
-	public static DocumentDataEntity toDocumentDataEntity(DocumentDataEntity documentDataEntity) {
+	public static List<DocumentDataEntity> toDocumentDataEntities(DocumentDataEntity documentDataEntity) {
 		return Optional.ofNullable(documentDataEntity)
 			.map(doc -> DocumentDataEntity.create()
 				.withMimeType(doc.getMimeType())
 				.withFileName(doc.getFileName())
 				.withFileSizeInBytes(doc.getFileSizeInBytes())
 				.withDocumentDataBinary(toDocumentDataBinaryEntity(doc.getDocumentDataBinary())))
+			.map(List::of)
 			.orElse(null);
 	}
 
@@ -82,7 +83,7 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	private static List<DocumentMetadataEmbeddable> toDocumentMetadataEmbeddableList(List<DocumentMetadata> documentMetadataList) {
+	public static List<DocumentMetadataEmbeddable> toDocumentMetadataEmbeddableList(List<DocumentMetadata> documentMetadataList) {
 		return Optional.ofNullable(documentMetadataList).orElse(emptyList()).stream()
 			.map(documentMetadata -> DocumentMetadataEmbeddable.create()
 				.withKey(documentMetadata.getKey())
@@ -116,9 +117,11 @@ public class DocumentMapper {
 	public static Document toDocument(DocumentEntity documentEntity) {
 		return Optional.ofNullable(documentEntity)
 			.map(docEntity -> Document.create()
+				.withConfidential(docEntity.isConfidential())
 				.withCreated(docEntity.getCreated())
 				.withCreatedBy(docEntity.getCreatedBy())
-				.withDocumentData(toDocumentData(docEntity.getDocumentData()))
+				.withDescription(docEntity.getDescription())
+				.withDocumentData(toDocumentData(Optional.ofNullable(docEntity.getDocumentDatas()).map(l -> l.get(0)).orElse(null)))
 				.withId(docEntity.getId())
 				.withMetadataList(toDocumentMetadataList(docEntity.getMetadata()))
 				.withMunicipalityId(docEntity.getMunicipalityId())

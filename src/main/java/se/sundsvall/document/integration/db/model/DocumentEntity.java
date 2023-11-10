@@ -20,7 +20,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import se.sundsvall.document.integration.db.model.listener.DocumentEntityListener;
@@ -29,13 +29,14 @@ import se.sundsvall.document.integration.db.model.listener.DocumentEntityListene
 @Table(
 	name = "document",
 	uniqueConstraints = {
-		@UniqueConstraint(name = "uq_revision_and_registration_number", columnNames = { "revision", "registration_number" }),
-		@UniqueConstraint(name = "uq_document_data_id", columnNames = { "document_data_id" })
+		@UniqueConstraint(name = "uq_revision_and_registration_number", columnNames = { "revision", "registration_number" })
 	},
 	indexes = {
 		@Index(name = "ix_registration_number", columnList = "registration_number"),
 		@Index(name = "ix_created_by", columnList = "created_by"),
-		@Index(name = "ix_municipality_id", columnList = "municipality_id")
+		@Index(name = "ix_municipality_id", columnList = "municipality_id"),
+		@Index(name = "ix_confidential", columnList = "confidential"),
+		@Index(name = "ix_description", columnList = "description")
 	})
 @EntityListeners(DocumentEntityListener.class)
 public class DocumentEntity {
@@ -54,6 +55,12 @@ public class DocumentEntity {
 	@Column(name = "registration_number", nullable = false, updatable = false)
 	private String registrationNumber;
 
+	@Column(name = "description", nullable = false, columnDefinition = "varchar(8192)")
+	private String description;
+
+	@Column(name = "confidential", nullable = false)
+	private boolean confidential;
+
 	@Column(name = "created_by")
 	private String createdBy;
 
@@ -61,12 +68,8 @@ public class DocumentEntity {
 	@TimeZoneStorage(NORMALIZE)
 	private OffsetDateTime created;
 
-	@OneToOne(cascade = ALL, orphanRemoval = true)
-	@JoinColumn(
-		name = "document_data_id",
-		referencedColumnName = "id",
-		foreignKey = @ForeignKey(name = "fk_document_document_data"))
-	private DocumentDataEntity documentData;
+	@OneToMany(cascade = ALL, orphanRemoval = true, mappedBy = "document")
+	private List<DocumentDataEntity> documentDatas;
 
 	@ElementCollection(fetch = EAGER)
 	@CollectionTable(name = "document_metadata",
@@ -135,6 +138,32 @@ public class DocumentEntity {
 		return this;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public DocumentEntity withDescription(String description) {
+		this.description = description;
+		return this;
+	}
+
+	public boolean isConfidential() {
+		return confidential;
+	}
+
+	public void setConfidential(boolean confidential) {
+		this.confidential = confidential;
+	}
+
+	public DocumentEntity withConfidential(boolean confidential) {
+		this.confidential = confidential;
+		return this;
+	}
+
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -161,16 +190,16 @@ public class DocumentEntity {
 		return this;
 	}
 
-	public DocumentDataEntity getDocumentData() {
-		return documentData;
+	public List<DocumentDataEntity> getDocumentDatas() {
+		return documentDatas;
 	}
 
-	public void setDocumentData(DocumentDataEntity documentData) {
-		this.documentData = documentData;
+	public void setDocumentDatas(List<DocumentDataEntity> documentDatas) {
+		this.documentDatas = documentDatas;
 	}
 
-	public DocumentEntity withDocumentData(DocumentDataEntity documentData) {
-		this.documentData = documentData;
+	public DocumentEntity withDocumentDatas(List<DocumentDataEntity> documentDatas) {
+		this.documentDatas = documentDatas;
 		return this;
 	}
 
@@ -189,22 +218,27 @@ public class DocumentEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(created, createdBy, documentData, id, metadata, municipalityId, registrationNumber, revision);
+		return Objects.hash(confidential, created, createdBy, description, documentDatas, id, metadata, municipalityId, registrationNumber, revision);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentEntity other)) { return false; }
-		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(documentData, other.documentData) && Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata)
-			&& (municipalityId == other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && (revision == other.revision);
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof DocumentEntity)) {
+			return false;
+		}
+		DocumentEntity other = (DocumentEntity) obj;
+		return confidential == other.confidential && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(documentDatas, other.documentDatas)
+			&& Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && revision == other.revision;
 	}
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", createdBy=").append(createdBy).append(
-			", created=").append(created).append(", documentData=").append(documentData).append(", metadata=").append(metadata).append("]");
+		StringBuilder builder = new StringBuilder();
+		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", description=").append(description)
+			.append(", confidential=").append(confidential).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentDatas=").append(documentDatas).append(", metadata=").append(metadata).append("]");
 		return builder.toString();
 	}
 }

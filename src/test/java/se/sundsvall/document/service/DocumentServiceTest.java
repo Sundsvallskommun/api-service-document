@@ -64,6 +64,7 @@ class DocumentServiceTest {
 	private static final String MIME_TYPE = "image/jpeg";
 	private static final OffsetDateTime CREATED = now(systemDefault());
 	private static final String CREATED_BY = "User";
+	private static final String DESCRIPTION = "Description";
 	private static final String ID = randomUUID().toString();
 	private static final String METADATA_KEY = "key";
 	private static final String METADATA_VALUE = "value";
@@ -274,7 +275,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER);
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.jpg\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentDatas().get(0).getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 	}
 
@@ -305,7 +306,7 @@ class DocumentServiceTest {
 
 		final var documentEntity = createDocumentEntity();
 
-		when(documentRepositoryMock.findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER)).thenReturn(Optional.of(documentEntity.withDocumentData(null)));
+		when(documentRepositoryMock.findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER)).thenReturn(Optional.of(documentEntity.withDocumentDatas(null)));
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.readFile(REGISTRATION_NUMBER, includeConfidential, httpServletResponseMock));
@@ -340,7 +341,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER);
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.jpg\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentDatas().get(0).getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 	}
 
@@ -361,7 +362,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevision(REGISTRATION_NUMBER, REVISION);
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.jpg\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentDatas().get(0).getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 	}
 
@@ -391,7 +392,7 @@ class DocumentServiceTest {
 		final var includeConfidential = false;
 		final var documentEntity = createDocumentEntity();
 
-		when(documentRepositoryMock.findByRegistrationNumberAndRevision(REGISTRATION_NUMBER, REVISION)).thenReturn(Optional.of(documentEntity.withDocumentData(null)));
+		when(documentRepositoryMock.findByRegistrationNumberAndRevision(REGISTRATION_NUMBER, REVISION)).thenReturn(Optional.of(documentEntity.withDocumentDatas(null)));
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.readFile(REGISTRATION_NUMBER, REVISION, includeConfidential, httpServletResponseMock));
@@ -429,7 +430,45 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void update() throws FileNotFoundException, IOException {
+	void updateAllValues() throws FileNotFoundException, IOException {
+
+		// Arrange
+		final var includeConfidential = false;
+		final var existingEntity = createDocumentEntity();
+		final var documentUpdateRequest = DocumentUpdateRequest.create()
+			.withCreatedBy("changedUser")
+			.withConfidential(true)
+			.withDescription("changedDescription")
+			.withMetadataList(List.of(DocumentMetadata.create().withKey("changedKey").withValue("changedValue")));
+
+		final var file = new File("src/test/resources/files/image.png");
+		final var multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
+
+		when(documentRepositoryMock.findTopByRegistrationNumberOrderByRevisionDesc(REGISTRATION_NUMBER)).thenReturn(Optional.of(existingEntity));
+		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
+
+		// Act
+		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFile);
+
+		// Assert
+		assertThat(result).isNotNull();
+
+		verify(databaseHelperMock).convertToBlob(multipartFile);
+		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
+		verifyNoInteractions(registrationNumberServiceMock);
+
+		final var capturedDocumentEntity = documentEntityCaptor.getValue();
+		assertThat(capturedDocumentEntity).isNotNull();
+		assertThat(capturedDocumentEntity.isConfidential()).isTrue();
+		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo("changedUser");
+		assertThat(capturedDocumentEntity.getDescription()).isEqualTo("changedDescription");
+		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey("changedKey").withValue("changedValue")));
+		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
+		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
+	}
+
+	@Test
+	void updateOneValue() throws FileNotFoundException, IOException {
 
 		// Arrange
 		final var includeConfidential = false;
@@ -456,7 +495,9 @@ class DocumentServiceTest {
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
+		assertThat(capturedDocumentEntity.isConfidential()).isFalse();
 		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo("changedUser");
+		assertThat(capturedDocumentEntity.getDescription()).isEqualTo(DESCRIPTION);
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey("changedKey").withValue("changedValue")));
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
@@ -500,7 +541,9 @@ class DocumentServiceTest {
 			return DocumentEntity.create()
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
-				.withDocumentData(documentDataEntity)
+				.withConfidential(false)
+				.withDescription(DESCRIPTION)
+				.withDocumentDatas(List.of(documentDataEntity))
 				.withId(ID)
 				.withMetadata(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)

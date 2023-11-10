@@ -6,7 +6,8 @@ import static org.springframework.data.jpa.domain.Specification.where;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.FILE_NAME;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.MIME_TYPE;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.CREATED_BY;
-import static se.sundsvall.document.integration.db.model.DocumentEntity_.DOCUMENT_DATA;
+import static se.sundsvall.document.integration.db.model.DocumentEntity_.DESCRIPTION;
+import static se.sundsvall.document.integration.db.model.DocumentEntity_.DOCUMENT_DATAS;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.METADATA;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.MUNICIPALITY_ID;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.REGISTRATION_NUMBER;
@@ -24,6 +25,7 @@ public interface SearchSpecification {
 	static Specification<DocumentEntity> withSearchQuery(String query) {
 		final var queryString = toQueryString(query);
 		return where(matchesCreatedBy(queryString))
+			.or(matchesDescription(queryString))
 			.or(matchesMunicipalityId(queryString))
 			.or(matchesRegistrationNumber(queryString))
 			.or(matchesFileName(queryString))
@@ -37,6 +39,10 @@ public interface SearchSpecification {
 		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(CREATED_BY)), query);
 	}
 
+	private static Specification<DocumentEntity> matchesDescription(String query) {
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(DESCRIPTION)), query);
+	}
+
 	private static Specification<DocumentEntity> matchesMunicipalityId(String query) {
 		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(MUNICIPALITY_ID)), query);
 	}
@@ -46,11 +52,11 @@ public interface SearchSpecification {
 	}
 
 	private static Specification<DocumentEntity> matchesFileName(String query) {
-		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATA, LEFT).get(FILE_NAME)), query);
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATAS, LEFT).get(FILE_NAME)), query);
 	}
 
 	private static Specification<DocumentEntity> matchesMimeType(String query) {
-		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATA, LEFT).get(MIME_TYPE)), query);
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATAS, LEFT).get(MIME_TYPE)), query);
 	}
 
 	private static Specification<DocumentEntity> matchesMetadataKey(String query) {

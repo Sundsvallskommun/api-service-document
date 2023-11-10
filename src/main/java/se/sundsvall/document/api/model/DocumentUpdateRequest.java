@@ -5,9 +5,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import java.util.List;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -23,9 +20,8 @@ public class DocumentUpdateRequest {
 	@Schema(description = """
 		A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
 		If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
-		""", example = "false", defaultValue = "false")
-	@JsonSetter(nulls = Nulls.SKIP)
-	private boolean confidential;
+		""", example = "false")
+	private Boolean confidential;
 
 	@Size(max = 8192)
 	@Schema(description = "Document description", example = "A brief description of this object. Maximum 8192 characters.")
@@ -51,15 +47,15 @@ public class DocumentUpdateRequest {
 		return this;
 	}
 
-	public boolean isConfidential() {
+	public Boolean getConfidential() {
 		return confidential;
 	}
 
-	public void setConfidential(boolean confidential) {
+	public void setConfidential(Boolean confidential) {
 		this.confidential = confidential;
 	}
 
-	public DocumentUpdateRequest withConfidential(boolean confidential) {
+	public DocumentUpdateRequest withConfidential(Boolean confidential) {
 		this.confidential = confidential;
 		return this;
 	}
@@ -97,9 +93,13 @@ public class DocumentUpdateRequest {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentUpdateRequest other)) { return false; }
-		return (confidential == other.confidential) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof final DocumentUpdateRequest other)) {
+			return false;
+		}
+		return Objects.equals(confidential, other.confidential) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
 	}
 
 	@Override

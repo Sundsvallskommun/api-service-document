@@ -40,7 +40,7 @@ class DocumentUpdateRequestTest {
 			.withMetadataList(metadataList);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(bean.isConfidential()).isEqualTo(confidential);
+		assertThat(bean.getConfidential()).isEqualTo(confidential);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 		assertThat(bean.getDescription()).isEqualTo(description);
 		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
@@ -48,7 +48,7 @@ class DocumentUpdateRequestTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentUpdateRequest.create()).hasAllNullFieldsOrPropertiesExcept("confidential");
-		assertThat(new DocumentUpdateRequest()).hasAllNullFieldsOrPropertiesExcept("confidential");
+		assertThat(DocumentUpdateRequest.create()).hasAllNullFieldsOrProperties();
+		assertThat(new DocumentUpdateRequest()).hasAllNullFieldsOrProperties();
 	}
 }

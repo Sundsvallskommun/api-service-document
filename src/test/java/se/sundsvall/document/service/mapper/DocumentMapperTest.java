@@ -39,6 +39,8 @@ import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 @ExtendWith(MockitoExtension.class)
 class DocumentMapperTest {
 
+	private static final boolean CONFIDENTIAL = true;
+	private static final String DESCRIPTION = "Description";
 	private static final OffsetDateTime CREATED = now(systemDefault());
 	private static final String CREATED_BY = "createdBy";
 	private static final String FILE_NAME = "filename.txt";
@@ -59,7 +61,9 @@ class DocumentMapperTest {
 
 		// Arrange
 		final var documentCreateRequest = DocumentCreateRequest.create()
+			.withConfidential(CONFIDENTIAL)
 			.withCreatedBy(CREATED_BY)
+			.withDescription(DESCRIPTION)
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey(METADATA_KEY)
 				.withValue(METADATA_VALUE)))
@@ -72,7 +76,9 @@ class DocumentMapperTest {
 		assertThat(result)
 			.isNotNull()
 			.isEqualTo(DocumentEntity.create()
+				.withConfidential(CONFIDENTIAL)
 				.withCreatedBy(CREATED_BY)
+				.withDescription(DESCRIPTION)
 				.withMetadata(List.of(DocumentMetadataEmbeddable.create()
 					.withKey(METADATA_KEY)
 					.withValue(METADATA_VALUE)))
@@ -89,7 +95,9 @@ class DocumentMapperTest {
 
 		// Arrange
 		final var documentUpdateRequest = DocumentUpdateRequest.create()
+			.withConfidential(CONFIDENTIAL)
 			.withCreatedBy(CREATED_BY)
+			.withDescription(DESCRIPTION)
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey(METADATA_KEY)
 				.withValue(METADATA_VALUE)));
@@ -101,10 +109,7 @@ class DocumentMapperTest {
 		assertThat(result)
 			.isNotNull()
 			.isEqualTo(DocumentEntity.create()
-				.withCreatedBy(CREATED_BY)
-				.withMetadata(List.of(DocumentMetadataEmbeddable.create()
-					.withKey(METADATA_KEY)
-					.withValue(METADATA_VALUE))));
+				.withCreatedBy(CREATED_BY));
 	}
 
 	@Test
@@ -117,13 +122,15 @@ class DocumentMapperTest {
 
 		// Arrange
 		final var documentEntity = DocumentEntity.create()
+			.withConfidential(CONFIDENTIAL)
 			.withCreated(CREATED)
 			.withCreatedBy(CREATED_BY)
-			.withDocumentData(DocumentDataEntity.create()
+			.withDescription(DESCRIPTION)
+			.withDocumentDatas(List.of(DocumentDataEntity.create()
 				.withFileName(FILE_NAME)
 				.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
 				.withId(ID)
-				.withMimeType(MIME_TYPE))
+				.withMimeType(MIME_TYPE)))
 			.withId(ID)
 			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
 				.withKey(METADATA_KEY)
@@ -139,8 +146,10 @@ class DocumentMapperTest {
 		assertThat(result)
 			.hasSize(1)
 			.containsExactly(Document.create()
+				.withConfidential(CONFIDENTIAL)
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
+				.withDescription(DESCRIPTION)
 				.withDocumentData(DocumentData.create()
 					.withFileName(FILE_NAME)
 					.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
@@ -165,13 +174,15 @@ class DocumentMapperTest {
 
 		// Arrange
 		final var documentEntity = DocumentEntity.create()
+			.withConfidential(CONFIDENTIAL)
 			.withCreated(CREATED)
 			.withCreatedBy(CREATED_BY)
-			.withDocumentData(DocumentDataEntity.create()
+			.withDescription(DESCRIPTION)
+			.withDocumentDatas(List.of(DocumentDataEntity.create()
 				.withFileName(FILE_NAME)
 				.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
 				.withId(ID)
-				.withMimeType(MIME_TYPE))
+				.withMimeType(MIME_TYPE)))
 			.withId(ID)
 			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
 				.withKey(METADATA_KEY)
@@ -187,8 +198,10 @@ class DocumentMapperTest {
 		assertThat(result)
 			.isNotNull()
 			.isEqualTo(Document.create()
+				.withConfidential(CONFIDENTIAL)
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
+				.withDescription(DESCRIPTION)
 				.withDocumentData(DocumentData.create()
 					.withFileName(FILE_NAME)
 					.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
@@ -220,14 +233,14 @@ class DocumentMapperTest {
 		when(databaseHelperMock.convertToBlob(multipartFile)).thenReturn(new MariaDbBlob());
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntity(multipartFile, databaseHelperMock);
+		final var result = DocumentMapper.toDocumentDataEntities(multipartFile, databaseHelperMock);
 
 		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getFileName()).isEqualTo(fileName);
-		assertThat(result.getMimeType()).isEqualTo(mimeType);
-		assertThat(result.getDocumentDataBinary()).isNotNull();
-		assertThat(result.getDocumentDataBinary().getBinaryFile()).isNotNull();
+		assertThat(result).isNotNull().isNotEmpty();
+		assertThat(result.get(0).getFileName()).isEqualTo(fileName);
+		assertThat(result.get(0).getMimeType()).isEqualTo(mimeType);
+		assertThat(result.get(0).getDocumentDataBinary()).isNotNull();
+		assertThat(result.get(0).getDocumentDataBinary().getBinaryFile()).isNotNull();
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 	}
 
@@ -235,7 +248,7 @@ class DocumentMapperTest {
 	void toDocumentDataEntityFromMultipartWhenInputIsNull() throws IOException {
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntity(null, databaseHelperMock);
+		final var result = DocumentMapper.toDocumentDataEntities(null, databaseHelperMock);
 
 		// Assert
 		assertThat(result).isNull();
@@ -258,15 +271,15 @@ class DocumentMapperTest {
 			.withMimeType(mimeType);
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntity(source);
+		final var result = DocumentMapper.toDocumentDataEntities(source);
 
 		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getDocumentDataBinary()).isEqualTo(documentDataBinary);
-		assertThat(result.getDocumentDataBinary().getBinaryFile()).isEqualTo(file);
-		assertThat(result.getMimeType()).isEqualTo(mimeType);
-		assertThat(result.getFileName()).isEqualTo(fileName);
-		assertThat(result.getId()).isNull();
+		assertThat(result).isNotNull().isNotEmpty();
+		assertThat(result.get(0).getDocumentDataBinary()).isEqualTo(documentDataBinary);
+		assertThat(result.get(0).getDocumentDataBinary().getBinaryFile()).isEqualTo(file);
+		assertThat(result.get(0).getMimeType()).isEqualTo(mimeType);
+		assertThat(result.get(0).getFileName()).isEqualTo(fileName);
+		assertThat(result.get(0).getId()).isNull();
 	}
 
 	@Test
@@ -279,8 +292,10 @@ class DocumentMapperTest {
 		final var pageable = PageRequest.of(page, pageSize, sort);
 
 		final var documentEntity = DocumentEntity.create()
+			.withConfidential(CONFIDENTIAL)
 			.withCreated(CREATED)
 			.withCreatedBy(CREATED_BY)
+			.withDescription(DESCRIPTION)
 			.withId(ID)
 			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
 				.withKey(METADATA_KEY)
@@ -306,8 +321,10 @@ class DocumentMapperTest {
 		assertThat(result.getDocuments())
 			.hasSize(1)
 			.containsExactly(Document.create()
+				.withConfidential(CONFIDENTIAL)
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
+				.withDescription(DESCRIPTION)
 				.withId(ID)
 				.withMetadataList(List.of(DocumentMetadata.create()
 					.withKey(METADATA_KEY)
@@ -331,7 +348,7 @@ class DocumentMapperTest {
 	void toDocumentDataEntityFromDocumentDataEntityWhenInputIsNull() throws IOException {
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntity(null);
+		final var result = DocumentMapper.toDocumentDataEntities(null);
 
 		// Assert
 		assertThat(result).isNull();
