@@ -60,14 +60,14 @@ public class DocumentService {
 
 		final var documentEntity = toDocumentEntity(documentCreateRequest)
 			.withRegistrationNumber(registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId()))
-			.withDocumentDatas(toDocumentDataEntities(documentFile, databaseHelper));
+			.withDocumentData(toDocumentDataEntities(documentFile, databaseHelper));
 
 		return toDocument(documentRepository.save(documentEntity));
 	}
 
 	public Document read(String registrationNumber, boolean includeConfidential) {
 
-		final var documentEntity = documentRepository.findTopByRegistrationNumberOrderByRevisionDesc(registrationNumber)
+		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(registrationNumber, includeConfidential)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber)));
 
 		return toDocument(documentEntity);
@@ -75,47 +75,47 @@ public class DocumentService {
 
 	public Document read(String registrationNumber, int revision, boolean includeConfidential) {
 
-		final var documentEntity = documentRepository.findByRegistrationNumberAndRevision(registrationNumber, revision)
+		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidential(registrationNumber, revision, includeConfidential)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision)));
 
 		return toDocument(documentEntity);
 	}
 
 	public PagedDocumentResponse readAll(String registrationNumber, boolean includeConfidential, Pageable pageable) {
-		return toPagedDocumentResponse(documentRepository.findByRegistrationNumber(registrationNumber, pageable));
+		return toPagedDocumentResponse(documentRepository.findByRegistrationNumberAndConfidential(registrationNumber, includeConfidential, pageable));
 	}
 
 	public PagedDocumentResponse search(String query, boolean includeConfidential, Pageable pageable) {
-		return toPagedDocumentResponse(documentRepository.search(query, pageable));
+		return toPagedDocumentResponse(documentRepository.search(query, includeConfidential, pageable));
 	}
 
 	public void readFile(String registrationNumber, boolean includeConfidential, HttpServletResponse response) {
 
-		final var documentEntity = documentRepository.findTopByRegistrationNumberOrderByRevisionDesc(registrationNumber)
+		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(registrationNumber, includeConfidential)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber)));
 
-		if (isEmpty(documentEntity.getDocumentDatas())) {
+		if (isEmpty(documentEntity.getDocumentData())) {
 			throw Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber));
 		}
 
-		addFileContentToResponse(documentEntity.getDocumentDatas().get(0), response);
+		addFileContentToResponse(documentEntity.getDocumentData().get(0), response);
 	}
 
 	public void readFile(String registrationNumber, int revision, boolean includeConfidential, HttpServletResponse response) {
 
-		final var documentEntity = documentRepository.findByRegistrationNumberAndRevision(registrationNumber, revision)
+		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidential(registrationNumber, revision, includeConfidential)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision)));
 
-		if (isEmpty(documentEntity.getDocumentDatas())) {
+		if (isEmpty(documentEntity.getDocumentData())) {
 			throw Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision));
 		}
 
-		addFileContentToResponse(documentEntity.getDocumentDatas().get(0), response);
+		addFileContentToResponse(documentEntity.getDocumentData().get(0), response);
 	}
 
 	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, List<MultipartFile> documentFiles) {
 
-		final var existingDocumentEntity = documentRepository.findTopByRegistrationNumberOrderByRevisionDesc(registrationNumber)
+		final var existingDocumentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(registrationNumber, includeConfidential)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber)));
 
 		// Do not update existing entity, create a new revision instead.
@@ -128,9 +128,9 @@ public class DocumentService {
 			.withMetadata(Optional.ofNullable(documentUpdateRequest.getMetadataList())
 				.map(DocumentMapper::toDocumentMetadataEmbeddableList)
 				.orElse(existingDocumentEntity.getMetadata()))
-			.withDocumentDatas(Optional.ofNullable(documentFiles)
+			.withDocumentData(Optional.ofNullable(documentFiles)
 				.map(file -> toDocumentDataEntities(documentFiles, databaseHelper))
-				.orElse(toDocumentDataEntities(Optional.ofNullable(existingDocumentEntity.getDocumentDatas()).map(l -> l.get(0)).orElse(null))));
+				.orElse(toDocumentDataEntities(Optional.ofNullable(existingDocumentEntity.getDocumentData()).map(l -> l.get(0)).orElse(null))));
 
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}

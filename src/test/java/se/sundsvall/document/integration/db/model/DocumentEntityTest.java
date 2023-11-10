@@ -56,7 +56,7 @@ class DocumentEntityTest {
 			.withCreated(created)
 			.withCreatedBy(createdBy)
 			.withDescription(description)
-			.withDocumentDatas(documentDatas)
+			.withDocumentData(documentDatas)
 			.withId(id)
 			.withMetadata(metadata)
 			.withMunicipalityId(municipalityId)
@@ -68,7 +68,7 @@ class DocumentEntityTest {
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 		assertThat(bean.getDescription()).isEqualTo(description);
-		assertThat(bean.getDocumentDatas()).isEqualTo(documentDatas);
+		assertThat(bean.getDocumentData()).isEqualTo(documentDatas);
 		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getMetadata()).isEqualTo(metadata);
 		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);

@@ -14,7 +14,7 @@
     create table document_data (
         file_size_in_bytes bigint default 0,
         document_data_binary_id varchar(255),
-        `document_id` varchar(255) not null,
+        document_id varchar(255) not null,
         file_name varchar(255),
         id varchar(255) not null,
         mime_type varchar(255),
@@ -54,14 +54,8 @@
     create index ix_confidential 
        on document (confidential);
 
-    create index ix_description 
-       on document (description);
-
     alter table if exists document 
        add constraint uq_revision_and_registration_number unique (revision, registration_number);
-
-    create index ix_document_id 
-       on document_data (`document_id`);
 
     alter table if exists document_data 
        add constraint UK_pk8e8r0wijpujsxn25gob65si unique (document_data_binary_id);
@@ -76,14 +70,14 @@
        add constraint uq_municipality_id unique (municipality_id);
 
     alter table if exists document_data 
-       add constraint fk_document_data_document 
-       foreign key (`document_id`) 
-       references document (id);
-
-    alter table if exists document_data 
        add constraint fk_document_data_document_data_binary 
        foreign key (document_data_binary_id) 
        references document_data_binary (id);
+
+    alter table if exists document_data 
+       add constraint fk_document_data_document 
+       foreign key (document_id) 
+       references document (id);
 
     alter table if exists document_metadata 
        add constraint fk_document_metadata_document 

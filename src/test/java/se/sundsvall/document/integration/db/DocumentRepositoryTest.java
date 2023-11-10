@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.mariadb.jdbc.MariaDbBlob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -24,6 +25,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
+import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 
@@ -42,7 +45,6 @@ import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 })
 class DocumentRepositoryTest {
 
-	private static final String REGISTRATION_NUMBER = "2023-1337";
 	private static final String CREATED_BY = "User123";
 	private static final String DOCUMENT_ENTITY_ID = "159c10bf-1b32-471b-b2d3-c4b4b13ea152"; // -- Document 1, revision 1
 
@@ -53,7 +55,8 @@ class DocumentRepositoryTest {
 	void create() {
 
 		// Arrange
-		final var entity = createDocumentEntity();
+		final var registrationNumber = "2023-1337";
+		final var entity = createDocumentEntity(registrationNumber);
 
 		// Act
 		final var result = documentRepository.save(entity);
@@ -62,13 +65,40 @@ class DocumentRepositoryTest {
 		assertThat(result).isNotNull();
 		assertThat(isValidUUID(result.getId())).isTrue();
 		assertThat(result.getCreated()).isCloseTo(now(), within(2, SECONDS));
-		assertThat(result.getRegistrationNumber()).isEqualTo(REGISTRATION_NUMBER);
+		assertThat(result.getRegistrationNumber()).isEqualTo(registrationNumber);
 		assertThat(result.getCreatedBy()).isEqualTo(CREATED_BY);
 		assertThat(result.getMetadata())
 			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
 			.containsExactly(
 				tuple("key1", "value1"),
 				tuple("key2", "value2"));
+	}
+
+	@Test
+	void createWithMultipleDocumentData() {
+
+		// Arrange
+		final var registrationNumber = "2023-1338";
+		final var entity = createDocumentEntity(registrationNumber);
+
+		entity.setDocumentData(List.of(createDocumentDataEntity("file1.txt"), createDocumentDataEntity("file2.txt")));
+
+		// Act
+		final var result = documentRepository.save(entity);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(isValidUUID(result.getId())).isTrue();
+		assertThat(result.getCreated()).isCloseTo(now(), within(2, SECONDS));
+		assertThat(result.getRegistrationNumber()).isEqualTo(registrationNumber);
+		assertThat(result.getCreatedBy()).isEqualTo(CREATED_BY);
+		assertThat(result.getMetadata())
+			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
+			.containsExactly(
+				tuple("key1", "value1"),
+				tuple("key2", "value2"));
+		assertThat(result.getDocumentData()).extracting(DocumentDataEntity::getFileName)
+			.containsExactly("file1.txt", "file2.txt");
 	}
 
 	@Test
@@ -106,7 +136,7 @@ class DocumentRepositoryTest {
 		final var registrationNumber = "2023-2281-123";
 
 		// Act
-		final var result = documentRepository.findTopByRegistrationNumberOrderByRevisionDesc(registrationNumber).orElseThrow();
+		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(registrationNumber, false).orElseThrow();
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -132,7 +162,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumber(registrationNumber, pageRequest);
+		final var result = documentRepository.findByRegistrationNumberAndConfidential(registrationNumber, false, pageRequest);
 
 		// Assert
 		assertThat(result)
@@ -152,7 +182,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumber(registrationNumber, pageRequest);
+		final var result = documentRepository.findByRegistrationNumberAndConfidential(registrationNumber, false, pageRequest);
 
 		// Assert
 		assertThat(result)
@@ -172,7 +202,7 @@ class DocumentRepositoryTest {
 		final var revision = 2;
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndRevision(registrationNumber, revision).orElseThrow();
+		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidential(registrationNumber, revision, false).orElseThrow();
 
 		// Assert
 		assertThat(result)
@@ -182,14 +212,14 @@ class DocumentRepositoryTest {
 	}
 
 	@Test
-	void searchByKey() {
+	void searchByKeyWithConfidentialIncluded() {
 
 		// Arrange
 		final var search = "*key3";
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
 
 		// Act
-		final var result = documentRepository.search(search, pageRequest);
+		final var result = documentRepository.search(search, true, pageRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -201,6 +231,24 @@ class DocumentRepositoryTest {
 	}
 
 	@Test
+	void searchByKeyWithConfidentialExcluded() {
+
+		// Arrange
+		final var search = "*key3";
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
+
+		// Act
+		final var result = documentRepository.search(search, false, pageRequest);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(result.getContent())
+			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
+			.containsExactly(
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User3"));
+	}
+
+	@Test
 	void searchByFilename() {
 
 		// Arrange
@@ -208,7 +256,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "registrationNumber", "revision"));
 
 		// Act
-		final var result = documentRepository.search(search, pageRequest);
+		final var result = documentRepository.search(search, true, pageRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -229,21 +277,30 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
 
 		// Act
-		final var result = documentRepository.search(search, pageRequest);
+		final var result = documentRepository.search(search, true, pageRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(result.getContent()).isEmpty();
 	}
 
-	private static DocumentEntity createDocumentEntity() {
+	private static DocumentEntity createDocumentEntity(String registrationNumber) {
 		return DocumentEntity.create()
 			.withCreatedBy(CREATED_BY)
 			.withMetadata(List.of(
 				DocumentMetadataEmbeddable.create().withKey("key1").withValue("value1"),
 				DocumentMetadataEmbeddable.create().withKey("key2").withValue("value2")))
-			.withRegistrationNumber(REGISTRATION_NUMBER)
+			.withRegistrationNumber(registrationNumber)
 			.withRevision(0);
+	}
+
+	private static DocumentDataEntity createDocumentDataEntity(String filename) {
+		final var fileContent = "fileContent";
+		return DocumentDataEntity.create()
+			.withDocumentDataBinary(DocumentDataBinaryEntity.create().withBinaryFile(new MariaDbBlob(fileContent.getBytes())))
+			.withFileName(filename)
+			.withFileSizeInBytes(fileContent.length())
+			.withMimeType("text/plain");
 	}
 
 	private boolean isValidUUID(final String value) {
