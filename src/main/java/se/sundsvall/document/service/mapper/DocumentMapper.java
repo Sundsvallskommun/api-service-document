@@ -121,7 +121,7 @@ public class DocumentMapper {
 				.withCreated(docEntity.getCreated())
 				.withCreatedBy(docEntity.getCreatedBy())
 				.withDescription(docEntity.getDescription())
-				.withDocumentData(toDocumentData(Optional.ofNullable(docEntity.getDocumentDatas()).map(l -> l.get(0)).orElse(null)))
+				.withDocumentData(toDocumentData(Optional.ofNullable(docEntity.getDocumentData()).map(l -> l.get(0)).orElse(null)))
 				.withId(docEntity.getId())
 				.withMetadataList(toDocumentMetadataList(docEntity.getMetadata()))
 				.withMunicipalityId(docEntity.getMunicipalityId())

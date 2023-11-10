@@ -5,9 +5,10 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.springframework.data.jpa.domain.Specification.where;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.FILE_NAME;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.MIME_TYPE;
+import static se.sundsvall.document.integration.db.model.DocumentEntity_.CONFIDENTIAL;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.CREATED_BY;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.DESCRIPTION;
-import static se.sundsvall.document.integration.db.model.DocumentEntity_.DOCUMENT_DATAS;
+import static se.sundsvall.document.integration.db.model.DocumentEntity_.DOCUMENT_DATA;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.METADATA;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.MUNICIPALITY_ID;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.REGISTRATION_NUMBER;
@@ -22,7 +23,7 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 
 public interface SearchSpecification {
 
-	static Specification<DocumentEntity> withSearchQuery(String query) {
+	static Specification<DocumentEntity> withSearchQuery(String query, boolean includeConfidential) {
 		final var queryString = toQueryString(query);
 		return where(matchesCreatedBy(queryString))
 			.or(matchesDescription(queryString))
@@ -32,7 +33,15 @@ public interface SearchSpecification {
 			.or(matchesMimeType(queryString))
 			.or(matchesMetadataKey(queryString))
 			.or(matchesMetadataValue(queryString))
+			.and(includeConfidentialDocuments(includeConfidential))
 			.and(distinct());
+	}
+
+	private static Specification<DocumentEntity> includeConfidentialDocuments(boolean includeConfidential) {
+		if (includeConfidential) {
+			return null; // Do not add any filter to return all documents regardless of whether they are confidential or not
+		}
+		return (entity, cq, cb) -> cb.equal(entity.get(CONFIDENTIAL), false); // Return non-confidential documents only
 	}
 
 	private static Specification<DocumentEntity> matchesCreatedBy(String query) {
@@ -52,11 +61,11 @@ public interface SearchSpecification {
 	}
 
 	private static Specification<DocumentEntity> matchesFileName(String query) {
-		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATAS, LEFT).get(FILE_NAME)), query);
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATA, LEFT).get(FILE_NAME)), query);
 	}
 
 	private static Specification<DocumentEntity> matchesMimeType(String query) {
-		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATAS, LEFT).get(MIME_TYPE)), query);
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.join(DOCUMENT_DATA, LEFT).get(MIME_TYPE)), query);
 	}
 
 	private static Specification<DocumentEntity> matchesMetadataKey(String query) {

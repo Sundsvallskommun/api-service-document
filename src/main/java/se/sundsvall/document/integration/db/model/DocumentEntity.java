@@ -35,8 +35,7 @@ import se.sundsvall.document.integration.db.model.listener.DocumentEntityListene
 		@Index(name = "ix_registration_number", columnList = "registration_number"),
 		@Index(name = "ix_created_by", columnList = "created_by"),
 		@Index(name = "ix_municipality_id", columnList = "municipality_id"),
-		@Index(name = "ix_confidential", columnList = "confidential"),
-		@Index(name = "ix_description", columnList = "description")
+		@Index(name = "ix_confidential", columnList = "confidential")
 	})
 @EntityListeners(DocumentEntityListener.class)
 public class DocumentEntity {
@@ -68,8 +67,9 @@ public class DocumentEntity {
 	@TimeZoneStorage(NORMALIZE)
 	private OffsetDateTime created;
 
-	@OneToMany(cascade = ALL, orphanRemoval = true, mappedBy = "document")
-	private List<DocumentDataEntity> documentDatas;
+	@OneToMany(cascade = ALL, orphanRemoval = true)
+	@JoinColumn(name = "document_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_document_data_document"))
+	private List<DocumentDataEntity> documentData;
 
 	@ElementCollection(fetch = EAGER)
 	@CollectionTable(name = "document_metadata",
@@ -190,16 +190,16 @@ public class DocumentEntity {
 		return this;
 	}
 
-	public List<DocumentDataEntity> getDocumentDatas() {
-		return documentDatas;
+	public List<DocumentDataEntity> getDocumentData() {
+		return documentData;
 	}
 
-	public void setDocumentDatas(List<DocumentDataEntity> documentDatas) {
-		this.documentDatas = documentDatas;
+	public void setDocumentData(List<DocumentDataEntity> documentData) {
+		this.documentData = documentData;
 	}
 
-	public DocumentEntity withDocumentDatas(List<DocumentDataEntity> documentDatas) {
-		this.documentDatas = documentDatas;
+	public DocumentEntity withDocumentData(List<DocumentDataEntity> documentData) {
+		this.documentData = documentData;
 		return this;
 	}
 
@@ -218,7 +218,7 @@ public class DocumentEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(confidential, created, createdBy, description, documentDatas, id, metadata, municipalityId, registrationNumber, revision);
+		return Objects.hash(confidential, created, createdBy, description, documentData, id, metadata, municipalityId, registrationNumber, revision);
 	}
 
 	@Override
@@ -230,7 +230,7 @@ public class DocumentEntity {
 			return false;
 		}
 		DocumentEntity other = (DocumentEntity) obj;
-		return confidential == other.confidential && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(documentDatas, other.documentDatas)
+		return confidential == other.confidential && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(documentData, other.documentData)
 			&& Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && revision == other.revision;
 	}
 
@@ -238,7 +238,7 @@ public class DocumentEntity {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", description=").append(description)
-			.append(", confidential=").append(confidential).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentDatas=").append(documentDatas).append(", metadata=").append(metadata).append("]");
+			.append(", confidential=").append(confidential).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentData=").append(documentData).append(", metadata=").append(metadata).append("]");
 		return builder.toString();
 	}
 }
