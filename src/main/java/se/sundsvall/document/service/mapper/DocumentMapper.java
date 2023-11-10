@@ -59,14 +59,15 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	public static List<DocumentDataEntity> toDocumentDataEntities(DocumentDataEntity documentDataEntity) {
-		return Optional.ofNullable(documentDataEntity)
-			.map(doc -> DocumentDataEntity.create()
-				.withMimeType(doc.getMimeType())
-				.withFileName(doc.getFileName())
-				.withFileSizeInBytes(doc.getFileSizeInBytes())
-				.withDocumentDataBinary(toDocumentDataBinaryEntity(doc.getDocumentDataBinary())))
-			.map(List::of)
+	public static List<DocumentDataEntity> toDocumentDataEntities(List<DocumentDataEntity> documentDataEntityList) {
+		return Optional.ofNullable(documentDataEntityList)
+			.map(list -> list.stream()
+				.map(doc -> DocumentDataEntity.create()
+					.withMimeType(doc.getMimeType())
+					.withFileName(doc.getFileName())
+					.withFileSizeInBytes(doc.getFileSizeInBytes())
+					.withDocumentDataBinary(toDocumentDataBinaryEntity(doc.getDocumentDataBinary())))
+				.toList())
 			.orElse(null);
 	}
 
@@ -122,7 +123,7 @@ public class DocumentMapper {
 				.withCreated(docEntity.getCreated())
 				.withCreatedBy(docEntity.getCreatedBy())
 				.withDescription(docEntity.getDescription())
-				.withDocumentData(toDocumentData(Optional.ofNullable(docEntity.getDocumentData()).map(l -> l.get(0)).orElse(null)))
+				.withDocumentData(toDocumentDataList(docEntity.getDocumentData()))
 				.withId(docEntity.getId())
 				.withMetadataList(toDocumentMetadataList(docEntity.getMetadata()))
 				.withMunicipalityId(docEntity.getMunicipalityId())
@@ -137,6 +138,14 @@ public class DocumentMapper {
 				.withKey(docMetadataEmbeddable.getKey())
 				.withValue(docMetadataEmbeddable.getValue()))
 			.toList();
+	}
+
+	private static List<DocumentData> toDocumentDataList(List<DocumentDataEntity> documentDataEntityList) {
+		return Optional.ofNullable(documentDataEntityList)
+			.map(list -> list.stream()
+				.map(DocumentMapper::toDocumentData)
+				.toList())
+			.orElse(null);
 	}
 
 	private static DocumentData toDocumentData(DocumentDataEntity documentDataEntity) {

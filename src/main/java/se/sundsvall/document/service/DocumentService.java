@@ -130,7 +130,7 @@ public class DocumentService {
 				.orElse(existingDocumentEntity.getMetadata()))
 			.withDocumentData(Optional.ofNullable(documentFiles)
 				.map(file -> toDocumentDataEntities(documentFiles, databaseHelper))
-				.orElse(toDocumentDataEntities(Optional.ofNullable(existingDocumentEntity.getDocumentData()).map(l -> l.get(0)).orElse(null))));
+				.orElse(toDocumentDataEntities(existingDocumentEntity.getDocumentData())));
 
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}

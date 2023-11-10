@@ -46,7 +46,7 @@ public class Document {
 	private List<DocumentMetadata> metadataList;
 
 	@Schema(description = "Document data")
-	private DocumentData documentData;
+	private List<DocumentData> documentData;
 
 	public static Document create() {
 		return new Document();
@@ -169,15 +169,15 @@ public class Document {
 		return this;
 	}
 
-	public DocumentData getDocumentData() {
+	public List<DocumentData> getDocumentData() {
 		return documentData;
 	}
 
-	public void setDocumentData(DocumentData documentData) {
+	public void setDocumentData(List<DocumentData> documentData) {
 		this.documentData = documentData;
 	}
 
-	public Document withDocumentData(DocumentData documentData) {
+	public Document withDocumentData(List<DocumentData> documentData) {
 		this.documentData = documentData;
 		return this;
 	}

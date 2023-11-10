@@ -44,7 +44,7 @@ class DocumentTest {
 		final var created = now(systemDefault());
 		final var createdBy = "user";
 		final var description = "description";
-		final var documentData = DocumentData.create();
+		final var documentData = List.of(DocumentData.create());
 		final var id = randomUUID().toString();
 		final var metadataList = List.of(DocumentMetadata.create());
 		final var municipalityId = "municipalityId";

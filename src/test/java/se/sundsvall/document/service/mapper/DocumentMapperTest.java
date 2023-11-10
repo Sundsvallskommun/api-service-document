@@ -44,12 +44,15 @@ class DocumentMapperTest {
 	private static final String DESCRIPTION = "Description";
 	private static final OffsetDateTime CREATED = now(systemDefault());
 	private static final String CREATED_BY = "createdBy";
-	private static final String FILE_NAME = "filename.txt";
-	private static final long FILE_SIZE_IN_BYTES = 1000;
+	private static final String FILE_1_NAME = "filename1.png";
+	private static final String FILE_2_NAME = "filename2.txt";
+	private static final long FILE_1_SIZE_IN_BYTES = 1000;
+	private static final long FILE_2_SIZE_IN_BYTES = 2000;
+	private static final String MIME_TYPE_1 = "image/png";
+	private static final String MIME_TYPE_2 = "text/plain";
 	private static final String ID = "id";
 	private static final String METADATA_KEY = "key";
 	private static final String METADATA_VALUE = "value";
-	private static final String MIME_TYPE = "text/plain";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String REGISTRATION_NUMBER = "reistrationNumber";
 	private static final int REVISION = 666;
@@ -127,11 +130,17 @@ class DocumentMapperTest {
 			.withCreated(CREATED)
 			.withCreatedBy(CREATED_BY)
 			.withDescription(DESCRIPTION)
-			.withDocumentData(List.of(DocumentDataEntity.create()
-				.withFileName(FILE_NAME)
-				.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
-				.withId(ID)
-				.withMimeType(MIME_TYPE)))
+			.withDocumentData(List.of(
+				DocumentDataEntity.create()
+					.withFileName(FILE_1_NAME)
+					.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
+					.withId(ID)
+					.withMimeType(MIME_TYPE_1),
+				DocumentDataEntity.create()
+					.withFileName(FILE_2_NAME)
+					.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
+					.withId(ID)
+					.withMimeType(MIME_TYPE_2)))
 			.withId(ID)
 			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
 				.withKey(METADATA_KEY)
@@ -151,11 +160,17 @@ class DocumentMapperTest {
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
 				.withDescription(DESCRIPTION)
-				.withDocumentData(DocumentData.create()
-					.withFileName(FILE_NAME)
-					.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
-					.withId(ID)
-					.withMimeType(MIME_TYPE))
+				.withDocumentData(List.of(
+					DocumentData.create()
+						.withFileName(FILE_1_NAME)
+						.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
+						.withId(ID)
+						.withMimeType(MIME_TYPE_1),
+					DocumentData.create()
+						.withFileName(FILE_2_NAME)
+						.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
+						.withId(ID)
+						.withMimeType(MIME_TYPE_2)))
 				.withId(ID)
 				.withMetadataList(List.of(DocumentMetadata.create()
 					.withKey(METADATA_KEY)
@@ -179,11 +194,17 @@ class DocumentMapperTest {
 			.withCreated(CREATED)
 			.withCreatedBy(CREATED_BY)
 			.withDescription(DESCRIPTION)
-			.withDocumentData(List.of(DocumentDataEntity.create()
-				.withFileName(FILE_NAME)
-				.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
-				.withId(ID)
-				.withMimeType(MIME_TYPE)))
+			.withDocumentData(List.of(
+				DocumentDataEntity.create()
+					.withFileName(FILE_1_NAME)
+					.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
+					.withId(ID)
+					.withMimeType(MIME_TYPE_1),
+				DocumentDataEntity.create()
+					.withFileName(FILE_2_NAME)
+					.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
+					.withId(ID)
+					.withMimeType(MIME_TYPE_2)))
 			.withId(ID)
 			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
 				.withKey(METADATA_KEY)
@@ -203,11 +224,17 @@ class DocumentMapperTest {
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
 				.withDescription(DESCRIPTION)
-				.withDocumentData(DocumentData.create()
-					.withFileName(FILE_NAME)
-					.withFileSizeInBytes(FILE_SIZE_IN_BYTES)
-					.withId(ID)
-					.withMimeType(MIME_TYPE))
+				.withDocumentData(List.of(
+					DocumentData.create()
+						.withFileName(FILE_1_NAME)
+						.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
+						.withId(ID)
+						.withMimeType(MIME_TYPE_1),
+					DocumentData.create()
+						.withFileName(FILE_2_NAME)
+						.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
+						.withId(ID)
+						.withMimeType(MIME_TYPE_2)))
 				.withId(ID)
 				.withMetadataList(List.of(DocumentMetadata.create()
 					.withKey(METADATA_KEY)
@@ -257,7 +284,7 @@ class DocumentMapperTest {
 	}
 
 	@Test
-	void toDocumentDataEntityFromDocumentDataEntity() {
+	void toDocumentDataEntitiesFromDocumentDataEntities() {
 
 		// Arrange
 		final var file = new MariaDbBlob();
@@ -266,11 +293,11 @@ class DocumentMapperTest {
 		final var id = "id";
 		final var mimeType = "image/png";
 
-		final var source = DocumentDataEntity.create()
+		final var source = List.of(DocumentDataEntity.create()
 			.withDocumentDataBinary(documentDataBinary)
 			.withFileName(fileName)
 			.withId(id)
-			.withMimeType(mimeType);
+			.withMimeType(mimeType));
 
 		// Act
 		final var result = DocumentMapper.toDocumentDataEntities(source);
@@ -282,6 +309,16 @@ class DocumentMapperTest {
 		assertThat(result.get(0).getMimeType()).isEqualTo(mimeType);
 		assertThat(result.get(0).getFileName()).isEqualTo(fileName);
 		assertThat(result.get(0).getId()).isNull();
+	}
+
+	@Test
+	void toDocumentDataEntitiesFromDocumentDataEntitiesWhenInputIsNull() {
+
+		// Act
+		final var result = DocumentMapper.toDocumentDataEntities(null);
+
+		// Assert
+		assertThat(result).isNull();
 	}
 
 	@Test
