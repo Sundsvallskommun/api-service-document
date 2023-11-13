@@ -22,7 +22,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
@@ -100,7 +99,7 @@ class DocumentServiceTest {
 	private ArgumentCaptor<DocumentEntity> documentEntityCaptor;
 
 	@Test
-	void create() throws FileNotFoundException, IOException {
+	void create() throws IOException {
 
 		// Arrange
 		final var documentCreateRequest = DocumentCreateRequest.create()
@@ -134,7 +133,7 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void createWithMultipleFiles() throws FileNotFoundException, IOException {
+	void createWithMultipleFiles() throws IOException {
 
 		// Arrange
 		final var documentCreateRequest = DocumentCreateRequest.create()
@@ -327,7 +326,7 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void readFileByRegistrationNumberNotFound() throws IOException, SQLException {
+	void readFileByRegistrationNumberNotFound() {
 
 		// Arrange
 		final var includeConfidential = false;
@@ -346,7 +345,7 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void readFileByRegistrationNumberDocumentDataIdNotFound() throws IOException, SQLException {
+	void readFileByRegistrationNumberDocumentDataIdNotFound() {
 
 		// Arrange
 		final var includeConfidential = false;
@@ -369,7 +368,7 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void readFileByRegistrationNumberFileContentNotFound() throws IOException, SQLException {
+	void readFileByRegistrationNumberFileContentNotFound() {
 
 		// Arrange
 		final var includeConfidential = false;
@@ -434,7 +433,7 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void readFileByRegistrationNumberAndRevisionNotFound() throws IOException, SQLException {
+	void readFileByRegistrationNumberAndRevisionNotFound() {
 
 		// Arrange
 		final var includeConfidential = false;
@@ -453,7 +452,7 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void readFileByRegistrationNumberAndRevisionFileContentNotFound() throws IOException, SQLException {
+	void readFileByRegistrationNumberAndRevisionFileContentNotFound() {
 
 		// Arrange
 		final var includeConfidential = false;
@@ -520,7 +519,7 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void updateAllValues() throws FileNotFoundException, IOException {
+	void updateAllValues() throws IOException {
 
 		// Arrange
 		final var includeConfidential = false;
@@ -533,13 +532,12 @@ class DocumentServiceTest {
 
 		final var file = new File("src/test/resources/files/image.png");
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
-		final var multipartFiles = List.of(multipartFile);
 
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(REGISTRATION_NUMBER, includeConfidential)).thenReturn(Optional.of(existingEntity));
 		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
 
 		// Act
-		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFiles);
+		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFile);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -559,7 +557,7 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void updateOneValue() throws FileNotFoundException, IOException {
+	void updateOneValue() throws IOException {
 
 		// Arrange
 		final var includeConfidential = false;
@@ -570,13 +568,12 @@ class DocumentServiceTest {
 
 		final var file = new File("src/test/resources/files/image.png");
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
-		final var multipartFiles = List.of(multipartFile);
 
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(REGISTRATION_NUMBER, includeConfidential)).thenReturn(Optional.of(existingEntity));
 		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
 
 		// Act
-		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFiles);
+		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFile);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -606,12 +603,11 @@ class DocumentServiceTest {
 
 		final var file = new File("src/test/resources/files/image.png");
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
-		final var multipartFiles = List.of(multipartFile);
 
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(REGISTRATION_NUMBER, includeConfidential)).thenReturn(empty());
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFiles));
+		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, multipartFile));
 
 		// Assert
 		assertThat(exception).isNotNull();

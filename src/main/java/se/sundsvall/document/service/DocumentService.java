@@ -124,7 +124,7 @@ public class DocumentService {
 		addFileContentToResponse(documentDataEntity, response);
 	}
 
-	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, List<MultipartFile> documentFiles) {
+	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, MultipartFile documentFile) {
 
 		final var existingDocumentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(registrationNumber, includeConfidential)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber)));
@@ -139,8 +139,8 @@ public class DocumentService {
 			.withMetadata(Optional.ofNullable(documentUpdateRequest.getMetadataList())
 				.map(DocumentMapper::toDocumentMetadataEmbeddableList)
 				.orElse(existingDocumentEntity.getMetadata()))
-			.withDocumentData(Optional.ofNullable(documentFiles)
-				.map(file -> toDocumentDataEntities(documentFiles, databaseHelper))
+			.withDocumentData(Optional.ofNullable(documentFile)
+				.map(file -> toDocumentDataEntities(List.of(documentFile), databaseHelper))
 				.orElse(toDocumentDataEntities(existingDocumentEntity.getDocumentData())));
 
 		return toDocument(documentRepository.save(newDocumentEntity));

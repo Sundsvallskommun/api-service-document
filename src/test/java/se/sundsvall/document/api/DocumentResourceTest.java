@@ -113,7 +113,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).update(eq(registrationNumber), eq(false), any(DocumentUpdateRequest.class), ArgumentMatchers.<List<MultipartFile>>any());
+		verify(documentServiceMock).update(eq(registrationNumber), eq(false), any(DocumentUpdateRequest.class), any(MultipartFile.class));
 	}
 
 	@Test
@@ -123,7 +123,7 @@ class DocumentResourceTest {
 		final var includeConfidential = true;
 		final var registrationNumber = "2023-1337";
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
 			.withCreatedBy("user")
 			.withMetadataList(List.of(DocumentMetadata.create()
@@ -148,7 +148,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).update(eq(registrationNumber), eq(includeConfidential), any(DocumentUpdateRequest.class), ArgumentMatchers.<List<MultipartFile>>any());
+		verify(documentServiceMock).update(eq(registrationNumber), eq(includeConfidential), any(DocumentUpdateRequest.class), any(MultipartFile.class));
 	}
 
 	@Test
