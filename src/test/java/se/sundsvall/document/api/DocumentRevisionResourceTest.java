@@ -1,5 +1,6 @@
 package se.sundsvall.document.api;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -152,18 +153,19 @@ class DocumentRevisionResourceTest {
 
 		// Arrange
 		final var registrationNumber = "2023-2281-1337";
+		final var documentDataId = randomUUID().toString();
 		final var revision = 2;
 
 		// Act
 		webTestClient.get()
-			.uri("/documents/" + registrationNumber + "/revisions/" + revision + "/file")
+			.uri("/documents/" + registrationNumber + "/revisions/" + revision + "/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody()
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(false), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(documentDataId), eq(false), any(HttpServletResponse.class));
 	}
 
 	@Test
@@ -172,11 +174,12 @@ class DocumentRevisionResourceTest {
 		// Arrange
 		final var includeConfidential = true;
 		final var registrationNumber = "2023-2281-1337";
+		final var documentDataId = randomUUID().toString();
 		final var revision = 2;
 
 		// Act
 		webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions/" + revision + "/file")
+			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions/" + revision + "/files/" + documentDataId)
 				.queryParam("includeConfidential", includeConfidential)
 				.build())
 			.exchange()
@@ -185,6 +188,6 @@ class DocumentRevisionResourceTest {
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(includeConfidential), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(documentDataId), eq(includeConfidential), any(HttpServletResponse.class));
 	}
 }

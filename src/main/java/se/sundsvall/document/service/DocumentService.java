@@ -9,6 +9,7 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND;
+import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_COULD_NOT_READ;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND;
@@ -89,7 +90,7 @@ public class DocumentService {
 		return toPagedDocumentResponse(documentRepository.search(query, includeConfidential, pageable));
 	}
 
-	public void readFile(String registrationNumber, boolean includeConfidential, HttpServletResponse response) {
+	public void readFile(String registrationNumber, String documentDataId, boolean includeConfidential, HttpServletResponse response) {
 
 		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(registrationNumber, includeConfidential)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber)));
@@ -98,10 +99,15 @@ public class DocumentService {
 			throw Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND, registrationNumber));
 		}
 
-		addFileContentToResponse(documentEntity.getDocumentData().get(0), response);
+		final var documentDataEntity = documentEntity.getDocumentData().stream()
+			.filter(docData -> docData.getId().equals(documentDataId))
+			.findFirst()
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND, documentDataId)));
+
+		addFileContentToResponse(documentDataEntity, response);
 	}
 
-	public void readFile(String registrationNumber, int revision, boolean includeConfidential, HttpServletResponse response) {
+	public void readFile(String registrationNumber, int revision, String documentDataId, boolean includeConfidential, HttpServletResponse response) {
 
 		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidential(registrationNumber, revision, includeConfidential)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision)));
@@ -110,7 +116,12 @@ public class DocumentService {
 			throw Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision));
 		}
 
-		addFileContentToResponse(documentEntity.getDocumentData().get(0), response);
+		final var documentDataEntity = documentEntity.getDocumentData().stream()
+			.filter(docData -> docData.getId().equals(documentDataId))
+			.findFirst()
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND, documentDataId)));
+
+		addFileContentToResponse(documentDataEntity, response);
 	}
 
 	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, List<MultipartFile> documentFiles) {

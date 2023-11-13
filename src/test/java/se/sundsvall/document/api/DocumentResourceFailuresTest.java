@@ -298,6 +298,7 @@ class DocumentResourceFailuresTest {
 	@Test
 	void updateWithBlankKeyInMetaData() {
 
+		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
 			.withCreatedBy("user")
@@ -331,6 +332,7 @@ class DocumentResourceFailuresTest {
 	@Test
 	void updateWithBlankValueInMetaData() {
 
+		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
 			.withCreatedBy("user")
@@ -364,6 +366,7 @@ class DocumentResourceFailuresTest {
 	@Test
 	void updateWithMissingCreatedBy() {
 
+		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
 			.withDescription("description")
@@ -396,6 +399,7 @@ class DocumentResourceFailuresTest {
 	@Test
 	void updateWithTooLongDescription() {
 
+		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
 			.withCreatedBy("user")
@@ -431,8 +435,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents")
-				.build())
+			.uri("/documents")
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -467,6 +470,31 @@ class DocumentResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("search.query", "must not be blank"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void readFileWithInvalidDocumentDataId() {
+
+		// Arrange
+		final var documentDataId = "not-a-valid-uuid";
+
+		// Act
+		final var response = webTestClient.get()
+			.uri("/documents/2023-1337/files/" + documentDataId)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("readFile.documentDataId", "not a valid UUID"));
 
 		verifyNoInteractions(documentServiceMock);
 	}

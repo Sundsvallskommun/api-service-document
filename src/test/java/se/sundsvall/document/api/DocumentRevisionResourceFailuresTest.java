@@ -1,5 +1,6 @@
 package se.sundsvall.document.api;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -53,9 +54,12 @@ class DocumentRevisionResourceFailuresTest {
 	@Test
 	void readFileWithNegativeRevision() {
 
+		// Arrange
+		final var documentDataId = randomUUID().toString();
+
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents/2023-1337/revisions/-1/file")
+			.uri("/documents/2023-1337/revisions/-1/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -68,6 +72,31 @@ class DocumentRevisionResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("readFileRevision.revision", "must be greater than or equal to 0"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void readFileWithInvalidDocumentDataId() {
+
+		// Arrange
+		final var documentDataId = "not-a-valid-uuid";
+
+		// Act
+		final var response = webTestClient.get()
+			.uri("/documents/2023-1337/revisions/1/files/" + documentDataId)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("readFileRevision.documentDataId", "not a valid UUID"));
 
 		verifyNoInteractions(documentServiceMock);
 	}

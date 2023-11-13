@@ -1,5 +1,6 @@
 package se.sundsvall.document.api;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -267,30 +268,32 @@ class DocumentResourceTest {
 	void readFile() {
 
 		// Arrange
+		final var documentDataId = randomUUID().toString();
 		final var registrationNumber = "2023-1337";
 
 		// Act
 		webTestClient.get()
-			.uri("/documents/" + registrationNumber + "/file")
+			.uri("/documents/" + registrationNumber + "/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody()
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), eq(false), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(documentDataId), eq(false), any(HttpServletResponse.class));
 	}
 
 	@Test
 	void readFileWithIncludeConfidential() {
 
 		// Arrange
+		final var documentDataId = randomUUID().toString();
 		final var includeConfidential = true;
 		final var registrationNumber = "2023-1337";
 
 		// Act
 		webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/file")
+			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/files/" + documentDataId)
 				.queryParam("includeConfidential", includeConfidential)
 				.build())
 			.exchange()
@@ -299,6 +302,6 @@ class DocumentResourceTest {
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), eq(includeConfidential), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(documentDataId), eq(includeConfidential), any(HttpServletResponse.class));
 	}
 }
