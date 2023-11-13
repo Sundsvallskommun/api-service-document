@@ -8,13 +8,18 @@ import static org.assertj.core.api.Assertions.within;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
+import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mariadb.jdbc.MariaDbBlob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -29,6 +34,7 @@ import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
+import se.sundsvall.document.service.InclusionFilter;
 
 /**
  * DocumentRepository tests
@@ -46,7 +52,6 @@ import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 class DocumentRepositoryTest {
 
 	private static final String CREATED_BY = "User123";
-	private static final String DOCUMENT_ENTITY_ID = "159c10bf-1b32-471b-b2d3-c4b4b13ea152"; // -- Document 1, revision 1
 
 	@Autowired
 	private DocumentRepository documentRepository;
@@ -105,7 +110,7 @@ class DocumentRepositoryTest {
 	void update() {
 
 		// Arrange
-		final var entity = documentRepository.findById(DOCUMENT_ENTITY_ID).orElseThrow();
+		final var entity = documentRepository.findById("159c10bf-1b32-471b-b2d3-c4b4b13ea152").orElseThrow();
 		assertThat(entity).isNotNull();
 		assertThat(entity.getCreated()).isEqualTo(OffsetDateTime.parse("2023-06-28T12:01:00.000+02:00"));
 		assertThat(entity.getRegistrationNumber()).isEqualTo("2023-2281-123");
@@ -129,14 +134,29 @@ class DocumentRepositoryTest {
 			.containsExactly(tuple("UpdatedKey", "UpdatedValue"));
 	}
 
+	@ParameterizedTest
+	@MethodSource("publicConfidentialTestsArgumentsProvider")
+	void findTopByRegistrationNumberOrderByRevisionDesc(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
+
+		// Act
+		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(registrationNumber, filter.getValue());
+
+		// Assert
+		if (shouldHaveMatch) {
+			assertThat(result).isPresent();
+		} else {
+			assertThat(result).isNotPresent();
+		}
+	}
+
 	@Test
 	void findTopByRegistrationNumberOrderByRevisionDesc() {
 
 		// Arrange
-		final var registrationNumber = "2023-2281-123";
+		final var registrationNumber = "2023-2281-123"; // Document 1 (public)
 
 		// Act
-		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(registrationNumber, false).orElseThrow();
+		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(registrationNumber, PUBLIC.getValue()).orElseThrow();
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -154,15 +174,33 @@ class DocumentRepositoryTest {
 				tuple("document1-key4", "value-4"));
 	}
 
+	@ParameterizedTest
+	@MethodSource("publicConfidentialTestsArgumentsProvider")
+	void findByRegistrationNumberAndConfidentialIn(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
+
+		// Arrange
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
+
+		// Act
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, filter.getValue(), pageRequest);
+
+		// Assert
+		if (shouldHaveMatch) {
+			assertThat(result).isNotEmpty();
+		} else {
+			assertThat(result).isNullOrEmpty();
+		}
+	}
+
 	@Test
-	void findByRegistrationNumber() {
+	void findByRegistrationNumberAndConfidentialIn() {
 
 		// Arrange
 		final var registrationNumber = "2023-2281-123";
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidential(registrationNumber, false, pageRequest);
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, PUBLIC.getValue(), pageRequest);
 
 		// Assert
 		assertThat(result)
@@ -174,15 +212,32 @@ class DocumentRepositoryTest {
 				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-2281-123", "User1"));
 	}
 
+	@ParameterizedTest
+	@MethodSource("publicConfidentialTestsArgumentsProvider")
+	void findByRegistrationNumberAndConfidentialInReversedOrder(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
+		// Arrange
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
+
+		// Act
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, filter.getValue(), pageRequest);
+
+		// Assert
+		if (shouldHaveMatch) {
+			assertThat(result).isNotEmpty();
+		} else {
+			assertThat(result).isNullOrEmpty();
+		}
+	}
+
 	@Test
-	void findByRegistrationNumberInReversedOrder() {
+	void findByRegistrationNumberAndConfidentialInReversedOrder() {
 
 		// Arrange
 		final var registrationNumber = "2023-2281-123";
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidential(registrationNumber, false, pageRequest);
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, PUBLIC.getValue(), pageRequest);
 
 		// Assert
 		assertThat(result)
@@ -194,15 +249,31 @@ class DocumentRepositoryTest {
 				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User3"));
 	}
 
+	@ParameterizedTest
+	@MethodSource("publicConfidentialTestsArgumentsProvider")
+	void findByRegistrationNumberAndRevisionAndConfidentialIn(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
+		final var revision = 1;
+
+		// Act
+		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialIn(registrationNumber, revision, filter.getValue());
+
+		// Assert
+		if (shouldHaveMatch) {
+			assertThat(result).isPresent();
+		} else {
+			assertThat(result).isNotPresent();
+		}
+	}
+
 	@Test
-	void findByRegistrationNumberAndRevision() {
+	void findByRegistrationNumberAndRevisionAndConfidentialIn() {
 
 		// Arrange
 		final var registrationNumber = "2023-2281-123";
 		final var revision = 2;
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidential(registrationNumber, revision, false).orElseThrow();
+		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialIn(registrationNumber, revision, PUBLIC.getValue()).orElseThrow();
 
 		// Assert
 		assertThat(result)
@@ -311,5 +382,16 @@ class DocumentRepositoryTest {
 		}
 
 		return true;
+	}
+
+	private static Stream<Arguments> publicConfidentialTestsArgumentsProvider() {
+		final var publicDocument = "2023-2281-123"; // Document 1 (public)
+		final var confidentialDocument = "2024-2281-999"; // Document 2 (confidential)
+
+		return Stream.of(
+			Arguments.of(publicDocument, InclusionFilter.CONFIDENTIAL_AND_PUBLIC, true),
+			Arguments.of(publicDocument, InclusionFilter.PUBLIC, true),
+			Arguments.of(confidentialDocument, InclusionFilter.CONFIDENTIAL_AND_PUBLIC, true),
+			Arguments.of(confidentialDocument, InclusionFilter.PUBLIC, false));
 	}
 }

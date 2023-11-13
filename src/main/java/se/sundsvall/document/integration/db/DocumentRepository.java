@@ -2,6 +2,7 @@ package se.sundsvall.document.integration.db;
 
 import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchQuery;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -18,31 +19,34 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	/**
 	 * Find latest document by registrationNumber.
 	 *
-	 * @param registrationNumber  of the DocumentEntity.
-	 * @param includeConfidential option if confidential documents should be included or not.
+	 * @param registrationNumber of the DocumentEntity.
+	 * @param confidentialValues values of confidentiality for the documents that should be included in the result where
+	 *                           true equals confidential document, false equals public document.
 	 * @return an Optional of DocumentEntity object.
 	 */
-	Optional<DocumentEntity> findTopByRegistrationNumberAndConfidentialOrderByRevisionDesc(String registrationNumber, boolean includeConfidential);
+	Optional<DocumentEntity> findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(String registrationNumber, List<Boolean> confidentialValues);
 
 	/**
 	 * Find all revisions of a document by registrationNumber.
 	 *
-	 * @param registrationNumber  of the DocumentEntity.
-	 * @param includeConfidential option if confidential documents should be included or not.
-	 * @param pageable            the pageable object.
+	 * @param registrationNumber of the DocumentEntity.
+	 * @param confidentialValues values of confidentiality for the documents that should be included in the result where
+	 *                           true equals confidential document, false equals public document.
+	 * @param pageable           the pageable object.
 	 * @return a Page of DocumentEntity objects.
 	 */
-	Page<DocumentEntity> findByRegistrationNumberAndConfidential(String registrationNumber, boolean includeConfidential, Pageable pageable);
+	Page<DocumentEntity> findByRegistrationNumberAndConfidentialIn(String registrationNumber, List<Boolean> confidentialValues, Pageable pageable);
 
 	/**
 	 * Find document by registrationNumber and revision.
 	 *
-	 * @param registrationNumber  of the DocumentEntity.
-	 * @param revision            Document revision number.
-	 * @param includeConfidential option if confidential documents should be included or not.
+	 * @param registrationNumber of the DocumentEntity.
+	 * @param revision           Document revision number.
+	 * @param confidentialValues values of confidentiality for the documents that should be included in the result where
+	 *                           true equals confidential document, false equals public document.
 	 * @return an Optional of DocumentEntity object.
 	 */
-	Optional<DocumentEntity> findByRegistrationNumberAndRevisionAndConfidential(String registrationNumber, int revision, boolean includeConfidential);
+	Optional<DocumentEntity> findByRegistrationNumberAndRevisionAndConfidentialIn(String registrationNumber, int revision, List<Boolean> confidentialValues);
 
 	/**
 	 * Performs a search in DocumentEntities.

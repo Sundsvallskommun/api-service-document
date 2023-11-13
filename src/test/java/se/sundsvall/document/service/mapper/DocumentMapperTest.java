@@ -392,4 +392,11 @@ class DocumentMapperTest {
 		// Assert
 		assertThat(result).isNull();
 	}
+
+	@Test
+	void toInclusionFilter() {
+		// Act and assert
+		assertThat(DocumentMapper.toInclusionFilter(false)).containsExactly(false);
+		assertThat(DocumentMapper.toInclusionFilter(true)).containsExactlyInAnyOrder(true, false);
+	}
 }

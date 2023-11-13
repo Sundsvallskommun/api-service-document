@@ -1,6 +1,8 @@
 package se.sundsvall.document.service.mapper;
 
 import static java.util.Collections.emptyList;
+import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
+import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
 
 import java.util.List;
 import java.util.Optional;
@@ -91,6 +93,13 @@ public class DocumentMapper {
 				.withKey(documentMetadata.getKey())
 				.withValue(documentMetadata.getValue()))
 			.toList();
+	}
+
+	public static List<Boolean> toInclusionFilter(boolean includeConfidential) {
+		if (includeConfidential) {
+			return CONFIDENTIAL_AND_PUBLIC.getValue();
+		}
+		return PUBLIC.getValue();
 	}
 
 	/**
