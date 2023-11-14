@@ -3,6 +3,7 @@ package se.sundsvall.document.integration.db.model;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import org.hibernate.annotations.ColumnDefault;
@@ -23,7 +24,9 @@ import jakarta.persistence.UniqueConstraint;
 	uniqueConstraints = {
 		@UniqueConstraint(name = "uq_document_data_binary_id", columnNames = { "document_data_binary_id" })
 	})
-public class DocumentDataEntity {
+public class DocumentDataEntity implements Serializable {
+
+	private static final long serialVersionUID = -7783051635903859326L;
 
 	@Id
 	@UuidGenerator
@@ -126,17 +129,16 @@ public class DocumentDataEntity {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof DocumentDataEntity)) {
+		if (!(obj instanceof final DocumentDataEntity other)) {
 			return false;
 		}
-		DocumentDataEntity other = (DocumentDataEntity) obj;
-		return Objects.equals(documentDataBinary, other.documentDataBinary) && Objects.equals(fileName, other.fileName) && fileSizeInBytes == other.fileSizeInBytes && Objects.equals(id, other.id) && Objects
+		return Objects.equals(documentDataBinary, other.documentDataBinary) && Objects.equals(fileName, other.fileName) && (fileSizeInBytes == other.fileSizeInBytes) && Objects.equals(id, other.id) && Objects
 			.equals(mimeType, other.mimeType);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", fileSizeInBytes=").append(fileSizeInBytes).append(
 			", documentDataBinary=").append(documentDataBinary).append("]");
 		return builder.toString();

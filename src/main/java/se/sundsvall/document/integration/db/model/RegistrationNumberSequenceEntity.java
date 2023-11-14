@@ -2,6 +2,7 @@ package se.sundsvall.document.integration.db.model;
 
 import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -27,7 +28,9 @@ import se.sundsvall.document.integration.db.model.listener.RegistrationNumberSeq
 		@Index(name = "ix_municipality_id", columnList = "municipality_id")
 	})
 @EntityListeners(RegistrationNumberSequenceEntityListener.class)
-public class RegistrationNumberSequenceEntity {
+public class RegistrationNumberSequenceEntity implements Serializable {
+
+	private static final long serialVersionUID = -6803997089374760074L;
 
 	@Id
 	@UuidGenerator

@@ -1,7 +1,13 @@
 package se.sundsvall.document.service.mapper;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toCollection;
+import static org.apache.commons.lang3.ObjectUtils.anyNull;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
+import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,13 +46,6 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	public static DocumentEntity toDocumentEntity(DocumentUpdateRequest documentUpdateRequest) {
-		return Optional.ofNullable(documentUpdateRequest)
-			.map(doc -> DocumentEntity.create()
-				.withCreatedBy(doc.getCreatedBy()))
-			.orElse(null);
-	}
-
 	public static List<DocumentDataEntity> toDocumentDataEntities(List<MultipartFile> multipartFiles, DatabaseHelper databaseHelper) {
 		return Optional.ofNullable(multipartFiles)
 			.map(files -> files.stream()
@@ -59,38 +58,40 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	public static List<DocumentDataEntity> toDocumentDataEntities(List<DocumentDataEntity> documentDataEntityList) {
-		return Optional.ofNullable(documentDataEntityList)
-			.map(list -> list.stream()
-				.map(doc -> DocumentDataEntity.create()
-					.withMimeType(doc.getMimeType())
-					.withFileName(doc.getFileName())
-					.withFileSizeInBytes(doc.getFileSizeInBytes())
-					.withDocumentDataBinary(toDocumentDataBinaryEntity(doc.getDocumentDataBinary())))
-				.toList())
-			.orElse(null);
+	public static List<Boolean> toInclusionFilter(boolean includeConfidential) {
+		if (includeConfidential) {
+			return CONFIDENTIAL_AND_PUBLIC.getValue();
+		}
+		return PUBLIC.getValue();
 	}
 
-	private static DocumentDataBinaryEntity toDocumentDataBinaryEntity(DocumentDataBinaryEntity documentDataFileEntity) {
-		return Optional.ofNullable(documentDataFileEntity)
-			.map(docData -> DocumentDataBinaryEntity.create()
-				.withBinaryFile(docData.getBinaryFile()))
-			.orElse(null);
-	}
+	public static DocumentEntity toDocumentEntity(DocumentUpdateRequest documentUpdateRequest, DocumentEntity existingDocumentEntity, MultipartFile documentFile, DatabaseHelper databaseHelper) {
+		if (anyNull(documentUpdateRequest, existingDocumentEntity, databaseHelper)) {
+			return null;
+		}
 
-	private static DocumentDataBinaryEntity toDocumentDataBinaryEntity(MultipartFile multipartFile, DatabaseHelper databaseHelper) {
-		return Optional.ofNullable(multipartFile)
-			.map(file -> DocumentDataBinaryEntity.create()
-				.withBinaryFile(databaseHelper.convertToBlob(file)))
-			.orElse(null);
-	}
+		final var newDocumentEntity = DocumentEntity.create()
+			.withCreatedBy(documentUpdateRequest.getCreatedBy())
+			.withMunicipalityId(existingDocumentEntity.getMunicipalityId())
+			.withRegistrationNumber(existingDocumentEntity.getRegistrationNumber())
+			.withRevision(existingDocumentEntity.getRevision() + 1)
+			.withConfidential(Optional.ofNullable(documentUpdateRequest.getConfidential()).orElse(existingDocumentEntity.isConfidential()))
+			.withDescription(Optional.ofNullable(documentUpdateRequest.getDescription()).orElse(existingDocumentEntity.getDescription()))
+			.withMetadata(Optional.ofNullable(documentUpdateRequest.getMetadataList())
+				.map(DocumentMapper::toDocumentMetadataEmbeddableList)
+				.orElse(copyDocumentMetadataEmbeddableList(existingDocumentEntity.getMetadata())))
+			.withDocumentData(copyDocumentDataEntities(existingDocumentEntity.getDocumentData()));
 
-	public static List<DocumentMetadataEmbeddable> toDocumentMetadataEmbeddableList(List<DocumentMetadata> documentMetadataList) {
-		return Optional.ofNullable(documentMetadataList).orElse(emptyList()).stream()
-			.map(documentMetadata -> DocumentMetadataEmbeddable.create()
-				.withKey(documentMetadata.getKey())
-				.withValue(documentMetadata.getValue()))
-			.toList();
+		Optional.ofNullable(documentFile).ifPresent(file -> {
+			// Remove any existing file if the file name is the same as the incoming file name.
+			newDocumentEntity.getDocumentData()
+				.removeIf(docData -> equalsIgnoreCase(docData.getFileName(), documentFile.getOriginalFilename()));
+
+			// Add new file.
+			newDocumentEntity.getDocumentData().addAll(toDocumentDataEntities(List.of(documentFile), databaseHelper));
+		});
+
+		return newDocumentEntity;
 	}
 
 	/**
@@ -129,6 +130,70 @@ public class DocumentMapper {
 				.withMunicipalityId(docEntity.getMunicipalityId())
 				.withRegistrationNumber(docEntity.getRegistrationNumber())
 				.withRevision(docEntity.getRevision()))
+			.orElse(null);
+	}
+
+	/**
+	 * Database to Database mappings.
+	 */
+
+	public static DocumentEntity copyDocumentEntity(DocumentEntity documentEntity) {
+		return Optional.ofNullable(documentEntity)
+			.map(docEntity -> DocumentEntity.create()
+				.withConfidential(docEntity.isConfidential())
+				.withCreatedBy(docEntity.getCreatedBy())
+				.withDescription(docEntity.getDescription())
+				.withDocumentData(copyDocumentDataEntities(docEntity.getDocumentData()))
+				.withMetadata(copyDocumentMetadataEmbeddableList(docEntity.getMetadata()))
+				.withMunicipalityId(docEntity.getMunicipalityId())
+				.withRegistrationNumber(docEntity.getRegistrationNumber())
+				.withRevision(docEntity.getRevision()))
+			.orElse(null);
+	}
+
+	/**
+	 * Private methods
+	 */
+
+	private static List<DocumentDataEntity> copyDocumentDataEntities(List<DocumentDataEntity> documentDataEntityList) {
+		return Optional.ofNullable(documentDataEntityList)
+			.map(list -> list.stream()
+				.map(doc -> DocumentDataEntity.create()
+					.withMimeType(doc.getMimeType())
+					.withFileName(doc.getFileName())
+					.withFileSizeInBytes(doc.getFileSizeInBytes())
+					.withDocumentDataBinary(copyDocumentDataBinaryEntity(doc.getDocumentDataBinary())))
+				.collect(toCollection(ArrayList::new))) // Need a mutable List here.
+			.orElse(null);
+	}
+
+	private static List<DocumentMetadataEmbeddable> copyDocumentMetadataEmbeddableList(List<DocumentMetadataEmbeddable> documentMetadataEmbeddableList) {
+		return Optional.ofNullable(documentMetadataEmbeddableList).orElse(emptyList()).stream()
+			.map(docMetadataEmbeddable -> DocumentMetadataEmbeddable.create()
+				.withKey(docMetadataEmbeddable.getKey())
+				.withValue(docMetadataEmbeddable.getValue()))
+			.toList();
+	}
+
+	private static List<DocumentMetadataEmbeddable> toDocumentMetadataEmbeddableList(List<DocumentMetadata> documentMetadataList) {
+		return Optional.ofNullable(documentMetadataList).orElse(emptyList()).stream()
+			.map(documentMetadata -> DocumentMetadataEmbeddable.create()
+				.withKey(documentMetadata.getKey())
+				.withValue(documentMetadata.getValue()))
+			.toList();
+	}
+
+	private static DocumentDataBinaryEntity copyDocumentDataBinaryEntity(DocumentDataBinaryEntity documentDataFileEntity) {
+		return Optional.ofNullable(documentDataFileEntity)
+			.map(docData -> DocumentDataBinaryEntity.create()
+				.withBinaryFile(docData.getBinaryFile()))
+			.orElse(null);
+	}
+
+	private static DocumentDataBinaryEntity toDocumentDataBinaryEntity(MultipartFile multipartFile, DatabaseHelper databaseHelper) {
+		return Optional.ofNullable(multipartFile)
+			.map(file -> DocumentDataBinaryEntity.create()
+				.withBinaryFile(databaseHelper.convertToBlob(file)))
 			.orElse(null);
 	}
 

@@ -4,6 +4,7 @@ import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.EAGER;
 import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -38,7 +39,9 @@ import se.sundsvall.document.integration.db.model.listener.DocumentEntityListene
 		@Index(name = "ix_confidential", columnList = "confidential")
 	})
 @EntityListeners(DocumentEntityListener.class)
-public class DocumentEntity {
+public class DocumentEntity implements Serializable {
+
+	private static final long serialVersionUID = -4452832623957756766L;
 
 	@Id
 	@UuidGenerator
@@ -226,17 +229,16 @@ public class DocumentEntity {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof DocumentEntity)) {
+		if (!(obj instanceof final DocumentEntity other)) {
 			return false;
 		}
-		DocumentEntity other = (DocumentEntity) obj;
-		return confidential == other.confidential && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(documentData, other.documentData)
-			&& Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && revision == other.revision;
+		return (confidential == other.confidential) && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(documentData, other.documentData)
+			&& Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && (revision == other.revision);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", description=").append(description)
 			.append(", confidential=").append(confidential).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentData=").append(documentData).append(", metadata=").append(metadata).append("]");
 		return builder.toString();

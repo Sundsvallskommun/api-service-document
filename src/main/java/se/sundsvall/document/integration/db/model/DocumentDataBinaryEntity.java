@@ -1,5 +1,6 @@
 package se.sundsvall.document.integration.db.model;
 
+import java.io.Serializable;
 import java.sql.Blob;
 import java.util.Objects;
 
@@ -13,7 +14,9 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "document_data_binary")
-public class DocumentDataBinaryEntity {
+public class DocumentDataBinaryEntity implements Serializable {
+
+	private static final long serialVersionUID = -1254399670053984961L;
 
 	@Id
 	@UuidGenerator

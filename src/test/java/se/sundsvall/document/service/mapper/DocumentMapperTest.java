@@ -4,6 +4,7 @@ import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.data.domain.Sort.Direction.ASC;
@@ -95,30 +96,97 @@ class DocumentMapperTest {
 	}
 
 	@Test
-	void toDocumentEntityFromDocumentUpdateRequest() {
+	void toDocumentEntityFromDocumentUpdateRequest() throws IOException {
 
 		// Arrange
+		final var blob = new MariaDbBlob();
+		final var mimeType = "image/png";
+
+		final var file1 = new File("src/test/resources/files/image.png");
+		final var fileName1 = "image1.png";
+		final var multipartFile1 = (MultipartFile) new MockMultipartFile("file", fileName1, mimeType, toByteArray(new FileInputStream(file1)));
+
+		final var file2 = new File("src/test/resources/files/image.png");
+		final var fileName2 = "image2.png";
+		final var multipartFile2 = (MultipartFile) new MockMultipartFile("file", fileName2, mimeType, toByteArray(new FileInputStream(file2)));
+
+		final var updatedFile = new File("src/test/resources/files/image2.png");
+		final var updatedFileName = "image2.png";
+		final var updatedMimeType = "updated/mimetype";
+		final var updatedMultipartFile = (MultipartFile) new MockMultipartFile("file", updatedFileName, updatedMimeType, toByteArray(new FileInputStream(updatedFile)));
+
+		List.of(multipartFile1, multipartFile2);
+
 		final var documentUpdateRequest = DocumentUpdateRequest.create()
+			.withConfidential(false)
+			.withCreatedBy("Updated user")
+			.withDescription("Updated text")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("Updated-key")
+				.withValue("Updated-value")));
+
+		final var existingDocumentEntity = DocumentEntity.create()
 			.withConfidential(CONFIDENTIAL)
 			.withCreatedBy(CREATED_BY)
 			.withDescription(DESCRIPTION)
-			.withMetadataList(List.of(DocumentMetadata.create()
+			.withDocumentData(List.of(
+				DocumentDataEntity.create()
+					.withFileName(fileName1)
+					.withFileSizeInBytes(file1.length())
+					.withMimeType(mimeType)
+					.withDocumentDataBinary(DocumentDataBinaryEntity.create()
+						.withBinaryFile(blob)),
+				DocumentDataEntity.create()
+					.withFileName(fileName2)
+					.withFileSizeInBytes(file2.length())
+					.withMimeType(mimeType)
+					.withDocumentDataBinary(DocumentDataBinaryEntity.create()
+						.withBinaryFile(blob))))
+			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
 				.withKey(METADATA_KEY)
-				.withValue(METADATA_VALUE)));
+				.withValue(METADATA_VALUE)))
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withRegistrationNumber(REGISTRATION_NUMBER)
+			.withRevision(REVISION);
+
+		when(databaseHelperMock.convertToBlob(any())).thenReturn(blob);
 
 		// Act
-		final var result = DocumentMapper.toDocumentEntity(documentUpdateRequest);
+		final var result = DocumentMapper.toDocumentEntity(documentUpdateRequest, existingDocumentEntity, updatedMultipartFile, databaseHelperMock);
 
 		// Assert
 		assertThat(result)
 			.isNotNull()
 			.isEqualTo(DocumentEntity.create()
-				.withCreatedBy(CREATED_BY));
+				.withConfidential(false)
+				.withCreatedBy("Updated user")
+				.withDescription("Updated text")
+				.withDocumentData(List.of(
+					DocumentDataEntity.create()
+						.withFileName(fileName1)
+						.withFileSizeInBytes(file1.length())
+						.withMimeType(mimeType)
+						.withDocumentDataBinary(DocumentDataBinaryEntity.create()
+							.withBinaryFile(blob)),
+					DocumentDataEntity.create()
+						.withFileName(updatedFileName)
+						.withFileSizeInBytes(updatedFile.length()) // File has been updated
+						.withMimeType(updatedMimeType) // File has been updated
+						.withDocumentDataBinary(DocumentDataBinaryEntity.create()
+							.withBinaryFile(blob))))
+				.withMetadata(List.of(DocumentMetadataEmbeddable.create()
+					.withKey("Updated-key")
+					.withValue("Updated-value")))
+				.withMunicipalityId(MUNICIPALITY_ID)
+				.withRegistrationNumber(REGISTRATION_NUMBER)
+				.withRevision(REVISION + 1));
 	}
 
 	@Test
 	void toDocumentEntityFromDocumentUpdateRequestWhenInputIsNull() {
-		assertThat(DocumentMapper.toDocumentEntity((DocumentUpdateRequest) null)).isNull();
+		assertThat(DocumentMapper.toDocumentEntity(DocumentUpdateRequest.create(), null, null, null)).isNull();
+		assertThat(DocumentMapper.toDocumentEntity(null, DocumentEntity.create(), null, null)).isNull();
+		assertThat(DocumentMapper.toDocumentEntity(DocumentUpdateRequest.create(), DocumentEntity.create(), null, null)).isNull();
 	}
 
 	@Test
@@ -250,7 +318,7 @@ class DocumentMapperTest {
 	}
 
 	@Test
-	void toDocumentDataEntityFromMultipart() throws IOException {
+	void toDocumentDataEntitiesFromMultipart() throws IOException {
 
 		// Arrange
 		final var mimeType = "image/png";
@@ -274,7 +342,7 @@ class DocumentMapperTest {
 	}
 
 	@Test
-	void toDocumentDataEntityFromMultipartWhenInputIsNull() throws IOException {
+	void toDocumentDataEntitiesFromMultipartWhenInputIsNull() throws IOException {
 
 		// Act
 		final var result = DocumentMapper.toDocumentDataEntities(null, databaseHelperMock);
@@ -284,38 +352,66 @@ class DocumentMapperTest {
 	}
 
 	@Test
-	void toDocumentDataEntitiesFromDocumentDataEntities() {
+	void copyDocumentEntity() {
 
 		// Arrange
-		final var file = new MariaDbBlob();
-		final var documentDataBinary = DocumentDataBinaryEntity.create().withBinaryFile(file);
-		final var fileName = "fileName";
-		final var id = "id";
-		final var mimeType = "image/png";
-
-		final var source = List.of(DocumentDataEntity.create()
-			.withDocumentDataBinary(documentDataBinary)
-			.withFileName(fileName)
-			.withId(id)
-			.withMimeType(mimeType));
+		final var documentEntity = DocumentEntity.create()
+			.withConfidential(CONFIDENTIAL)
+			.withCreated(CREATED)
+			.withCreatedBy(CREATED_BY)
+			.withDescription(DESCRIPTION)
+			.withDocumentData(List.of(
+				DocumentDataEntity.create()
+					.withFileName(FILE_1_NAME)
+					.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
+					.withId(ID)
+					.withMimeType(MIME_TYPE_1),
+				DocumentDataEntity.create()
+					.withFileName(FILE_2_NAME)
+					.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
+					.withId(ID)
+					.withMimeType(MIME_TYPE_2)))
+			.withId(ID)
+			.withMetadata(List.of(DocumentMetadataEmbeddable.create()
+				.withKey(METADATA_KEY)
+				.withValue(METADATA_VALUE)))
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withRegistrationNumber(REGISTRATION_NUMBER)
+			.withRevision(REVISION);
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntities(source);
+		final var result = DocumentMapper.copyDocumentEntity(documentEntity);
 
 		// Assert
-		assertThat(result).isNotNull().isNotEmpty();
-		assertThat(result.get(0).getDocumentDataBinary()).isEqualTo(documentDataBinary);
-		assertThat(result.get(0).getDocumentDataBinary().getBinaryFile()).isEqualTo(file);
-		assertThat(result.get(0).getMimeType()).isEqualTo(mimeType);
-		assertThat(result.get(0).getFileName()).isEqualTo(fileName);
-		assertThat(result.get(0).getId()).isNull();
+		assertThat(result)
+			.isNotNull()
+			.isNotSameAs(documentEntity)
+			.isEqualTo(DocumentEntity.create()
+				.withConfidential(CONFIDENTIAL)
+				.withCreatedBy(CREATED_BY)
+				.withDescription(DESCRIPTION)
+				.withDocumentData(List.of(
+					DocumentDataEntity.create()
+						.withFileName(FILE_1_NAME)
+						.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
+						.withMimeType(MIME_TYPE_1),
+					DocumentDataEntity.create()
+						.withFileName(FILE_2_NAME)
+						.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
+						.withMimeType(MIME_TYPE_2)))
+				.withMetadata(List.of(DocumentMetadataEmbeddable.create()
+					.withKey(METADATA_KEY)
+					.withValue(METADATA_VALUE)))
+				.withMunicipalityId(MUNICIPALITY_ID)
+				.withRegistrationNumber(REGISTRATION_NUMBER)
+				.withRevision(REVISION));
 	}
 
 	@Test
-	void toDocumentDataEntitiesFromDocumentDataEntitiesWhenInputIsNull() {
+	void copyDocumentEntityWhenInputIsNull() {
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntities(null);
+		final var result = DocumentMapper.copyDocumentEntity(null);
 
 		// Assert
 		assertThat(result).isNull();
@@ -384,12 +480,9 @@ class DocumentMapperTest {
 	}
 
 	@Test
-	void toDocumentDataEntityFromDocumentDataEntityWhenInputIsNull() throws IOException {
-
-		// Act
-		final var result = DocumentMapper.toDocumentDataEntities(null);
-
-		// Assert
-		assertThat(result).isNull();
+	void toInclusionFilter() {
+		// Act and assert
+		assertThat(DocumentMapper.toInclusionFilter(false)).containsExactly(false);
+		assertThat(DocumentMapper.toInclusionFilter(true)).containsExactlyInAnyOrder(true, false);
 	}
 }
