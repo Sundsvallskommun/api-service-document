@@ -186,7 +186,6 @@ class DocumentMapperTest {
 	void toDocumentEntityFromDocumentUpdateRequestWhenInputIsNull() {
 		assertThat(DocumentMapper.toDocumentEntity(DocumentUpdateRequest.create(), null, null, null)).isNull();
 		assertThat(DocumentMapper.toDocumentEntity(null, DocumentEntity.create(), null, null)).isNull();
-		assertThat(DocumentMapper.toDocumentEntity(DocumentUpdateRequest.create(), DocumentEntity.create(), null, null)).isNull();
 	}
 
 	@Test

@@ -498,4 +498,29 @@ class DocumentResourceFailuresTest {
 
 		verifyNoInteractions(documentServiceMock);
 	}
+
+	@Test
+	void deleteFileWithInvalidDocumentDataId() {
+
+		// Arrange
+		final var documentDataId = "not-a-valid-uuid";
+
+		// Act
+		final var response = webTestClient.delete()
+			.uri("/documents/2023-1337/files/" + documentDataId)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("deleteFile.documentDataId", "not a valid UUID"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
 }

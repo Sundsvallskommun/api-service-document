@@ -133,20 +133,17 @@ public class DocumentService {
 			throw Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber));
 		}
 
-		final var hasDocumentDataId = documentEntity.getDocumentData().stream()
-			.anyMatch(docData -> docData.getId().equals(documentDataId));
-
-		if (!hasDocumentDataId) {
-			throw Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND.formatted(documentDataId));
-		}
-
 		// Do not update existing entity, create a new revision instead.
 		final var newDocumentEntity = DocumentMapper.copyDocumentEntity(documentEntity)
-			.withRevision(documentEntity.getRevision() + 1);
+			.withRevision(documentEntity.getRevision() + 1)
+			.withDocumentData(documentEntity.getDocumentData().stream()
+				.filter(docDataEntity -> !docDataEntity.getId().equals(documentDataId)) // Create a new documentData list without the "deleted" object.
+				.map(DocumentMapper::copyDocumentDataEntity)
+				.toList());
 
-		// TODO: implement file handling (remove if found)
-
-		documentRepository.save(newDocumentEntity);
+		if (documentEntity.getDocumentData().size() != newDocumentEntity.getDocumentData().size()) {
+			documentRepository.save(newDocumentEntity);
+		}
 	}
 
 	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, MultipartFile documentFile) {

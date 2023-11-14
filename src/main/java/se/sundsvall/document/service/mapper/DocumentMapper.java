@@ -66,7 +66,7 @@ public class DocumentMapper {
 	}
 
 	public static DocumentEntity toDocumentEntity(DocumentUpdateRequest documentUpdateRequest, DocumentEntity existingDocumentEntity, MultipartFile documentFile, DatabaseHelper databaseHelper) {
-		if (anyNull(documentUpdateRequest, existingDocumentEntity, databaseHelper)) {
+		if (anyNull(documentUpdateRequest, existingDocumentEntity)) {
 			return null;
 		}
 
@@ -84,11 +84,12 @@ public class DocumentMapper {
 
 		Optional.ofNullable(documentFile).ifPresent(file -> {
 			// Remove any existing file if the file name is the same as the incoming file name.
-			newDocumentEntity.getDocumentData()
-				.removeIf(docData -> equalsIgnoreCase(docData.getFileName(), documentFile.getOriginalFilename()));
+			Optional.ofNullable(newDocumentEntity.getDocumentData())
+				.ifPresent(list -> list.removeIf(docData -> equalsIgnoreCase(docData.getFileName(), documentFile.getOriginalFilename())));
 
 			// Add new file.
-			newDocumentEntity.getDocumentData().addAll(toDocumentDataEntities(List.of(documentFile), databaseHelper));
+			Optional.ofNullable(newDocumentEntity.getDocumentData())
+				.ifPresent(list -> list.addAll(toDocumentDataEntities(List.of(documentFile), databaseHelper)));
 		});
 
 		return newDocumentEntity;
@@ -151,6 +152,16 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
+	public static DocumentDataEntity copyDocumentDataEntity(DocumentDataEntity documentDataEntity) {
+		return Optional.ofNullable(documentDataEntity)
+			.map(docEntity -> DocumentDataEntity.create()
+				.withMimeType(docEntity.getMimeType())
+				.withFileName(docEntity.getFileName())
+				.withFileSizeInBytes(docEntity.getFileSizeInBytes())
+				.withDocumentDataBinary(copyDocumentDataBinaryEntity(docEntity.getDocumentDataBinary())))
+			.orElse(null);
+	}
+
 	/**
 	 * Private methods
 	 */
@@ -158,11 +169,7 @@ public class DocumentMapper {
 	private static List<DocumentDataEntity> copyDocumentDataEntities(List<DocumentDataEntity> documentDataEntityList) {
 		return Optional.ofNullable(documentDataEntityList)
 			.map(list -> list.stream()
-				.map(doc -> DocumentDataEntity.create()
-					.withMimeType(doc.getMimeType())
-					.withFileName(doc.getFileName())
-					.withFileSizeInBytes(doc.getFileSizeInBytes())
-					.withDocumentDataBinary(copyDocumentDataBinaryEntity(doc.getDocumentDataBinary())))
+				.map(DocumentMapper::copyDocumentDataEntity)
 				.collect(toCollection(ArrayList::new))) // Need a mutable List here.
 			.orElse(null);
 	}

@@ -304,4 +304,23 @@ class DocumentResourceTest {
 		// Assert
 		verify(documentServiceMock).readFile(eq(registrationNumber), eq(documentDataId), eq(includeConfidential), any(HttpServletResponse.class));
 	}
+
+	@Test
+	void deleteFile() {
+
+		// Arrange
+		final var documentDataId = randomUUID().toString();
+		final var registrationNumber = "2023-1337";
+
+		// Act
+		webTestClient.delete()
+			.uri("/documents/" + registrationNumber + "/files/" + documentDataId)
+			.exchange()
+			.expectStatus().isNoContent()
+			.expectBody()
+			.isEmpty();
+
+		// Assert
+		verify(documentServiceMock).deleteFile(registrationNumber, documentDataId);
+	}
 }
