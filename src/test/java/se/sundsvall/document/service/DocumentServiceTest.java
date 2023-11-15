@@ -403,7 +403,7 @@ class DocumentServiceTest {
 
 		// Assert
 		assertThat(exception).isNotNull();
-		assertThat(exception.getMessage()).isEqualTo("Internal Server Error: Could not read file content for document data with id '" + DOCUMENT_DATA_ID + "'!");
+		assertThat(exception.getMessage()).isEqualTo("Internal Server Error: Could not read file content for document data with ID: '" + DOCUMENT_DATA_ID + "'!");
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);

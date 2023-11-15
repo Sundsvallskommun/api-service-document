@@ -13,6 +13,7 @@ import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REG
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_COULD_NOT_READ;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND;
 import static se.sundsvall.document.service.Constants.TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE;
+import static se.sundsvall.document.service.mapper.DocumentMapper.copyDocumentEntity;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocument;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntities;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentEntity;
@@ -134,7 +135,7 @@ public class DocumentService {
 		}
 
 		// Do not update existing entity, create a new revision instead.
-		final var newDocumentEntity = DocumentMapper.copyDocumentEntity(documentEntity)
+		final var newDocumentEntity = copyDocumentEntity(documentEntity)
 			.withRevision(documentEntity.getRevision() + 1)
 			.withDocumentData(documentEntity.getDocumentData().stream()
 				.filter(docDataEntity -> !docDataEntity.getId().equals(documentDataId)) // Create a new documentData list without the "deleted" object.
