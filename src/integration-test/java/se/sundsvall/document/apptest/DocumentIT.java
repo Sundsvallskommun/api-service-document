@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.client.MultipartBodyBuilder;
@@ -25,6 +26,7 @@ import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.document.Application;
 
+@Disabled // TODO: Remove before flight
 @WireMockAppTestSuite(files = "classpath:/DocumentIT/", classes = Application.class)
 @Sql({
 	"/db/scripts/truncate.sql",

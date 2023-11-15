@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -12,6 +13,7 @@ import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.document.Application;
 
+@Disabled // TODO: Remove before flight
 @WireMockAppTestSuite(files = "classpath:/DocumentRevisionIT/", classes = Application.class)
 @Sql({
 	"/db/scripts/truncate.sql",

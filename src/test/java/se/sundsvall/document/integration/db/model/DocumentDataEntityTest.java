@@ -11,7 +11,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.mariadb.jdbc.MariaDbBlob;
 
 class DocumentDataEntityTest {
 
@@ -28,7 +27,6 @@ class DocumentDataEntityTest {
 	@Test
 	void testBuilderMethods() {
 
-		new MariaDbBlob();
 		final var documentDataBinary = DocumentDataBinaryEntity.create();
 		final var fileName = "filename.jpg";
 		final var id = randomUUID().toString();

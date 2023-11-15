@@ -40,9 +40,11 @@ class DocumentTest {
 	@Test
 	void testBuilderMethods() {
 
+		final var confidential = true;
 		final var created = now(systemDefault());
 		final var createdBy = "user";
-		final var documentData = DocumentData.create();
+		final var description = "description";
+		final var documentData = List.of(DocumentData.create());
 		final var id = randomUUID().toString();
 		final var metadataList = List.of(DocumentMetadata.create());
 		final var municipalityId = "municipalityId";
@@ -50,8 +52,10 @@ class DocumentTest {
 		final var revision = 5;
 
 		final var bean = Document.create()
+			.withConfidential(confidential)
 			.withCreated(created)
 			.withCreatedBy(createdBy)
+			.withDescription(description)
 			.withDocumentData(documentData)
 			.withId(id)
 			.withMetadataList(metadataList)
@@ -60,8 +64,10 @@ class DocumentTest {
 			.withRevision(revision);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(bean.isConfidential()).isEqualTo(confidential);
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
+		assertThat(bean.getDescription()).isEqualTo(description);
 		assertThat(bean.getDocumentData()).isEqualTo(documentData);
 		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
@@ -72,7 +78,7 @@ class DocumentTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(Document.create()).hasAllNullFieldsOrPropertiesExcept("revision");
-		assertThat(new Document()).hasAllNullFieldsOrPropertiesExcept("revision");
+		assertThat(Document.create()).hasAllNullFieldsOrPropertiesExcept("revision", "confidential");
+		assertThat(new Document()).hasAllNullFieldsOrPropertiesExcept("revision", "confidential");
 	}
 }

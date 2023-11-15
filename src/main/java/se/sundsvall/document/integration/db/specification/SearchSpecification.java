@@ -5,7 +5,9 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.springframework.data.jpa.domain.Specification.where;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.FILE_NAME;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.MIME_TYPE;
+import static se.sundsvall.document.integration.db.model.DocumentEntity_.CONFIDENTIAL;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.CREATED_BY;
+import static se.sundsvall.document.integration.db.model.DocumentEntity_.DESCRIPTION;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.DOCUMENT_DATA;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.METADATA;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.MUNICIPALITY_ID;
@@ -21,20 +23,33 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 
 public interface SearchSpecification {
 
-	static Specification<DocumentEntity> withSearchQuery(String query) {
+	static Specification<DocumentEntity> withSearchQuery(String query, boolean includeConfidential) {
 		final var queryString = toQueryString(query);
 		return where(matchesCreatedBy(queryString))
+			.or(matchesDescription(queryString))
 			.or(matchesMunicipalityId(queryString))
 			.or(matchesRegistrationNumber(queryString))
 			.or(matchesFileName(queryString))
 			.or(matchesMimeType(queryString))
 			.or(matchesMetadataKey(queryString))
 			.or(matchesMetadataValue(queryString))
+			.and(includeConfidentialDocuments(includeConfidential))
 			.and(distinct());
+	}
+
+	private static Specification<DocumentEntity> includeConfidentialDocuments(boolean includeConfidential) {
+		if (includeConfidential) {
+			return null; // Do not add any filter to return all documents regardless of whether they are confidential or not
+		}
+		return (entity, cq, cb) -> cb.equal(entity.get(CONFIDENTIAL), false); // Return non-confidential documents only
 	}
 
 	private static Specification<DocumentEntity> matchesCreatedBy(String query) {
 		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(CREATED_BY)), query);
+	}
+
+	private static Specification<DocumentEntity> matchesDescription(String query) {
+		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(DESCRIPTION)), query);
 	}
 
 	private static Specification<DocumentEntity> matchesMunicipalityId(String query) {

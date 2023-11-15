@@ -1,9 +1,10 @@
 
     create table document (
+        confidential bit not null,
         revision integer,
         created datetime(6),
         created_by varchar(255),
-        document_data_id varchar(255),
+        description varchar(8192) not null,
         id varchar(255) not null,
         municipality_id varchar(255),
         registration_number varchar(255) not null,
@@ -13,6 +14,7 @@
     create table document_data (
         file_size_in_bytes bigint default 0,
         document_data_binary_id varchar(255),
+        document_id varchar(255) not null,
         file_name varchar(255),
         id varchar(255) not null,
         mime_type varchar(255),
@@ -49,11 +51,11 @@
     create index ix_municipality_id 
        on document (municipality_id);
 
-    alter table if exists document 
-       add constraint uq_revision_and_registration_number unique (revision, registration_number);
+    create index ix_confidential 
+       on document (confidential);
 
     alter table if exists document 
-       add constraint UK_dte6vwi6c7hh3rcta5ace6k3t unique (document_data_id);
+       add constraint uq_revision_and_registration_number unique (revision, registration_number);
 
     alter table if exists document_data 
        add constraint UK_pk8e8r0wijpujsxn25gob65si unique (document_data_binary_id);
@@ -67,15 +69,15 @@
     alter table if exists registration_number_sequence 
        add constraint uq_municipality_id unique (municipality_id);
 
-    alter table if exists document 
-       add constraint fk_document_document_data 
-       foreign key (document_data_id) 
-       references document_data (id);
-
     alter table if exists document_data 
        add constraint fk_document_data_document_data_binary 
        foreign key (document_data_binary_id) 
        references document_data_binary (id);
+
+    alter table if exists document_data 
+       add constraint fk_document_data_document 
+       foreign key (document_id) 
+       references document (id);
 
     alter table if exists document_metadata 
        add constraint fk_document_metadata_document 

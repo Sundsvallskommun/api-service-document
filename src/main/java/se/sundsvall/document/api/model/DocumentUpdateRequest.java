@@ -8,7 +8,7 @@ import java.util.Objects;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 @Schema(description = "DocumentUpdateRequest model.")
 public class DocumentUpdateRequest {
@@ -17,8 +17,17 @@ public class DocumentUpdateRequest {
 	@Schema(description = "Actor that created this revision.", example = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
-	@NotEmpty
-	@Schema(description = "List of DocumentMetadata objects.", requiredMode = REQUIRED)
+	@Schema(description = """
+		A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
+		If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
+		""", example = "false")
+	private Boolean confidential;
+
+	@Size(max = 8192)
+	@Schema(description = "Document description", example = "A brief description of this object. Maximum 8192 characters.")
+	private String description;
+
+	@Schema(description = "List of DocumentMetadata objects.")
 	private List<@Valid DocumentMetadata> metadataList;
 
 	public static DocumentUpdateRequest create() {
@@ -38,6 +47,32 @@ public class DocumentUpdateRequest {
 		return this;
 	}
 
+	public Boolean getConfidential() {
+		return confidential;
+	}
+
+	public void setConfidential(Boolean confidential) {
+		this.confidential = confidential;
+	}
+
+	public DocumentUpdateRequest withConfidential(Boolean confidential) {
+		this.confidential = confidential;
+		return this;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public DocumentUpdateRequest withDescription(String description) {
+		this.description = description;
+		return this;
+	}
+
 	public List<DocumentMetadata> getMetadataList() {
 		return metadataList;
 	}
@@ -53,20 +88,24 @@ public class DocumentUpdateRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(createdBy, metadataList);
+		return Objects.hash(confidential, createdBy, description, metadataList);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentUpdateRequest other)) { return false; }
-		return Objects.equals(createdBy, other.createdBy) && Objects.equals(metadataList, other.metadataList);
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof final DocumentUpdateRequest other)) {
+			return false;
+		}
+		return Objects.equals(confidential, other.confidential) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", metadataList=").append(metadataList).append("]");
+		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", confidential=").append(confidential).append(", description=").append(description).append(", metadataList=").append(metadataList).append("]");
 		return builder.toString();
 	}
 }
