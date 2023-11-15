@@ -4,6 +4,7 @@ import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -320,23 +321,25 @@ class DocumentMapperTest {
 	void toDocumentDataEntitiesFromMultipart() throws IOException {
 
 		// Arrange
+		final var blob = new MariaDbBlob();
 		final var mimeType = "image/png";
 		final var file = new File("src/test/resources/files/image.png");
 		final var fileName = file.getName();
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", fileName, mimeType, toByteArray(new FileInputStream(file)));
 		final var multipartFiles = List.of(multipartFile);
 
-		when(databaseHelperMock.convertToBlob(multipartFile)).thenReturn(new MariaDbBlob());
+		when(databaseHelperMock.convertToBlob(multipartFile)).thenReturn(blob);
 
 		// Act
 		final var result = DocumentMapper.toDocumentDataEntities(multipartFiles, databaseHelperMock);
 
 		// Assert
-		assertThat(result).isNotNull().isNotEmpty();
-		assertThat(result.get(0).getFileName()).isEqualTo(fileName);
-		assertThat(result.get(0).getMimeType()).isEqualTo(mimeType);
-		assertThat(result.get(0).getDocumentDataBinary()).isNotNull();
-		assertThat(result.get(0).getDocumentDataBinary().getBinaryFile()).isNotNull();
+		assertThat(result)
+			.isNotNull()
+			.isNotEmpty()
+			.extracting(DocumentDataEntity::getFileName, DocumentDataEntity::getMimeType, DocumentDataEntity::getFileSizeInBytes, DocumentDataEntity::getDocumentDataBinary)
+			.containsExactly(tuple(fileName, mimeType, file.length(), DocumentDataBinaryEntity.create().withBinaryFile(blob)));
+
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 	}
 

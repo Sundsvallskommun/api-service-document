@@ -60,7 +60,7 @@ class DatabaseHelperTest {
 		final var result = databaseHelper.convertToBlob(multipartFile);
 
 		// Assert
-		assertThat(result).isNotNull();
+		assertThat(result).isNotNull().isInstanceOf(Blob.class);
 		verify(entityManagerMock).unwrap(Session.class);
 		verify(sessionMock).getLobHelper();
 		verify(lobHelperMock).createBlob(any(InputStream.class), eq(multipartFile.getSize()));

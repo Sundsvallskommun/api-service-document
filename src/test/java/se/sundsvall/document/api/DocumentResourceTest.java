@@ -89,13 +89,14 @@ class DocumentResourceTest {
 
 		// Arrange
 		final var registrationNumber = "2023-1337";
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+		final var documentUpdateRequest = DocumentUpdateRequest.create()
 			.withCreatedBy("user")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
-				.withValue("value"))));
+				.withValue("value")));
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", documentUpdateRequest);
 
 		when(documentServiceMock.update(any(), anyBoolean(), any(), any())).thenReturn(Document.create());
 
@@ -113,7 +114,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).update(eq(registrationNumber), eq(false), any(DocumentUpdateRequest.class), any(MultipartFile.class));
+		verify(documentServiceMock).update(eq(registrationNumber), eq(false), eq(documentUpdateRequest), any(MultipartFile.class));
 	}
 
 	@Test
@@ -122,13 +123,14 @@ class DocumentResourceTest {
 		// Arrange
 		final var includeConfidential = true;
 		final var registrationNumber = "2023-1337";
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+		final var documentUpdateRequest = DocumentUpdateRequest.create()
 			.withCreatedBy("user")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
-				.withValue("value"))));
+				.withValue("value")));
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", documentUpdateRequest);
 
 		when(documentServiceMock.update(any(), anyBoolean(), any(), any())).thenReturn(Document.create());
 
@@ -148,7 +150,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).update(eq(registrationNumber), eq(includeConfidential), any(DocumentUpdateRequest.class), any(MultipartFile.class));
+		verify(documentServiceMock).update(eq(registrationNumber), eq(includeConfidential), eq(documentUpdateRequest), any(MultipartFile.class));
 	}
 
 	@Test

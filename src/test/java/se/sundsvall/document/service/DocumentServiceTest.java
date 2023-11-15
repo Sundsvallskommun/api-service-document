@@ -384,7 +384,7 @@ class DocumentServiceTest {
 
 		// Assert
 		assertThat(exception).isNotNull();
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with registrationNumber: '2023-2281-4' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file for registrationNumber: '2023-2281-4' could be found!");
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
 		verifyNoInteractions(httpServletResponseMock);
@@ -595,7 +595,7 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
 	}
-	
+
 	@Test
 	void updateOneValueNoFile() throws IOException {
 
@@ -711,7 +711,7 @@ class DocumentServiceTest {
 
 		// Assert
 		assertThat(exception).isNotNull();
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with registrationNumber: '2023-2281-4' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file for registrationNumber: '2023-2281-4' could be found!");
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verifyNoMoreInteractions(documentRepositoryMock);
