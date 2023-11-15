@@ -60,8 +60,6 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 
 @ExtendWith(MockitoExtension.class)
-
-// TODO: Add tests and verifications for includeConfidential=true.
 class DocumentServiceTest {
 
 	private static final String FILE_NAME = "image.png";

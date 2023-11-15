@@ -15,7 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * RegistrationNumberSequenceRepositoryTest tests
+ * RegistrationNumberSequenceRepositoryTest tests.
  *
  * @see /src/test/resources/db/testdata-junit.sql for data setup.
  */

@@ -37,7 +37,7 @@ import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 import se.sundsvall.document.service.InclusionFilter;
 
 /**
- * DocumentRepository tests
+ * DocumentRepository tests.
  *
  * @see /src/test/resources/db/testdata-junit.sql for data setup.
  */
