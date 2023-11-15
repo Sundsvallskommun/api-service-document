@@ -1,6 +1,5 @@
 package se.sundsvall.document.service;
 
-import static java.lang.String.format;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -13,6 +12,7 @@ import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_ID_
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_COULD_NOT_READ;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND;
+import static se.sundsvall.document.service.Constants.TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocument;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntities;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentEntity;
@@ -110,7 +110,7 @@ public class DocumentService {
 	public void readFile(String registrationNumber, int revision, String documentDataId, boolean includeConfidential, HttpServletResponse response) {
 
 		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialIn(registrationNumber, revision, toInclusionFilter(includeConfidential))
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, format(ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND, registrationNumber, revision)));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND.formatted(registrationNumber, revision)));
 
 		if (isEmpty(documentEntity.getDocumentData())) {
 			throw Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND.formatted(registrationNumber, revision));
@@ -162,7 +162,7 @@ public class DocumentService {
 		try {
 			final var file = documentDataEntity.getDocumentDataBinary().getBinaryFile();
 			response.addHeader(CONTENT_TYPE, documentDataEntity.getMimeType());
-			response.addHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", documentDataEntity.getFileName()));
+			response.addHeader(CONTENT_DISPOSITION, TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE.formatted(documentDataEntity.getFileName()));
 			response.setContentLength((int) file.length());
 
 			copy(file.getBinaryStream(), response.getOutputStream());
