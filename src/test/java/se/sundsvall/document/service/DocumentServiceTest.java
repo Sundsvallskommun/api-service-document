@@ -65,6 +65,7 @@ class DocumentServiceTest {
 	private static final String FILE_NAME = "image.png";
 	private static final String MIME_TYPE = "image/png";
 	private static final OffsetDateTime CREATED = now(systemDefault());
+	private static final boolean CONFIDENTIAL = false;
 	private static final String CREATED_BY = "User";
 	private static final String DESCRIPTION = "Description";
 	private static final String ID = randomUUID().toString();
@@ -527,7 +528,6 @@ class DocumentServiceTest {
 		final var existingEntity = createDocumentEntity();
 		final var documentUpdateRequest = DocumentUpdateRequest.create()
 			.withCreatedBy("changedUser")
-			.withConfidential(true)
 			.withDescription("changedDescription")
 			.withMetadataList(List.of(DocumentMetadata.create().withKey("changedKey").withValue("changedValue")));
 
@@ -549,7 +549,7 @@ class DocumentServiceTest {
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
-		assertThat(capturedDocumentEntity.isConfidential()).isTrue();
+		assertThat(capturedDocumentEntity.isConfidential()).isFalse();
 		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo("changedUser");
 		assertThat(capturedDocumentEntity.getDescription()).isEqualTo("changedDescription");
 		assertThat(capturedDocumentEntity.getDocumentData()).hasSize(1).extracting(DocumentDataEntity::getFileName).containsExactly("image.png");
@@ -619,7 +619,7 @@ class DocumentServiceTest {
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
-		assertThat(capturedDocumentEntity.isConfidential()).isFalse();
+		assertThat(capturedDocumentEntity.isConfidential()).isEqualTo(CONFIDENTIAL);
 		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo("changedUser");
 		assertThat(capturedDocumentEntity.getDescription()).isEqualTo(DESCRIPTION);
 		assertThat(capturedDocumentEntity.getDocumentData()).hasSize(1).extracting(DocumentDataEntity::getFileName).containsExactly("image.png");
@@ -745,7 +745,7 @@ class DocumentServiceTest {
 			return DocumentEntity.create()
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
-				.withConfidential(false)
+				.withConfidential(CONFIDENTIAL)
 				.withDescription(DESCRIPTION)
 				.withDocumentData(List.of(documentDataEntity))
 				.withId(ID)

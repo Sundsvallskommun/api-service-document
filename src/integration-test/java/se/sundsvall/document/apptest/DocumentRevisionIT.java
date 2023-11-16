@@ -1,11 +1,11 @@
 package se.sundsvall.document.apptest;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -13,7 +13,6 @@ import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.document.Application;
 
-@Disabled // TODO: Remove before flight
 @WireMockAppTestSuite(files = "classpath:/DocumentRevisionIT/", classes = Application.class)
 @Sql({
 	"/db/scripts/truncate.sql",
@@ -36,7 +35,27 @@ class DocumentRevisionIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test02_readRevision() {
+	void test02_readRevisionsConfidentialFail() {
+		setupCall()
+			.withServicePath(PATH + "/2024-2281-999/revisions")
+			.withHttpMethod(GET)
+			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponseStatus(OK)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test03_readRevisionsConfidentialSuccess() {
+		setupCall()
+			.withServicePath(PATH + "/2024-2281-999/revisions?includeConfidential=true")
+			.withHttpMethod(GET)
+			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponseStatus(OK)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test04_readRevision() {
 		setupCall()
 			.withServicePath(PATH + "/2023-2281-123/revisions/2")
 			.withHttpMethod(GET)
@@ -46,9 +65,49 @@ class DocumentRevisionIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test03_readRevisionFile() throws IOException {
+	void test05_readRevisionConfidentialFail() {
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123/revisions/3/file")
+			.withServicePath(PATH + "/2024-2281-999/revisions/2")
+			.withHttpMethod(GET)
+			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponseStatus(NOT_FOUND)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test06_readRevisionConfidentialSuccess() {
+		setupCall()
+			.withServicePath(PATH + "/2024-2281-999/revisions/2?includeConfidential=true")
+			.withHttpMethod(GET)
+			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponseStatus(OK)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test07_readRevisionFile() throws IOException {
+		setupCall()
+			.withServicePath(PATH + "/2023-2281-123/revisions/3/files/4f0a04af-942d-4ad2-b2d9-151887fc995c")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedBinaryResponse(RESPONSE_FILE_BINARY)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test08_readRevisionFileConfidentialFail() throws IOException {
+		setupCall()
+			.withServicePath(PATH + "/2024-2281-999/revisions/2/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(NOT_FOUND)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test09_readRevisionFileConfidentialSuccess() throws IOException {
+		setupCall()
+			.withServicePath(PATH + "/2024-2281-999/revisions/2/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e?includeConfidential=true")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedBinaryResponse(RESPONSE_FILE_BINARY)

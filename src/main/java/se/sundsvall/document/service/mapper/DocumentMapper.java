@@ -75,7 +75,7 @@ public class DocumentMapper {
 			.withMunicipalityId(existingDocumentEntity.getMunicipalityId())
 			.withRegistrationNumber(existingDocumentEntity.getRegistrationNumber())
 			.withRevision(existingDocumentEntity.getRevision() + 1)
-			.withConfidential(Optional.ofNullable(documentUpdateRequest.getConfidential()).orElse(existingDocumentEntity.isConfidential()))
+			.withConfidential(existingDocumentEntity.isConfidential())
 			.withDescription(Optional.ofNullable(documentUpdateRequest.getDescription()).orElse(existingDocumentEntity.getDescription()))
 			.withMetadata(Optional.ofNullable(documentUpdateRequest.getMetadataList())
 				.map(DocumentMapper::toDocumentMetadataEmbeddableList)

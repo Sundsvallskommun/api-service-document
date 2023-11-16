@@ -17,12 +17,6 @@ public class DocumentUpdateRequest {
 	@Schema(description = "Actor that created this revision.", example = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
-	@Schema(description = """
-		A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
-		If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
-		""", example = "false")
-	private Boolean confidential;
-
 	@Size(max = 8192)
 	@Schema(description = "Document description", example = "A brief description of this object. Maximum 8192 characters.")
 	private String description;
@@ -44,19 +38,6 @@ public class DocumentUpdateRequest {
 
 	public DocumentUpdateRequest withCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
-		return this;
-	}
-
-	public Boolean getConfidential() {
-		return confidential;
-	}
-
-	public void setConfidential(Boolean confidential) {
-		this.confidential = confidential;
-	}
-
-	public DocumentUpdateRequest withConfidential(Boolean confidential) {
-		this.confidential = confidential;
 		return this;
 	}
 
@@ -88,24 +69,20 @@ public class DocumentUpdateRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(confidential, createdBy, description, metadataList);
+		return Objects.hash(createdBy, description, metadataList);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof final DocumentUpdateRequest other)) {
-			return false;
-		}
-		return Objects.equals(confidential, other.confidential) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
+		if (this == obj) { return true; }
+		if (!(obj instanceof final DocumentUpdateRequest other)) { return false; }
+		return Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", confidential=").append(confidential).append(", description=").append(description).append(", metadataList=").append(metadataList).append("]");
+		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", description=").append(description).append(", metadataList=").append(metadataList).append("]");
 		return builder.toString();
 	}
 }
