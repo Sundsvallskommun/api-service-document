@@ -363,7 +363,7 @@ class DocumentServiceTest {
 
 		// Assert
 		assertThat(exception).isNotNull();
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No document data with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
 		verifyNoInteractions(httpServletResponseMock);
@@ -490,7 +490,7 @@ class DocumentServiceTest {
 
 		// Assert
 		assertThat(exception).isNotNull();
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No document data with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevisionAndConfidentialIn(REGISTRATION_NUMBER, REVISION, PUBLIC.getValue());
 		verifyNoInteractions(httpServletResponseMock);
@@ -726,9 +726,12 @@ class DocumentServiceTest {
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(Optional.of(documentEntity));
 
 		// Act
-		documentService.deleteFile(REGISTRATION_NUMBER, DOCUMENT_DATA_ID);
+		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.deleteFile(REGISTRATION_NUMBER, DOCUMENT_DATA_ID));
 
 		// Assert
+		assertThat(exception).isNotNull();
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
+
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verifyNoMoreInteractions(documentRepositoryMock);
 	}

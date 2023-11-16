@@ -213,4 +213,14 @@ class DocumentIT extends AbstractAppTest {
 			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse();
 	}
+
+	@Test
+	void test16_deleteFileNotFound() {
+		setupCall()
+			.withServicePath(PATH + "/2023-2281-123/files/6619a286-a6cc-4001-9f55-945734805e7d") // ID doesn't exist
+			.withHttpMethod(DELETE)
+			.withExpectedResponseStatus(NOT_FOUND)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
 }

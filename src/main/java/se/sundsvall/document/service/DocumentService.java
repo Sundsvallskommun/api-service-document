@@ -142,9 +142,12 @@ public class DocumentService {
 				.map(DocumentMapper::copyDocumentDataEntity)
 				.toList());
 
-		if (documentEntity.getDocumentData().size() != newDocumentEntity.getDocumentData().size()) {
-			documentRepository.save(newDocumentEntity);
+		// If size on new list is the same as the old list, nothing was removed in new revision.
+		if (documentEntity.getDocumentData().size() == newDocumentEntity.getDocumentData().size()) {
+			throw Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND.formatted(documentDataId));
 		}
+
+		documentRepository.save(newDocumentEntity);
 	}
 
 	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, MultipartFile documentFile) {
