@@ -2,6 +2,8 @@
 	"id": "8efd63a3-b525-4581-8b0b-9759f381a5a5",
 	"registrationNumber": "2023-2281-123",
 	"revision": 2,
+	"confidential": false,
+	"description": "Document 1",
 	"created": "2023-06-28T12:02:00+02:00",
 	"createdBy": "User2",
 	"metadataList": [
@@ -14,10 +16,12 @@
 			"value": "value-2"
 		}
 	],
-	"documentData": {
-		"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
-		"fileName": "file2.jpg",
-		"mimeType": "image/jpeg",
-		"fileSizeInBytes": 5068
-	}
+	"documentData": [
+		{
+			"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
+			"fileName": "file2.jpg",
+			"mimeType": "image/jpeg",
+			"fileSizeInBytes": 5068
+		}
+	]
 }

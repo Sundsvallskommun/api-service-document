@@ -65,6 +65,7 @@ class DocumentServiceTest {
 	private static final String FILE_NAME = "image.png";
 	private static final String MIME_TYPE = "image/png";
 	private static final OffsetDateTime CREATED = now(systemDefault());
+	private static final boolean CONFIDENTIAL = false;
 	private static final String CREATED_BY = "User";
 	private static final String DESCRIPTION = "Description";
 	private static final String ID = randomUUID().toString();
@@ -362,7 +363,7 @@ class DocumentServiceTest {
 
 		// Assert
 		assertThat(exception).isNotNull();
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No document data with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
 		verifyNoInteractions(httpServletResponseMock);
@@ -489,7 +490,7 @@ class DocumentServiceTest {
 
 		// Assert
 		assertThat(exception).isNotNull();
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No document data with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevisionAndConfidentialIn(REGISTRATION_NUMBER, REVISION, PUBLIC.getValue());
 		verifyNoInteractions(httpServletResponseMock);
@@ -527,7 +528,6 @@ class DocumentServiceTest {
 		final var existingEntity = createDocumentEntity();
 		final var documentUpdateRequest = DocumentUpdateRequest.create()
 			.withCreatedBy("changedUser")
-			.withConfidential(true)
 			.withDescription("changedDescription")
 			.withMetadataList(List.of(DocumentMetadata.create().withKey("changedKey").withValue("changedValue")));
 
@@ -549,7 +549,7 @@ class DocumentServiceTest {
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
-		assertThat(capturedDocumentEntity.isConfidential()).isTrue();
+		assertThat(capturedDocumentEntity.isConfidential()).isFalse();
 		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo("changedUser");
 		assertThat(capturedDocumentEntity.getDescription()).isEqualTo("changedDescription");
 		assertThat(capturedDocumentEntity.getDocumentData()).hasSize(1).extracting(DocumentDataEntity::getFileName).containsExactly("image.png");
@@ -619,7 +619,7 @@ class DocumentServiceTest {
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
-		assertThat(capturedDocumentEntity.isConfidential()).isFalse();
+		assertThat(capturedDocumentEntity.isConfidential()).isEqualTo(CONFIDENTIAL);
 		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo("changedUser");
 		assertThat(capturedDocumentEntity.getDescription()).isEqualTo(DESCRIPTION);
 		assertThat(capturedDocumentEntity.getDocumentData()).hasSize(1).extracting(DocumentDataEntity::getFileName).containsExactly("image.png");
@@ -726,9 +726,12 @@ class DocumentServiceTest {
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(Optional.of(documentEntity));
 
 		// Act
-		documentService.deleteFile(REGISTRATION_NUMBER, DOCUMENT_DATA_ID);
+		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.deleteFile(REGISTRATION_NUMBER, DOCUMENT_DATA_ID));
 
 		// Assert
+		assertThat(exception).isNotNull();
+		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
+
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verifyNoMoreInteractions(documentRepositoryMock);
 	}
@@ -745,7 +748,7 @@ class DocumentServiceTest {
 			return DocumentEntity.create()
 				.withCreated(CREATED)
 				.withCreatedBy(CREATED_BY)
-				.withConfidential(false)
+				.withConfidential(CONFIDENTIAL)
 				.withDescription(DESCRIPTION)
 				.withDocumentData(List.of(documentDataEntity))
 				.withId(ID)

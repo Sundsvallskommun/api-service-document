@@ -112,17 +112,6 @@ public class DocumentResource {
 		return ok(documentService.read(registrationNumber, includeConfidential));
 	}
 
-	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Search documents.")
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
-	public ResponseEntity<PagedDocumentResponse> search(
-		@Parameter(name = "query", description = "Search query. Use asterisk-character [*] as wildcard.", example = "hello*") @RequestParam(value = "query", required = true) @NotBlank String query,
-		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
-		@ParameterObject Pageable pageable) {
-
-		return ok(documentService.search(query, includeConfidential, pageable));
-	}
-
 	@GetMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Read document file (latest revision).")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
@@ -135,6 +124,17 @@ public class DocumentResource {
 
 		documentService.readFile(registrationNumber, documentDataId, includeConfidential, response);
 		return ok().build();
+	}
+
+	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@Operation(summary = "Search documents.")
+	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
+	public ResponseEntity<PagedDocumentResponse> search(
+		@Parameter(name = "query", description = "Search query. Use asterisk-character [*] as wildcard.", example = "hello*") @RequestParam(value = "query", required = true) @NotBlank String query,
+		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
+		@ParameterObject Pageable pageable) {
+
+		return ok(documentService.search(query, includeConfidential, pageable));
 	}
 
 	@DeleteMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })

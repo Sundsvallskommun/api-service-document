@@ -119,7 +119,6 @@ class DocumentMapperTest {
 		List.of(multipartFile1, multipartFile2);
 
 		final var documentUpdateRequest = DocumentUpdateRequest.create()
-			.withConfidential(false)
 			.withCreatedBy("Updated user")
 			.withDescription("Updated text")
 			.withMetadataList(List.of(DocumentMetadata.create()
@@ -159,7 +158,7 @@ class DocumentMapperTest {
 		assertThat(result)
 			.isNotNull()
 			.isEqualTo(DocumentEntity.create()
-				.withConfidential(false)
+				.withConfidential(CONFIDENTIAL)
 				.withCreatedBy("Updated user")
 				.withDescription("Updated text")
 				.withDocumentData(List.of(
