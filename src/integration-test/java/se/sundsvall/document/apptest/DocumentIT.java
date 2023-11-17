@@ -2,10 +2,13 @@ package se.sundsvall.document.apptest;
 
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG;
@@ -42,7 +45,7 @@ class DocumentIT extends AbstractAppTest {
 
 		final var testFile = getFile(this.setupPaths().getTestDirectoryPath() + "image.png");
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", new FileSystemResource(testFile)).filename(testFile.getName()).contentType(IMAGE_PNG);
+		multipartBodyBuilder.part("documentFiles", new FileSystemResource(testFile)).filename(testFile.getName()).contentType(IMAGE_PNG);
 		multipartBodyBuilder.part("document", fromTestFile(REQUEST_FILE));
 
 		final var location = setupCall()
@@ -85,7 +88,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test03_readDocument() {
 		setupCall()
-			.withServicePath(PATH + "/2024-2281-999")
+			.withServicePath(PATH + "/2023-2281-123")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -93,9 +96,29 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test04_readDocumentFile() throws IOException {
+	void test04_readDocumentConfidentialFail() {
 		setupCall()
-			.withServicePath(PATH + "/2024-2281-999/file")
+			.withServicePath(PATH + "/2024-2281-999")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(NOT_FOUND)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test05_readDocumentConfidentialSuccess() {
+		setupCall()
+			.withServicePath(PATH + "/2024-2281-999?includeConfidential=true")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test06_readDocumentFile() throws IOException {
+		setupCall()
+			.withServicePath(PATH + "/2023-2281-123/files/4f0a04af-942d-4ad2-b2d9-151887fc995c")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedBinaryResponse(RESPONSE_FILE_BINARY)
@@ -103,7 +126,27 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test05_search() {
+	void test07_readDocumentFileConfidentialFail() throws IOException {
+		setupCall()
+			.withServicePath(PATH + "/2024-2281-999/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(NOT_FOUND)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test08_readDocumentFileConfidentialSuccess() throws IOException {
+		setupCall()
+			.withServicePath(PATH + "/2024-2281-999/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e?includeConfidential=true")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedBinaryResponse(RESPONSE_FILE_BINARY)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test09_search() {
 		setupCall()
 			.withServicePath(PATH + "?query=value-3")
 			.withHttpMethod(GET)
@@ -113,9 +156,9 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test06_searchWithWildCardTwoMatches() {
+	void test10_searchConfidential() {
 		setupCall()
-			.withServicePath(PATH + "?query=*key3")
+			.withServicePath(PATH + "?query=value-3&includeConfidential=true")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -123,11 +166,60 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test07_searchWithWildCardAllMatches() {
+	void test11_searchWithWildCardAndText() {
+		setupCall()
+			.withServicePath(PATH + "?query=*key2")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test12_searchWithWildCardAndTextConfidential() {
+		setupCall()
+			.withServicePath(PATH + "?query=*key2&includeConfidential=true")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test13_searchWithWildCardOnly() {
 		setupCall()
 			.withServicePath(PATH + "?query=*")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test14_searchWithWildCardOnlyConfidential() {
+		setupCall()
+			.withServicePath(PATH + "?query=*&includeConfidential=true")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test15_deleteFile() {
+		setupCall()
+			.withServicePath(PATH + "/2023-2281-123/files/4f0a04af-942d-4ad2-b2d9-151887fc995c")
+			.withHttpMethod(DELETE)
+			.withExpectedResponseStatus(NO_CONTENT)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test16_deleteFileNotFound() {
+		setupCall()
+			.withServicePath(PATH + "/2023-2281-123/files/6619a286-a6cc-4001-9f55-945734805e7d") // ID doesn't exist
+			.withHttpMethod(DELETE)
+			.withExpectedResponseStatus(NOT_FOUND)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}

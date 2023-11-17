@@ -26,6 +26,15 @@ public class Document {
 	@Schema(description = "Document revision.", example = "2")
 	private int revision;
 
+	@Schema(description = """
+		A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
+		If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
+		""", example = "false")
+	private boolean confidential;
+
+	@Schema(description = "Document description", example = "A brief description of this object.")
+	private String description;
+
 	@Schema(description = "Timestamp when document revision was created.", example = "2023-08-31T01:30:00.000+02:00")
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime created;
@@ -37,7 +46,7 @@ public class Document {
 	private List<DocumentMetadata> metadataList;
 
 	@Schema(description = "Document data")
-	private DocumentData documentData;
+	private List<DocumentData> documentData;
 
 	public static Document create() {
 		return new Document();
@@ -95,6 +104,32 @@ public class Document {
 		return this;
 	}
 
+	public boolean isConfidential() {
+		return confidential;
+	}
+
+	public void setConfidential(boolean confidential) {
+		this.confidential = confidential;
+	}
+
+	public Document withConfidential(boolean confidential) {
+		this.confidential = confidential;
+		return this;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Document withDescription(String description) {
+		this.description = description;
+		return this;
+	}
+
 	public OffsetDateTime getCreated() {
 		return created;
 	}
@@ -134,37 +169,37 @@ public class Document {
 		return this;
 	}
 
-	public DocumentData getDocumentData() {
+	public List<DocumentData> getDocumentData() {
 		return documentData;
 	}
 
-	public void setDocumentData(DocumentData documentData) {
+	public void setDocumentData(List<DocumentData> documentData) {
 		this.documentData = documentData;
 	}
 
-	public Document withDocumentData(DocumentData documentData) {
+	public Document withDocumentData(List<DocumentData> documentData) {
 		this.documentData = documentData;
 		return this;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(created, createdBy, documentData, id, metadataList, municipalityId, registrationNumber, revision);
+		return Objects.hash(confidential, created, createdBy, description, documentData, id, metadataList, municipalityId, registrationNumber, revision);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final Document other)) { return false; }
-		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(documentData, other.documentData) && Objects.equals(id, other.id) && Objects.equals(metadataList, other.metadataList) && Objects.equals(
-			municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && (revision == other.revision);
+		return (confidential == other.confidential) && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(documentData, other.documentData) && Objects
+			.equals(id, other.id) && Objects.equals(metadataList, other.metadataList) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && (revision == other.revision);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("Document [id=").append(id).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", revision=").append(revision).append(", created=").append(created).append(
-			", createdBy=").append(createdBy).append(", metadataList=").append(metadataList).append(", documentData=").append(documentData).append("]");
+		builder.append("Document [id=").append(id).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", revision=").append(revision).append(", confidential=").append(confidential).append(
+			", description=").append(description).append(", created=").append(created).append(", createdBy=").append(createdBy).append(", metadataList=").append(metadataList).append(", documentData=").append(documentData).append("]");
 		return builder.toString();
 	}
 }

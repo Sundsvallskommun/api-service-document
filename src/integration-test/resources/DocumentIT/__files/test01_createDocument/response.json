@@ -3,6 +3,8 @@
 	"municipalityId": "2281",
 	"registrationNumber": "2023-2281-1",
 	"revision": 0,
+	"confidential": false,
+	"description": "This is a document",
 	"created": "${json-unit.any-string}",
 	"createdBy": "username123",
 	"metadataList": [
@@ -11,10 +13,12 @@
 			"value": "Some value"
 		}
 	],
-	"documentData": {
-		"id": "${json-unit.any-string}",
-		"fileName": "image.png",
-		"mimeType": "image/png",
-		"fileSizeInBytes": 227546
-	}
+	"documentData": [
+		{
+			"id": "${json-unit.any-string}",
+			"fileName": "image.png",
+			"mimeType": "image/png",
+			"fileSizeInBytes": 227546
+		}
+	]
 }

@@ -22,7 +22,9 @@ class DocumentEntityListenerTest {
 		listener.prePersist(entity);
 
 		// Assert
-		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("created", "revision");
+		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("confidential", "created", "revision");
+		assertThat(entity.isConfidential()).isFalse();
 		assertThat(entity.getCreated()).isCloseTo(now(), within(2, SECONDS));
+		assertThat(entity.getRevision()).isZero();
 	}
 }

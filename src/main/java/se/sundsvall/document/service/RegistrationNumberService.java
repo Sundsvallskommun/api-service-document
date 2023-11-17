@@ -1,9 +1,9 @@
 package se.sundsvall.document.service;
 
-import static java.lang.String.format;
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
 import static org.apache.commons.lang3.ObjectUtils.allNull;
+import static se.sundsvall.document.service.Constants.TEMPLATE_REGISTRATION_NUMBER;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -30,7 +30,6 @@ import se.sundsvall.document.integration.db.model.RegistrationNumberSequenceEnti
 public class RegistrationNumberService {
 
 	private static final int SEQUENCE_START = 1;
-	private static final String REGISTRATION_NUMBER_TEMPLATE = "%s-%s-%s"; // [YYYY-MUNICIPALITY_ID-SEQUENCE]
 
 	private final RegistrationNumberSequenceRepository registrationNumberSequenceRepository;
 
@@ -65,6 +64,6 @@ public class RegistrationNumberService {
 	}
 
 	private String createRegistrationNumber(RegistrationNumberSequenceEntity sequenceEntity) {
-		return format(REGISTRATION_NUMBER_TEMPLATE, getCurrentYear(), sequenceEntity.getMunicipalityId(), sequenceEntity.getSequenceNumber());
+		return TEMPLATE_REGISTRATION_NUMBER.formatted(getCurrentYear(), sequenceEntity.getMunicipalityId(), sequenceEntity.getSequenceNumber());
 	}
 }

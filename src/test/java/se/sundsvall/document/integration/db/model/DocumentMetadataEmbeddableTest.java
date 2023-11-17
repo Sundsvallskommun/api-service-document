@@ -11,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-class DocumentMetadataTest {
+class DocumentMetadataEmbeddableTest {
 
 	@Test
 	void testBean() {

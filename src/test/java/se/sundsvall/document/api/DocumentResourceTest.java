@@ -1,7 +1,9 @@
 package se.sundsvall.document.api;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,6 +18,7 @@ import static org.springframework.web.reactive.function.BodyInserters.fromMultip
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,14 +53,18 @@ class DocumentResourceTest {
 	void create() {
 
 		// Arrange
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
+		final var documentCreateRequest = DocumentCreateRequest.create()
+			.withConfidential(true)
 			.withCreatedBy("user")
+			.withDescription("description")
 			.withMunicipalityId("2281")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
-				.withValue("value"))));
+				.withValue("value")));
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test2.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", documentCreateRequest);
 
 		when(documentServiceMock.create(any(), any())).thenReturn(Document.create());
 
@@ -74,7 +81,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).create(any(DocumentCreateRequest.class), any(MultipartFile.class));
+		verify(documentServiceMock).create(eq(documentCreateRequest), ArgumentMatchers.<List<MultipartFile>>any());
 	}
 
 	@Test
@@ -82,15 +89,16 @@ class DocumentResourceTest {
 
 		// Arrange
 		final var registrationNumber = "2023-1337";
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+		final var documentUpdateRequest = DocumentUpdateRequest.create()
 			.withCreatedBy("user")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
-				.withValue("value"))));
+				.withValue("value")));
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", documentUpdateRequest);
 
-		when(documentServiceMock.update(any(), any(), any())).thenReturn(Document.create());
+		when(documentServiceMock.update(any(), anyBoolean(), any(), any())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.patch()
@@ -106,7 +114,43 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).update(eq(registrationNumber), any(DocumentUpdateRequest.class), any(MultipartFile.class));
+		verify(documentServiceMock).update(eq(registrationNumber), eq(false), eq(documentUpdateRequest), any(MultipartFile.class));
+	}
+
+	@Test
+	void updateWithIncludeConfidential() {
+
+		// Arrange
+		final var includeConfidential = true;
+		final var registrationNumber = "2023-1337";
+		final var documentUpdateRequest = DocumentUpdateRequest.create()
+			.withCreatedBy("user")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value")));
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", documentUpdateRequest);
+
+		when(documentServiceMock.update(any(), anyBoolean(), any(), any())).thenReturn(Document.create());
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber)
+				.queryParam("includeConfidential", includeConfidential)
+				.build())
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentType(APPLICATION_JSON)
+			.expectBody()
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		verify(documentServiceMock).update(eq(registrationNumber), eq(includeConfidential), eq(documentUpdateRequest), any(MultipartFile.class));
 	}
 
 	@Test
@@ -118,7 +162,7 @@ class DocumentResourceTest {
 		final var size = 10;
 		final var sort = "created,asc";
 
-		when(documentServiceMock.search(any(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+		when(documentServiceMock.search(any(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
@@ -137,7 +181,40 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).search(query, PageRequest.of(page, size, Sort.by(asc("created"))));
+		verify(documentServiceMock).search(query, false, PageRequest.of(page, size, Sort.by(asc("created"))));
+	}
+
+	@Test
+	void searchWithIncludeConfidential() {
+
+		// Arrange
+		final var includeConfidential = true;
+		final var query = "string";
+		final var page = 1;
+		final var size = 10;
+		final var sort = "created,asc";
+
+		when(documentServiceMock.search(any(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents")
+				.queryParam("query", query)
+				.queryParam("page", page)
+				.queryParam("size", size)
+				.queryParam("sort", sort)
+				.queryParam("includeConfidential", includeConfidential)
+				.build())
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentType(APPLICATION_JSON)
+			.expectBody()
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		verify(documentServiceMock).search(query, includeConfidential, PageRequest.of(page, size, Sort.by(asc("created"))));
 	}
 
 	@Test
@@ -146,7 +223,7 @@ class DocumentResourceTest {
 		// Arrange
 		final var registrationNumber = "2023-1337";
 
-		when(documentServiceMock.read(any())).thenReturn(Document.create());
+		when(documentServiceMock.read(any(), anyBoolean())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.get()
@@ -160,24 +237,92 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).read(registrationNumber);
+		verify(documentServiceMock).read(registrationNumber, false);
+	}
+
+	@Test
+	void readWithIncludeConfidential() {
+
+		// Arrange
+		final var includeConfidential = true;
+		final var registrationNumber = "2023-1337";
+
+		when(documentServiceMock.read(any(), anyBoolean())).thenReturn(Document.create());
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber)
+				.queryParam("includeConfidential", includeConfidential)
+				.build())
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentType(APPLICATION_JSON)
+			.expectBody()
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		verify(documentServiceMock).read(registrationNumber, includeConfidential);
 	}
 
 	@Test
 	void readFile() {
 
 		// Arrange
+		final var documentDataId = randomUUID().toString();
 		final var registrationNumber = "2023-1337";
 
 		// Act
 		webTestClient.get()
-			.uri("/documents/" + registrationNumber + "/file")
+			.uri("/documents/" + registrationNumber + "/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody()
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(documentDataId), eq(false), any(HttpServletResponse.class));
+	}
+
+	@Test
+	void readFileWithIncludeConfidential() {
+
+		// Arrange
+		final var documentDataId = randomUUID().toString();
+		final var includeConfidential = true;
+		final var registrationNumber = "2023-1337";
+
+		// Act
+		webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/files/" + documentDataId)
+				.queryParam("includeConfidential", includeConfidential)
+				.build())
+			.exchange()
+			.expectStatus().isOk()
+			.expectBody()
+			.isEmpty();
+
+		// Assert
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(documentDataId), eq(includeConfidential), any(HttpServletResponse.class));
+	}
+
+	@Test
+	void deleteFile() {
+
+		// Arrange
+		final var documentDataId = randomUUID().toString();
+		final var registrationNumber = "2023-1337";
+
+		// Act
+		webTestClient.delete()
+			.uri("/documents/" + registrationNumber + "/files/" + documentDataId)
+			.exchange()
+			.expectStatus().isNoContent()
+			.expectBody()
+			.isEmpty();
+
+		// Assert
+		verify(documentServiceMock).deleteFile(registrationNumber, documentDataId);
 	}
 }

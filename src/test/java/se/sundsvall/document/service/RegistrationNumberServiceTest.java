@@ -57,7 +57,7 @@ class RegistrationNumberServiceTest {
 		final var result = registrationNumberService.generateRegistrationNumber(municipalityId);
 
 		// Assert
-		assertThat(result).isEqualTo(String.format("%s-%s-%s", now(systemDefault()).getYear(), municipalityId, sequenceNumber + 1));
+		assertThat(result).isEqualTo("%s-%s-%s".formatted(now(systemDefault()).getYear(), municipalityId, sequenceNumber + 1));
 
 		verify(registrationNumberSequenceRepositoryMock).findByMunicipalityId(municipalityId);
 		verify(registrationNumberSequenceRepositoryMock).save(registrationNumberSequenceEntityCaptor.capture());
@@ -89,7 +89,7 @@ class RegistrationNumberServiceTest {
 		final var result = registrationNumberService.generateRegistrationNumber(municipalityId);
 
 		// Assert
-		assertThat(result).isEqualTo(String.format("%s-%s-%s", now(systemDefault()).getYear(), "2281", 1));
+		assertThat(result).isEqualTo("%s-%s-%s".formatted(now(systemDefault()).getYear(), "2281", 1));
 
 		verify(registrationNumberSequenceRepositoryMock).findByMunicipalityId(municipalityId);
 		verify(registrationNumberSequenceRepositoryMock).save(registrationNumberSequenceEntityCaptor.capture());
@@ -123,7 +123,7 @@ class RegistrationNumberServiceTest {
 		final var result = registrationNumberService.generateRegistrationNumber(municipalityId);
 
 		// Assert
-		assertThat(result).isEqualTo(String.format("%s-%s-%s", now(systemDefault()).getYear(), "2281", 1));
+		assertThat(result).isEqualTo("%s-%s-%s".formatted(now(systemDefault()).getYear(), "2281", 1));
 
 		verify(registrationNumberSequenceRepositoryMock).findByMunicipalityId(municipalityId);
 		verify(registrationNumberSequenceRepositoryMock).save(registrationNumberSequenceEntityCaptor.capture());
