@@ -1,17 +1,21 @@
 package se.sundsvall.document.service;
 
+import static generated.se.sundsvall.eventlog.EventType.UPDATE;
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -30,6 +34,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,8 +51,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.ThrowableProblem;
 
+import generated.se.sundsvall.eventlog.Event;
+import generated.se.sundsvall.eventlog.Metadata;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentMetadata;
@@ -58,6 +66,8 @@ import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
+import se.sundsvall.document.integration.eventlog.EventlogClient;
+import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
@@ -75,6 +85,12 @@ class DocumentServiceTest {
 	private static final String REGISTRATION_NUMBER = "2023-2281-4";
 	private static final String DOCUMENT_DATA_ID = randomUUID().toString();
 	private static final int REVISION = 1;
+
+	@Mock
+	private EventlogClient eventlogClientMock;
+
+	@Mock
+	private EventlogProperties eventlogPropertiesMock;
 
 	@Mock
 	private DocumentRepository documentRepositoryMock;
@@ -99,6 +115,12 @@ class DocumentServiceTest {
 
 	@Captor
 	private ArgumentCaptor<DocumentEntity> documentEntityCaptor;
+
+	@Captor
+	private ArgumentCaptor<List<DocumentEntity>> documentEntitiesCaptor;
+
+	@Captor
+	private ArgumentCaptor<Event> eventCaptor;
 
 	@Test
 	void create() throws IOException {
@@ -125,6 +147,7 @@ class DocumentServiceTest {
 		verify(registrationNumberServiceMock).generateRegistrationNumber(MUNICIPALITY_ID);
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
+		verifyNoInteractions(eventlogClientMock);
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
@@ -162,6 +185,7 @@ class DocumentServiceTest {
 		verify(databaseHelperMock).convertToBlob(multipartFile1);
 		verify(databaseHelperMock).convertToBlob(multipartFile2);
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
+		verifyNoInteractions(eventlogClientMock);
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
@@ -199,6 +223,7 @@ class DocumentServiceTest {
 		assertThat(result.getRevision()).isEqualTo(REVISION);
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -217,6 +242,7 @@ class DocumentServiceTest {
 		assertThat(exception.getMessage()).isEqualTo("Not Found: No document with registrationNumber: '2023-2281-4' could be found!");
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -241,6 +267,7 @@ class DocumentServiceTest {
 		assertThat(result.getRevision()).isEqualTo(REVISION);
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevisionAndConfidentialIn(REGISTRATION_NUMBER, REVISION, PUBLIC.getValue());
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -259,6 +286,7 @@ class DocumentServiceTest {
 		assertThat(exception.getMessage()).isEqualTo("Not Found: No document with registrationNumber: '2023-2281-4' and revision: '1' could be found!");
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevisionAndConfidentialIn(REGISTRATION_NUMBER, REVISION, PUBLIC.getValue());
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -283,6 +311,7 @@ class DocumentServiceTest {
 			.containsExactly(tuple(CREATED, CREATED_BY, ID, MUNICIPALITY_ID, REGISTRATION_NUMBER, REVISION));
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndConfidentialIn(REGISTRATION_NUMBER, PUBLIC.getValue(), pageRequest);
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -304,6 +333,7 @@ class DocumentServiceTest {
 		assertThat(result.getDocuments()).isEmpty();
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndConfidentialIn(REGISTRATION_NUMBER, PUBLIC.getValue(), pageRequest);
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -325,6 +355,7 @@ class DocumentServiceTest {
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.png\"");
 		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().get(0).getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -343,7 +374,7 @@ class DocumentServiceTest {
 		assertThat(exception.getMessage()).isEqualTo("Not Found: No document with registrationNumber: '2023-2281-4' could be found!");
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
-		verifyNoInteractions(httpServletResponseMock);
+		verifyNoInteractions(httpServletResponseMock, eventlogClientMock);
 	}
 
 	@Test
@@ -366,7 +397,7 @@ class DocumentServiceTest {
 		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
-		verifyNoInteractions(httpServletResponseMock);
+		verifyNoInteractions(httpServletResponseMock, eventlogClientMock);
 	}
 
 	@Test
@@ -386,7 +417,7 @@ class DocumentServiceTest {
 		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file for registrationNumber: '2023-2281-4' could be found!");
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
-		verifyNoInteractions(httpServletResponseMock);
+		verifyNoInteractions(httpServletResponseMock, eventlogClientMock);
 	}
 
 	@Test
@@ -411,6 +442,7 @@ class DocumentServiceTest {
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.png\"");
 		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().get(0).getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -432,6 +464,7 @@ class DocumentServiceTest {
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.png\"");
 		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().get(0).getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -450,7 +483,7 @@ class DocumentServiceTest {
 		assertThat(exception.getMessage()).isEqualTo("Not Found: No document with registrationNumber: '2023-2281-4' and revision: '1' could be found!");
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevisionAndConfidentialIn(REGISTRATION_NUMBER, REVISION, PUBLIC.getValue());
-		verifyNoInteractions(httpServletResponseMock);
+		verifyNoInteractions(httpServletResponseMock, eventlogClientMock);
 	}
 
 	@Test
@@ -470,7 +503,7 @@ class DocumentServiceTest {
 		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with registrationNumber: '2023-2281-4' and revision: '1' could be found!");
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevisionAndConfidentialIn(REGISTRATION_NUMBER, REVISION, PUBLIC.getValue());
-		verifyNoInteractions(httpServletResponseMock);
+		verifyNoInteractions(httpServletResponseMock, eventlogClientMock);
 	}
 
 	@Test
@@ -493,7 +526,7 @@ class DocumentServiceTest {
 		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with ID: '" + DOCUMENT_DATA_ID + "' could be found!");
 
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevisionAndConfidentialIn(REGISTRATION_NUMBER, REVISION, PUBLIC.getValue());
-		verifyNoInteractions(httpServletResponseMock);
+		verifyNoInteractions(httpServletResponseMock, eventlogClientMock);
 	}
 
 	@Test
@@ -518,6 +551,7 @@ class DocumentServiceTest {
 			.containsExactly(tuple(CREATED, CREATED_BY, ID, MUNICIPALITY_ID, REGISTRATION_NUMBER, REVISION));
 
 		verify(documentRepositoryMock).search(search, includeConfidential, pageRequest);
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -545,7 +579,7 @@ class DocumentServiceTest {
 
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
-		verifyNoInteractions(registrationNumberServiceMock);
+		verifyNoInteractions(registrationNumberServiceMock, eventlogClientMock);
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
@@ -581,7 +615,7 @@ class DocumentServiceTest {
 
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
-		verifyNoInteractions(registrationNumberServiceMock);
+		verifyNoInteractions(registrationNumberServiceMock, eventlogClientMock);
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
@@ -615,7 +649,7 @@ class DocumentServiceTest {
 
 		verify(databaseHelperMock, never()).convertToBlob(any());
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
-		verifyNoInteractions(registrationNumberServiceMock);
+		verifyNoInteractions(registrationNumberServiceMock, eventlogClientMock);
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
@@ -651,7 +685,56 @@ class DocumentServiceTest {
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
 		verify(documentRepositoryMock, never()).save(any());
-		verifyNoInteractions(registrationNumberServiceMock, databaseHelperMock);
+		verifyNoInteractions(registrationNumberServiceMock, databaseHelperMock, eventlogClientMock);
+	}
+
+	@Test
+	void updateConfidentiality() {
+
+		// Arrange
+		final var eventLogKey = UUID.randomUUID().toString();
+		final var newConfidentialValue = true;
+		final var changedBy = "user";
+		final var existingEntities = List.of(createDocumentEntity(), createDocumentEntity().withRevision(REVISION + 1));
+		final var confidentialityUpdateRequest = ConfidentialityUpdateRequest.create()
+			.withChangedBy(changedBy)
+			.withValue(newConfidentialValue);
+
+		when(eventlogPropertiesMock.logKeyUuid()).thenReturn(eventLogKey);
+		when(documentRepositoryMock.findByRegistrationNumberAndConfidentialIn(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(existingEntities);
+		when(documentRepositoryMock.saveAll(any())).thenReturn(existingEntities);
+
+		// Act
+		documentService.updateConfidentiality(REGISTRATION_NUMBER, confidentialityUpdateRequest);
+
+		// Assert
+		verify(documentRepositoryMock).findByRegistrationNumberAndConfidentialIn(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
+		verify(documentRepositoryMock).saveAll(documentEntitiesCaptor.capture());
+		verify(eventlogClientMock).createEvent(eq(eventLogKey), eventCaptor.capture());
+		verifyNoInteractions(registrationNumberServiceMock);
+
+		// Assert captured DocumentEntity-objects.
+		final var capturedDocumentEntities = documentEntitiesCaptor.getValue();
+		assertThat(capturedDocumentEntities)
+			.isNotNull()
+			.hasSize(2)
+			.extracting(DocumentEntity::isConfidential, DocumentEntity::getRegistrationNumber, DocumentEntity::getRevision)
+			.containsExactlyInAnyOrder(
+				tuple(newConfidentialValue, REGISTRATION_NUMBER, REVISION),
+				tuple(newConfidentialValue, REGISTRATION_NUMBER, REVISION + 1));
+
+		// Assert captured Eventlog-event.
+		final var capturedEvent = eventCaptor.getValue();
+		assertThat(capturedEvent).isNotNull();
+		assertThat(capturedEvent.getExpires()).isCloseTo(now(systemDefault()).plusYears(10), within(2, SECONDS));
+		assertThat(capturedEvent.getType()).isEqualTo(UPDATE);
+		assertThat(capturedEvent.getMessage()).isEqualTo("Confidentiality flag updated to: 'true' for document with registrationNumber: '2023-2281-4'. Action performed by: 'user'");
+		assertThat(capturedEvent.getOwner()).isEqualTo("Document");
+		assertThat(capturedEvent.getMetadata())
+			.extracting(Metadata::getKey, Metadata::getValue)
+			.containsExactlyInAnyOrder(
+				tuple("RegistrationNumber", REGISTRATION_NUMBER),
+				tuple("ExecutedBy", changedBy));
 	}
 
 	@Test
@@ -668,6 +751,7 @@ class DocumentServiceTest {
 		// Assert
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
+		verifyNoInteractions(eventlogClientMock);
 
 		final var capturedEntity = documentEntityCaptor.getValue();
 		assertThat(capturedEntity).isNotNull();
@@ -694,6 +778,7 @@ class DocumentServiceTest {
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verifyNoMoreInteractions(documentRepositoryMock);
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -713,6 +798,7 @@ class DocumentServiceTest {
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verifyNoMoreInteractions(documentRepositoryMock);
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	@Test
@@ -734,6 +820,7 @@ class DocumentServiceTest {
 
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verifyNoMoreInteractions(documentRepositoryMock);
+		verifyNoInteractions(eventlogClientMock);
 	}
 
 	private DocumentEntity createDocumentEntity() {

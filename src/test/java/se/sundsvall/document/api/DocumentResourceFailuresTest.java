@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -25,6 +26,7 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import org.zalando.problem.violations.Violation;
 
 import se.sundsvall.document.Application;
+import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
@@ -426,6 +428,63 @@ class DocumentResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("description", "size must be between 0 and 8192"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void updateConfidentialityWithMissingValue() {
+
+		// Arrange
+		final var requestBody = ConfidentialityUpdateRequest.create()
+			.withChangedBy("user");
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri("/documents/2023-1337/confidential")
+			.contentType(APPLICATION_JSON)
+			.bodyValue(requestBody)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("value", "must not be null"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void updateConfidentialityWithBlankChangedBy() {
+
+		// Arrange
+		final var requestBody = ConfidentialityUpdateRequest.create()
+			.withChangedBy(" ")
+			.withValue(true);
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri("/documents/2023-1337/confidential")
+			.contentType(APPLICATION_JSON)
+			.bodyValue(requestBody)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("changedBy", "must not be blank"));
 
 		verifyNoInteractions(documentServiceMock);
 	}
