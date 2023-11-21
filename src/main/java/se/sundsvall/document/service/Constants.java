@@ -5,6 +5,7 @@ public final class Constants {
 	private Constants() {}
 
 	// Templates
+	public static final String TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED = "Confidentiality flag updated to: '%s' for document with registrationNumber: '%s'. Action performed by: '%s'";
 	public static final String TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE = "attachment; filename=\"%s\"";
 	public static final String TEMPLATE_REGISTRATION_NUMBER = "%s-%s-%s"; // [YYYY-MUNICIPALITY_ID-SEQUENCE]
 

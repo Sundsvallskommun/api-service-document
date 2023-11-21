@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.Application;
+import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentMetadata;
@@ -115,6 +116,29 @@ class DocumentResourceTest {
 		// Assert
 		assertThat(response).isNotNull();
 		verify(documentServiceMock).update(eq(registrationNumber), eq(false), eq(documentUpdateRequest), any(MultipartFile.class));
+	}
+
+	@Test
+	void updateConfidentiality() {
+
+		// Arrange
+		final var registrationNumber = "2023-1337";
+		final var confidentialityUpdateRequest = ConfidentialityUpdateRequest.create()
+			.withChangedBy("user")
+			.withValue(true);
+
+		// Act
+		webTestClient.patch()
+			.uri("/documents/" + registrationNumber + "/confidential")
+			.contentType(APPLICATION_JSON)
+			.bodyValue(confidentialityUpdateRequest)
+			.exchange()
+			.expectStatus().isNoContent()
+			.expectBody()
+			.isEmpty();
+
+		// Assert
+		verify(documentServiceMock).updateConfidentiality(registrationNumber, confidentialityUpdateRequest);
 	}
 
 	@Test

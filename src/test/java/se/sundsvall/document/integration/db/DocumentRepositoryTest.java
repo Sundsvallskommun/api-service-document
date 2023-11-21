@@ -174,9 +174,28 @@ class DocumentRepositoryTest {
 				tuple("document1-key4", "value-4"));
 	}
 
+	@Test
+	void findByRegistrationNumberAndConfidentialInReturningList() {
+
+		// Arrange
+		final var registrationNumber = "2023-2281-123"; // Document 1 (public)
+
+		// Act
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, PUBLIC.getValue());
+
+		// Assert
+		assertThat(result)
+			.isNotNull()
+			.extracting(DocumentEntity::getRegistrationNumber, DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getCreatedBy)
+			.containsExactlyInAnyOrder(
+				tuple("2023-2281-123", "159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "User1"),
+				tuple("2023-2281-123", "8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "User2"),
+				tuple("2023-2281-123", "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "User3"));
+	}
+
 	@ParameterizedTest
 	@MethodSource("publicConfidentialTestsArgumentsProvider")
-	void findByRegistrationNumberAndConfidentialIn(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
+	void findByRegistrationNumberAndConfidentialInReturningPage(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
 
 		// Arrange
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
@@ -193,7 +212,7 @@ class DocumentRepositoryTest {
 	}
 
 	@Test
-	void findByRegistrationNumberAndConfidentialIn() {
+	void findByRegistrationNumberAndConfidentialInReturningPage() {
 
 		// Arrange
 		final var registrationNumber = "2023-2281-123";
@@ -214,7 +233,7 @@ class DocumentRepositoryTest {
 
 	@ParameterizedTest
 	@MethodSource("publicConfidentialTestsArgumentsProvider")
-	void findByRegistrationNumberAndConfidentialInReversedOrder(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
+	void findByRegistrationNumberAndConfidentialInReturningPageReversedOrder(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
 		// Arrange
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
@@ -230,7 +249,7 @@ class DocumentRepositoryTest {
 	}
 
 	@Test
-	void findByRegistrationNumberAndConfidentialInReversedOrder() {
+	void findByRegistrationNumberAndConfidentialInReturningPageReversedOrder() {
 
 		// Arrange
 		final var registrationNumber = "2023-2281-123";
