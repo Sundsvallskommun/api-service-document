@@ -61,7 +61,7 @@
        add constraint UK_pk8e8r0wijpujsxn25gob65si unique (document_data_binary_id);
 
     create index ix_key 
-       on document_metadata (`key`);
+       on document_metadata (key);
 
     create index ix_municipality_id 
        on registration_number_sequence (municipality_id);
