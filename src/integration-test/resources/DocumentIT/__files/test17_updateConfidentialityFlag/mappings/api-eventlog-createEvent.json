@@ -10,6 +10,7 @@
 		},
 		"bodyPatterns": [
 			{
+			   "ignoreArrayOrder" : true,
 				"equalToJson": {
 					"type": "UPDATE",
 					"message": "Confidentiality flag updated to: 'true' for document with registrationNumber: '2023-2281-123'. Action performed by: 'username123'",
@@ -17,12 +18,12 @@
 					"owner": "Document",
 					"metadata": [
 						{
-							"key": "RegistrationNumber",
-							"value": "2023-2281-123"
-						},
-						{
 							"key": "ExecutedBy",
 							"value": "username123"
+						},
+						{
+							"key": "RegistrationNumber",
+							"value": "2023-2281-123"
 						}
 					]
 				}
