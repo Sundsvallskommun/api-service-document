@@ -17,12 +17,12 @@
 					"owner": "Document",
 					"metadata": [
 						{
-							"key": "ExecutedBy",
-							"value": "username123"
-						},
-						{
 							"key": "RegistrationNumber",
 							"value": "2023-2281-123"
+						},
+						{
+							"key": "ExecutedBy",
+							"value": "username123"
 						}
 					]
 				}
