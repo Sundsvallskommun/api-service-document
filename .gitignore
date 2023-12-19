@@ -10,6 +10,7 @@ release.properties
 .classpath
 .settings/
 bin/
+.factorypath
 
 # IntelliJ
 .idea
@@ -51,4 +52,3 @@ target/
 
 # Spring
 application-default.properties
-/.factorypath
