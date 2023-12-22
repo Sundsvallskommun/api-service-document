@@ -23,6 +23,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        auto_quote_keyword: true
       jakarta:
         persistence:
           schema-generation:
