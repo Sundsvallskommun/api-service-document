@@ -38,9 +38,9 @@ class RegistrationNumberServiceTest {
 	void generateRegistrationNumber() {
 
 		// Arrange
-		final var created = OffsetDateTime.parse("2023-06-28T12:01:00.000+02:00");
+		final var created = OffsetDateTime.now();
 		final var id = "id";
-		final var modified = OffsetDateTime.parse("2023-06-28T12:01:00.000+02:00");
+		final var modified = OffsetDateTime.now();
 		final var municipalityId = "2281";
 		final var sequenceNumber = 666;
 		final var sequenceEntity = RegistrationNumberSequenceEntity.create()
