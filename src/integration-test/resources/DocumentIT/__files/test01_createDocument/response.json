@@ -1,7 +1,7 @@
 {
 	"id": "${json-unit.any-string}",
 	"municipalityId": "2281",
-	"registrationNumber": "2023-2281-1",
+	"registrationNumber": "${json-unit.any-string}",
 	"revision": 0,
 	"confidential": false,
 	"description": "This is a document",
