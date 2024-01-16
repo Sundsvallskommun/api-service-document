@@ -58,7 +58,7 @@
        add constraint uq_revision_and_registration_number unique (revision, registration_number);
 
     alter table if exists document_data 
-       add constraint UK_pk8e8r0wijpujsxn25gob65si unique (document_data_binary_id);
+       add constraint uq_document_data_binary_id unique (document_data_binary_id);
 
     create index ix_key 
        on document_metadata (`key`);
