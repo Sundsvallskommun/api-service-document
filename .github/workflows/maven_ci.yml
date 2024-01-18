@@ -15,8 +15,7 @@ on:
   schedule:
     # At 03:00 on Sunday (Please note: Github actions schedule is in UTC time).
     - cron: '0 3 * * 0'
-    
-    
+
 jobs:
   build:
     name: Run CI
