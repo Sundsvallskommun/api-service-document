@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>se.sundsvall.dept44</groupId>
 		<artifactId>dept44-service-parent</artifactId>
-		<version>4.2.0</version>
+		<version>4.1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>se.sundsvall</groupId>
@@ -18,7 +18,7 @@
 		<published.container.port.production>9125</published.container.port.production>
 		<!-- Service properties -->
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
-		<faux-pas.version>0.9.0</faux-pas.version>
+		<faux-pas.version>0.8.0</faux-pas.version>
 	</properties>
 	<dependencies>
 		<dependency>
