@@ -9,7 +9,8 @@
 name: Java CI with Maven
 
 on:
-  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
   schedule:
     # At 03:00 on Sunday (Please note: Github actions schedule is in UTC time).
     - cron: '0 3 * * 0'
