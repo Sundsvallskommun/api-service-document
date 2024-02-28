@@ -10,6 +10,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
 import java.util.List;
 import java.util.Set;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
@@ -77,16 +77,18 @@ public class DocumentResource {
 	@Operation(summary = "Create document.")
 	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<Void> create(
-		UriComponentsBuilder uriComponentsBuilder,
 		@RequestPart("document") @Schema(description = "Document", implementation = DocumentCreateRequest.class) String documentString,
 		@RequestPart(value = "documentFiles") List<MultipartFile> documentFiles) throws JsonProcessingException {
 
-		final var documentCreateRequest = objectMapper.readValue(documentString, DocumentCreateRequest.class); // If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
+		// If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
+		final var documentCreateRequest = objectMapper.readValue(documentString, DocumentCreateRequest.class);
 		validate(documentCreateRequest);
 
 		final var registrationNumber = documentService.create(documentCreateRequest, documentFiles).getRegistrationNumber();
 
-		return created(uriComponentsBuilder.path("/documents/{registrationNumber}").buildAndExpand(registrationNumber).toUri()).header(CONTENT_TYPE, ALL_VALUE).build();
+		return created(fromPath("/documents/{registrationNumber}").buildAndExpand(registrationNumber).toUri())
+			.header(CONTENT_TYPE, ALL_VALUE)
+			.build();
 	}
 
 	@PatchMapping(path = "/{registrationNumber}", consumes = { MULTIPART_FORM_DATA_VALUE }, produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
