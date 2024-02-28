@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.data.domain.Sort.Order.asc;
+import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
@@ -24,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -77,7 +77,8 @@ class DocumentResourceTest {
 			.exchange()
 			.expectStatus().isCreated()
 			.expectHeader().contentType(ALL_VALUE)
-			.expectHeader().exists(HttpHeaders.LOCATION)
+			.expectHeader().exists(LOCATION)
+			.expectHeader().valuesMatch(LOCATION, "^/documents/(.*)$")
 			.expectBody().isEmpty();
 
 		// Assert
