@@ -9,15 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
-class DocumentCreateRequestTest {
+class DocumentDataCreateRequestTest {
 
 	@Test
 	void testBean() {
-		assertThat(DocumentCreateRequest.class, allOf(
+		assertThat(DocumentDataCreateRequest.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -28,30 +26,23 @@ class DocumentCreateRequestTest {
 	@Test
 	void testBuilderMethods() {
 
-		final var confidentiality = Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation");
+		final var confidentiality = Confidentiality.create()
+			.withConfidential(true)
+			.withLegalCitation("legalCitation");
 		final var createdBy = "user";
-		final var description = "description";
-		final var metadataList = List.of(DocumentMetadata.create());
-		final var municipalityId = "municipalityId";
 
-		final var bean = DocumentCreateRequest.create()
+		final var bean = DocumentDataCreateRequest.create()
 			.withConfidentiality(confidentiality)
-			.withCreatedBy(createdBy)
-			.withDescription(description)
-			.withMetadataList(metadataList)
-			.withMunicipalityId(municipalityId);
+			.withCreatedBy(createdBy);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
-		assertThat(bean.getDescription()).isEqualTo(description);
-		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
-		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentCreateRequest.create()).hasAllNullFieldsOrProperties();
-		assertThat(new DocumentCreateRequest()).hasAllNullFieldsOrProperties();
+		assertThat(DocumentDataCreateRequest.create()).hasAllNullFieldsOrProperties();
+		assertThat(new DocumentDataCreateRequest()).hasAllNullFieldsOrProperties();
 	}
 }

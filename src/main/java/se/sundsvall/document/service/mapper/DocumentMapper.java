@@ -3,7 +3,6 @@ package se.sundsvall.document.service.mapper;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toCollection;
 import static org.apache.commons.lang3.ObjectUtils.anyNull;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
 import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
 
@@ -15,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import se.sundsvall.dept44.models.api.paging.PagingMetaData;
+import se.sundsvall.document.api.model.Confidentiality;
+import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentData;
@@ -22,6 +23,7 @@ import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.integration.db.DatabaseHelper;
+import se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable;
 import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
@@ -38,7 +40,7 @@ public class DocumentMapper {
 	public static DocumentEntity toDocumentEntity(DocumentCreateRequest documentCreateRequest) {
 		return Optional.ofNullable(documentCreateRequest)
 			.map(doc -> DocumentEntity.create()
-				.withConfidential(doc.isConfidential())
+				.withConfidentiality(toConfidentialityEmbeddable(documentCreateRequest.getConfidentiality()))
 				.withCreatedBy(doc.getCreatedBy())
 				.withDescription(doc.getDescription())
 				.withMetadata(toDocumentMetadataEmbeddableList(doc.getMetadataList()))
@@ -46,10 +48,11 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	public static List<DocumentDataEntity> toDocumentDataEntities(List<MultipartFile> multipartFiles, DatabaseHelper databaseHelper) {
+	public static List<DocumentDataEntity> toDocumentDataEntities(List<MultipartFile> multipartFiles, DatabaseHelper databaseHelper, Confidentiality confidentiality) {
 		return Optional.ofNullable(multipartFiles)
 			.map(files -> files.stream()
 				.map(file -> DocumentDataEntity.create()
+					.withConfidentiality(toConfidentialityEmbeddable(confidentiality))
 					.withDocumentDataBinary(toDocumentDataBinaryEntity(file, databaseHelper))
 					.withMimeType(file.getContentType())
 					.withFileName(file.getOriginalFilename())
@@ -65,34 +68,38 @@ public class DocumentMapper {
 		return PUBLIC.getValue();
 	}
 
-	public static DocumentEntity toDocumentEntity(DocumentUpdateRequest documentUpdateRequest, DocumentEntity existingDocumentEntity, MultipartFile documentFile, DatabaseHelper databaseHelper) {
+	public static DocumentEntity toDocumentEntity(DocumentUpdateRequest documentUpdateRequest, DocumentEntity existingDocumentEntity) {
 		if (anyNull(documentUpdateRequest, existingDocumentEntity)) {
 			return null;
 		}
 
-		final var newDocumentEntity = DocumentEntity.create()
+		return DocumentEntity.create()
 			.withCreatedBy(documentUpdateRequest.getCreatedBy())
 			.withMunicipalityId(existingDocumentEntity.getMunicipalityId())
 			.withRegistrationNumber(existingDocumentEntity.getRegistrationNumber())
 			.withRevision(existingDocumentEntity.getRevision() + 1)
-			.withConfidential(existingDocumentEntity.isConfidential())
+			.withConfidentiality(existingDocumentEntity.getConfidentiality())
 			.withDescription(Optional.ofNullable(documentUpdateRequest.getDescription()).orElse(existingDocumentEntity.getDescription()))
 			.withMetadata(Optional.ofNullable(documentUpdateRequest.getMetadataList())
 				.map(DocumentMapper::toDocumentMetadataEmbeddableList)
 				.orElse(copyDocumentMetadataEmbeddableList(existingDocumentEntity.getMetadata())))
 			.withDocumentData(copyDocumentDataEntities(existingDocumentEntity.getDocumentData()));
+	}
 
-		Optional.ofNullable(documentFile).ifPresent(file -> {
-			// Remove any existing file if the file name is the same as the incoming file name.
-			Optional.ofNullable(newDocumentEntity.getDocumentData())
-				.ifPresent(list -> list.removeIf(docData -> equalsIgnoreCase(docData.getFileName(), documentFile.getOriginalFilename())));
+	public static ConfidentialityEmbeddable toConfidentialityEmbeddable(Confidentiality confidentiality) {
+		return Optional.ofNullable(confidentiality)
+			.map(c -> ConfidentialityEmbeddable.create()
+				.withConfidential(c.isConfidential())
+				.withLegalCitation(c.getLegalCitation()))
+			.orElse(ConfidentialityEmbeddable.create());
+	}
 
-			// Add new file.
-			Optional.ofNullable(newDocumentEntity.getDocumentData())
-				.ifPresent(list -> list.addAll(toDocumentDataEntities(List.of(documentFile), databaseHelper)));
-		});
-
-		return newDocumentEntity;
+	public static ConfidentialityEmbeddable toConfidentialityEmbeddable(ConfidentialityUpdateRequest confidentialityUpdateRequest) {
+		return Optional.ofNullable(confidentialityUpdateRequest)
+			.map(c -> ConfidentialityEmbeddable.create()
+				.withConfidential(c.getConfidential())
+				.withLegalCitation(c.getLegalCitation()))
+			.orElse(ConfidentialityEmbeddable.create());
 	}
 
 	/**
@@ -121,7 +128,7 @@ public class DocumentMapper {
 	public static Document toDocument(DocumentEntity documentEntity) {
 		return Optional.ofNullable(documentEntity)
 			.map(docEntity -> Document.create()
-				.withConfidential(docEntity.isConfidential())
+				.withConfidentiality(toConfidentiality(docEntity.getConfidentiality()))
 				.withCreated(docEntity.getCreated())
 				.withCreatedBy(docEntity.getCreatedBy())
 				.withDescription(docEntity.getDescription())
@@ -134,6 +141,14 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
+	public static Confidentiality toConfidentiality(ConfidentialityEmbeddable confidentialityEmbedded) {
+		return Optional.ofNullable(confidentialityEmbedded)
+			.map(c -> Confidentiality.create()
+				.withConfidential(c.isConfidential())
+				.withLegalCitation(c.getLegalCitation()))
+			.orElse(null);
+	}
+
 	/**
 	 * Database to Database mappings.
 	 */
@@ -141,7 +156,7 @@ public class DocumentMapper {
 	public static DocumentEntity copyDocumentEntity(DocumentEntity documentEntity) {
 		return Optional.ofNullable(documentEntity)
 			.map(docEntity -> DocumentEntity.create()
-				.withConfidential(docEntity.isConfidential())
+				.withConfidentiality(docEntity.getConfidentiality())
 				.withCreatedBy(docEntity.getCreatedBy())
 				.withDescription(docEntity.getDescription())
 				.withDocumentData(copyDocumentDataEntities(docEntity.getDocumentData()))
@@ -155,6 +170,7 @@ public class DocumentMapper {
 	public static DocumentDataEntity copyDocumentDataEntity(DocumentDataEntity documentDataEntity) {
 		return Optional.ofNullable(documentDataEntity)
 			.map(docEntity -> DocumentDataEntity.create()
+				.withConfidentiality(docEntity.getConfidentiality())
 				.withMimeType(docEntity.getMimeType())
 				.withFileName(docEntity.getFileName())
 				.withFileSizeInBytes(docEntity.getFileSizeInBytes())
@@ -223,6 +239,7 @@ public class DocumentMapper {
 	private static DocumentData toDocumentData(DocumentDataEntity documentDataEntity) {
 		return Optional.ofNullable(documentDataEntity)
 			.map(docDataEntity -> DocumentData.create()
+				.withConfidentiality(toConfidentiality(docDataEntity.getConfidentiality()))
 				.withFileName(docDataEntity.getFileName())
 				.withFileSizeInBytes(docDataEntity.getFileSizeInBytes())
 				.withId(docDataEntity.getId())

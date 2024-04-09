@@ -1,6 +1,7 @@
 package se.sundsvall.document.api;
 
 import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -26,8 +27,11 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import org.zalando.problem.violations.Violation;
 
 import se.sundsvall.document.Application;
+import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
+import se.sundsvall.document.api.model.DocumentDataCreateRequest;
+import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.service.DocumentService;
@@ -301,20 +305,19 @@ class DocumentResourceFailuresTest {
 	void updateWithBlankKeyInMetaData() {
 
 		// Arrange
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+		final var requestBody = DocumentUpdateRequest.create()
 			.withCreatedBy("user")
 			.withDescription("description")
 			.withMetadataList(List.of(
 				DocumentMetadata.create()
 					.withKey(" ")
-					.withValue("value"))));
+					.withValue("value")));
 
 		// Act
 		final var response = webTestClient.patch()
 			.uri("/documents/2023-1337")
-			.contentType(MULTIPART_FORM_DATA)
-			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.contentType(APPLICATION_JSON)
+			.bodyValue(requestBody)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -335,20 +338,19 @@ class DocumentResourceFailuresTest {
 	void updateWithBlankValueInMetaData() {
 
 		// Arrange
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+		final var requestBody = DocumentUpdateRequest.create()
 			.withCreatedBy("user")
 			.withDescription("description")
 			.withMetadataList(List.of(
 				DocumentMetadata.create()
 					.withKey("key")
-					.withValue(" "))));
+					.withValue(" ")));
 
 		// Act
 		final var response = webTestClient.patch()
 			.uri("/documents/2023-1337")
-			.contentType(MULTIPART_FORM_DATA)
-			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.contentType(APPLICATION_JSON)
+			.bodyValue(requestBody)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -369,19 +371,18 @@ class DocumentResourceFailuresTest {
 	void updateWithMissingCreatedBy() {
 
 		// Arrange
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+		final var requestBody = DocumentUpdateRequest.create()
 			.withDescription("description")
 			.withMetadataList(List.of(
 				DocumentMetadata.create()
 					.withKey("key")
-					.withValue("value"))));
+					.withValue("value")));
 
 		// Act
 		final var response = webTestClient.patch()
 			.uri("/documents/2023-1337")
-			.contentType(MULTIPART_FORM_DATA)
-			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.contentType(APPLICATION_JSON)
+			.bodyValue(requestBody)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -402,20 +403,19 @@ class DocumentResourceFailuresTest {
 	void updateWithTooLongDescription() {
 
 		// Arrange
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("document", DocumentUpdateRequest.create()
+		final var requestBody = DocumentUpdateRequest.create()
 			.withCreatedBy("user")
 			.withDescription(repeat("x", 8193)) // 8192 is max length on description.
 			.withMetadataList(List.of(
 				DocumentMetadata.create()
 					.withKey("key")
-					.withValue("value"))));
+					.withValue("value")));
 
 		// Act
 		final var response = webTestClient.patch()
 			.uri("/documents/2023-1337")
-			.contentType(MULTIPART_FORM_DATA)
-			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.contentType(APPLICATION_JSON)
+			.bodyValue(requestBody)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -441,7 +441,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri("/documents/2023-1337/confidential")
+			.uri("/documents/2023-1337/confidentiality")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(requestBody)
 			.exchange()
@@ -455,7 +455,7 @@ class DocumentResourceFailuresTest {
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("value", "must not be null"));
+			.containsExactlyInAnyOrder(tuple("confidential", "must not be null"));
 
 		verifyNoInteractions(documentServiceMock);
 	}
@@ -466,11 +466,12 @@ class DocumentResourceFailuresTest {
 		// Arrange
 		final var requestBody = ConfidentialityUpdateRequest.create()
 			.withChangedBy(" ")
-			.withValue(true);
+			.withConfidential(true)
+			.withLegalCitation("Lorum ipsum");
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri("/documents/2023-1337/confidential")
+			.uri("/documents/2023-1337/confidentiality")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(requestBody)
 			.exchange()
@@ -579,6 +580,77 @@ class DocumentResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("deleteFile.documentDataId", "not a valid UUID"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void addFileWithBlankCreatedBy() {
+
+		// Arrange
+		final var registrationNumber = "2023-1337";
+
+		// Arrange
+		final var documentDataCreateRequest = DocumentDataCreateRequest.create()
+			.withConfidentiality(Confidentiality.create()
+				.withConfidential(true)
+				.withLegalCitation("legalCitation"))
+			.withCreatedBy(" ");
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test2.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", documentDataCreateRequest);
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/documents/" + registrationNumber + "/files")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("createdBy", "must not be blank"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void updateFileWithBlankCreatedBy() {
+
+		// Arrange
+		final var documentDataId = randomUUID().toString();
+		final var registrationNumber = "2023-1337";
+		final var documentDataUpdateRequest = DocumentDataUpdateRequest.create()
+			.withCreatedBy(" ")
+			.withConfidentiality(Confidentiality.create()
+				.withConfidential(true)
+				.withLegalCitation("legalCitation"));
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri("/documents/" + registrationNumber + "/files/" + documentDataId)
+			.contentType(APPLICATION_JSON)
+			.bodyValue(documentDataUpdateRequest)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("createdBy", "must not be blank"));
 
 		verifyNoInteractions(documentServiceMock);
 	}

@@ -14,9 +14,11 @@ import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REG
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_COULD_NOT_READ;
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND;
 import static se.sundsvall.document.service.Constants.TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE;
-import static se.sundsvall.document.service.Constants.TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED;
+import static se.sundsvall.document.service.Constants.TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_DOCUMENT;
+import static se.sundsvall.document.service.Constants.TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_FILE;
 import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
 import static se.sundsvall.document.service.mapper.DocumentMapper.copyDocumentEntity;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toConfidentialityEmbeddable;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocument;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntities;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentEntity;
@@ -27,6 +29,7 @@ import static se.sundsvall.document.service.mapper.EventlogMapper.toEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +40,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.Problem;
 
 import jakarta.servlet.http.HttpServletResponse;
+import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
+import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.integration.db.DatabaseHelper;
@@ -75,18 +80,21 @@ public class DocumentService {
 		this.eventLogProperties = eventLogProperties;
 	}
 
-	public Document create(DocumentCreateRequest documentCreateRequest, List<MultipartFile> documentFile) {
+	public Document create(DocumentCreateRequest documentCreateRequest, List<MultipartFile> documentFiles) {
+
+		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper, documentCreateRequest.getConfidentiality());
+		final var registrationNumber = registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId());
 
 		final var documentEntity = toDocumentEntity(documentCreateRequest)
-			.withRegistrationNumber(registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId()))
-			.withDocumentData(toDocumentDataEntities(documentFile, databaseHelper));
+			.withRegistrationNumber(registrationNumber)
+			.withDocumentData(documentDataEntities);
 
 		return toDocument(documentRepository.save(documentEntity));
 	}
 
 	public Document read(String registrationNumber, boolean includeConfidential) {
 
-		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
+		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		return toDocument(documentEntity);
@@ -94,14 +102,14 @@ public class DocumentService {
 
 	public Document read(String registrationNumber, int revision, boolean includeConfidential) {
 
-		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialIn(registrationNumber, revision, toInclusionFilter(includeConfidential))
+		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(registrationNumber, revision, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND.formatted(registrationNumber, revision)));
 
 		return toDocument(documentEntity);
 	}
 
 	public PagedDocumentResponse readAll(String registrationNumber, boolean includeConfidential, Pageable pageable) {
-		return toPagedDocumentResponse(documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, toInclusionFilter(includeConfidential), pageable));
+		return toPagedDocumentResponse(documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, toInclusionFilter(includeConfidential), pageable));
 	}
 
 	public PagedDocumentResponse search(String query, boolean includeConfidential, Pageable pageable) {
@@ -110,7 +118,7 @@ public class DocumentService {
 
 	public void readFile(String registrationNumber, String documentDataId, boolean includeConfidential, HttpServletResponse response) {
 
-		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
+		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		if (isEmpty(documentEntity.getDocumentData())) {
@@ -127,7 +135,7 @@ public class DocumentService {
 
 	public void readFile(String registrationNumber, int revision, String documentDataId, boolean includeConfidential, HttpServletResponse response) {
 
-		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialIn(registrationNumber, revision, toInclusionFilter(includeConfidential))
+		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(registrationNumber, revision, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND.formatted(registrationNumber, revision)));
 
 		if (isEmpty(documentEntity.getDocumentData())) {
@@ -144,7 +152,7 @@ public class DocumentService {
 
 	public void deleteFile(String registrationNumber, String documentDataId) {
 
-		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(true))
+		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(true))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		if (isEmpty(documentEntity.getDocumentData())) {
@@ -167,25 +175,60 @@ public class DocumentService {
 		documentRepository.save(newDocumentEntity);
 	}
 
-	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, MultipartFile documentFile) {
+	public Document updateFile(String registrationNumber, String documentDataId, boolean includeConfidential, DocumentDataUpdateRequest documentDataUpdateRequest) {
 
-		final var existingDocumentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
+		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
+
+		if (isEmpty(documentEntity.getDocumentData())) {
+			throw Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber));
+		}
+
+		// Update confidentiality settings on documentDataEntity.
+		final var documentDataEntity = documentEntity.getDocumentData().stream()
+			.filter(docData -> docData.getId().equals(documentDataId))
+			.findFirst()
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND.formatted(documentDataId)))
+			.withConfidentiality(toConfidentialityEmbeddable(documentDataUpdateRequest.getConfidentiality()));
+
+		// Do not update existing entity, create a new revision instead.
+		final var newDocumentEntity = copyDocumentEntity(documentEntity)
+			.withRevision(documentEntity.getRevision() + 1);
+
+		// Send info to Eventlog.
+		eventLogForDocumentFile(registrationNumber, documentDataEntity.getFileName(), documentDataUpdateRequest);
+
+		return toDocument(documentRepository.save(newDocumentEntity));
+	}
+
+	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest) {
+
+		final var existingDocumentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		// Do not update existing entity, create a new revision instead.
-		final var newDocumentEntity = toDocumentEntity(documentUpdateRequest, existingDocumentEntity, documentFile, databaseHelper);
+		final var newDocumentEntity = toDocumentEntity(documentUpdateRequest, existingDocumentEntity);
 
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}
 
 	public void updateConfidentiality(String registrationNumber, ConfidentialityUpdateRequest confidentialityUpdateRequest) {
 
-		final var documentEntities = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, CONFIDENTIAL_AND_PUBLIC.getValue());
+		final var documentEntities = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, CONFIDENTIAL_AND_PUBLIC.getValue());
 
-		documentEntities.forEach(docEntity -> docEntity.setConfidential(confidentialityUpdateRequest.getValue()));
+		final var newConfidentialitySettings = toConfidentialityEmbeddable(confidentialityUpdateRequest);
+
+		documentEntities.forEach(documentEntity -> {
+
+			// Set confidentiality settings on document-level.
+			documentEntity.setConfidentiality(newConfidentialitySettings);
+
+			// Set confidentiality settings on document-data-level.
+			documentEntity.getDocumentData().forEach(documentDataEntity -> documentDataEntity.setConfidentiality(newConfidentialitySettings));
+		});
 
 		// Send info to Eventlog.
-		eventLog(registrationNumber, confidentialityUpdateRequest);
+		eventLogForDocument(registrationNumber, confidentialityUpdateRequest);
 
 		documentRepository.saveAll(documentEntities);
 	}
@@ -205,11 +248,23 @@ public class DocumentService {
 		}
 	}
 
-	private void eventLog(String registrationNumber, ConfidentialityUpdateRequest confidentialityUpdateRequest) {
+	private void eventLogForDocument(String registrationNumber, ConfidentialityUpdateRequest confidentialityUpdateRequest) {
 		eventLogClient.createEvent(eventLogProperties.logKeyUuid(), toEvent(
 			UPDATE,
 			registrationNumber,
-			TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED.formatted(confidentialityUpdateRequest.getValue(), registrationNumber, confidentialityUpdateRequest.getChangedBy()),
+			TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_DOCUMENT
+				.formatted(confidentialityUpdateRequest.getConfidential(), confidentialityUpdateRequest.getLegalCitation(), registrationNumber, confidentialityUpdateRequest.getChangedBy()),
 			confidentialityUpdateRequest.getChangedBy()));
+	}
+
+	private void eventLogForDocumentFile(String registrationNumber, String fileName, DocumentDataUpdateRequest documentDataUpdateRequest) {
+
+		final var confidentiality = Optional.ofNullable(documentDataUpdateRequest.getConfidentiality()).orElse(Confidentiality.create());
+
+		eventLogClient.createEvent(eventLogProperties.logKeyUuid(), toEvent(
+			UPDATE,
+			registrationNumber,
+			TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_FILE.formatted(confidentiality.isConfidential(), confidentiality.getLegalCitation(), registrationNumber, fileName, documentDataUpdateRequest.getCreatedBy()),
+			documentDataUpdateRequest.getCreatedBy()));
 	}
 }

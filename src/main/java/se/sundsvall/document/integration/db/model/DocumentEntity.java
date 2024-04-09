@@ -15,6 +15,7 @@ import org.hibernate.annotations.UuidGenerator;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.ForeignKey;
@@ -48,7 +49,7 @@ public class DocumentEntity implements Serializable {
 	@Column(name = "id")
 	private String id;
 
-	@Column(name = "revision")
+	@Column(name = "revision", nullable = false)
 	private int revision;
 
 	@Column(name = "municipality_id")
@@ -60,8 +61,8 @@ public class DocumentEntity implements Serializable {
 	@Column(name = "description", nullable = false, columnDefinition = "varchar(8192)")
 	private String description;
 
-	@Column(name = "confidential", nullable = false)
-	private boolean confidential;
+	@Embedded
+	private ConfidentialityEmbeddable confidentiality;
 
 	@Column(name = "created_by")
 	private String createdBy;
@@ -154,16 +155,16 @@ public class DocumentEntity implements Serializable {
 		return this;
 	}
 
-	public boolean isConfidential() {
-		return confidential;
+	public ConfidentialityEmbeddable getConfidentiality() {
+		return confidentiality;
 	}
 
-	public void setConfidential(boolean confidential) {
-		this.confidential = confidential;
+	public void setConfidentiality(ConfidentialityEmbeddable confidentiality) {
+		this.confidentiality = confidentiality;
 	}
 
-	public DocumentEntity withConfidential(boolean confidential) {
-		this.confidential = confidential;
+	public DocumentEntity withConfidentiality(ConfidentialityEmbeddable confidentiality) {
+		this.confidentiality = confidentiality;
 		return this;
 	}
 
@@ -221,26 +222,23 @@ public class DocumentEntity implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(confidential, created, createdBy, description, documentData, id, metadata, municipalityId, registrationNumber, revision);
+		return Objects.hash(confidentiality, created, createdBy, description, documentData, id, metadata, municipalityId, registrationNumber, revision);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof final DocumentEntity other)) {
-			return false;
-		}
-		return (confidential == other.confidential) && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(documentData, other.documentData)
-			&& Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber) && (revision == other.revision);
+		if (this == obj) { return true; }
+		if (!(obj instanceof final DocumentEntity other)) { return false; }
+		return Objects.equals(confidentiality, other.confidentiality) && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(documentData,
+			other.documentData) && Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber)
+			&& (revision == other.revision);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", description=").append(description)
-			.append(", confidential=").append(confidential).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentData=").append(documentData).append(", metadata=").append(metadata).append("]");
+			.append(", confidentiality=").append(confidentiality).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentData=").append(documentData).append(", metadata=").append(metadata).append("]");
 		return builder.toString();
 	}
 }
