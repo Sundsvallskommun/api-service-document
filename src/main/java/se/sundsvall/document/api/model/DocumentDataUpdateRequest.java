@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 public class DocumentDataUpdateRequest {
 
 	@NotBlank
-	@Schema(description = "Actor that created this object", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Actor that created this revision (all modifications will create new revisions)", example = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
 	@Schema(description = "Confidentiality")

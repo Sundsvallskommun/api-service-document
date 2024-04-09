@@ -20,7 +20,7 @@ public class DocumentCreateRequest {
 	private String municipalityId;
 
 	@NotBlank
-	@Schema(description = "Actor that created this revision.", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Actor that created this revision (all modifications will create new revisions)", example = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
 	@Schema(description = "Confidentiality")
