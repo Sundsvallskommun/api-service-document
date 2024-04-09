@@ -221,17 +221,16 @@ public class DocumentEntity implements Serializable {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(confidentiality, created, createdBy, description, documentData, id, metadata, municipalityId, registrationNumber, revision);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DocumentEntity that = (DocumentEntity) o;
+		return revision == that.revision && Objects.equals(id, that.id) && Objects.equals(municipalityId, that.municipalityId) && Objects.equals(registrationNumber, that.registrationNumber) && Objects.equals(description, that.description) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(createdBy, that.createdBy) && Objects.equals(created, that.created) && Objects.equals(documentData, that.documentData) && Objects.equals(metadata, that.metadata);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentEntity other)) { return false; }
-		return Objects.equals(confidentiality, other.confidentiality) && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(documentData,
-			other.documentData) && Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber)
-			&& (revision == other.revision);
+	public int hashCode() {
+		return Objects.hash(id, revision, municipalityId, registrationNumber, description, confidentiality, createdBy, created, documentData, metadata);
 	}
 
 	@Override

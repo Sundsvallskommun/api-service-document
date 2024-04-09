@@ -123,13 +123,24 @@ public class DocumentCreateRequest {
 		return this;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DocumentCreateRequest that = (DocumentCreateRequest) o;
+		return Objects.equals(municipalityId, that.municipalityId) && Objects.equals(createdBy, that.createdBy) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(description, that.description) && Objects.equals(metadataList, that.metadataList) && Objects.equals(archiveMap, that.archiveMap);
+	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(municipalityId, createdBy, confidentiality, description, metadataList, archiveMap);
+	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidential=").append(confidential).append(", description=").append(description).append(", metadataList=").append(
-			metadataList).append("]");
+		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidential=").append(confidentiality).append(", description=").append(description).append(", metadataList=").append(
+			metadataList).append(", archiveMap=").append(archiveMap).append("]");
 		return builder.toString();
 	}
 }
