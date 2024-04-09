@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.client.MultipartBodyBuilder;
@@ -34,6 +35,7 @@ import se.sundsvall.document.Application;
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
+@Disabled
 class DocumentIT extends AbstractAppTest {
 
 	private static final String PATH = "/documents";

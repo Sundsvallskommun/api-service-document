@@ -10,6 +10,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
@@ -38,6 +39,9 @@ public class DocumentDataEntity implements Serializable {
 
 	@Column(name = "file_name")
 	private String fileName;
+
+	@Embedded
+	private ConfidentialityEmbeddable confidentiality;
 
 	@Column(name = "file_size_in_bytes")
 	@ColumnDefault("0")
@@ -93,6 +97,19 @@ public class DocumentDataEntity implements Serializable {
 		return this;
 	}
 
+	public ConfidentialityEmbeddable getConfidentiality() {
+		return confidentiality;
+	}
+
+	public void setConfidentiality(ConfidentialityEmbeddable confidentiality) {
+		this.confidentiality = confidentiality;
+	}
+
+	public DocumentDataEntity withConfidentiality(ConfidentialityEmbeddable confidentiality) {
+		this.confidentiality = confidentiality;
+		return this;
+	}
+
 	public long getFileSizeInBytes() {
 		return fileSizeInBytes;
 	}
@@ -121,26 +138,23 @@ public class DocumentDataEntity implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(documentDataBinary, fileName, fileSizeInBytes, id, mimeType);
+		return Objects.hash(confidentiality, documentDataBinary, fileName, fileSizeInBytes, id, mimeType);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof final DocumentDataEntity other)) {
-			return false;
-		}
-		return Objects.equals(documentDataBinary, other.documentDataBinary) && Objects.equals(fileName, other.fileName) && (fileSizeInBytes == other.fileSizeInBytes) && Objects.equals(id, other.id) && Objects
-			.equals(mimeType, other.mimeType);
+		if (this == obj) { return true; }
+		if (!(obj instanceof final DocumentDataEntity other)) { return false; }
+		return Objects.equals(confidentiality, other.confidentiality) && Objects.equals(documentDataBinary, other.documentDataBinary) && Objects.equals(fileName, other.fileName) && (fileSizeInBytes == other.fileSizeInBytes) && Objects.equals(id, other.id)
+			&& Objects.equals(mimeType, other.mimeType);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", fileSizeInBytes=").append(fileSizeInBytes).append(
+		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", confidentiality=").append(confidentiality).append(", fileSizeInBytes=").append(fileSizeInBytes).append(
 			", documentDataBinary=").append(documentDataBinary).append("]");
 		return builder.toString();
 	}
+
 }

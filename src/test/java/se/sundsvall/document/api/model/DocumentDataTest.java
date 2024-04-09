@@ -27,18 +27,21 @@ class DocumentDataTest {
 	@Test
 	void testBuilderMethods() {
 
+		final var confidentiality = Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation");
 		final var fileName = "file.png";
 		final var fileSizeInBytes = 123L;
 		final var id = randomUUID().toString();
 		final var mimeType = "image/png";
 
 		final var bean = DocumentData.create()
+			.withConfidentiality(confidentiality)
 			.withFileName(fileName)
 			.withFileSizeInBytes(fileSizeInBytes)
 			.withId(id)
 			.withMimeType(mimeType);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
 		assertThat(bean.getFileName()).isEqualTo(fileName);
 		assertThat(bean.getFileSizeInBytes()).isEqualTo(fileSizeInBytes);
 		assertThat(bean.getId()).isEqualTo(id);

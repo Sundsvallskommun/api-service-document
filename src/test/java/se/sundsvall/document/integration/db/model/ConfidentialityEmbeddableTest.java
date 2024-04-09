@@ -1,4 +1,4 @@
-package se.sundsvall.document.api.model;
+package se.sundsvall.document.integration.db.model;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
@@ -11,11 +11,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-class ConfidentialityUpdateRequestTest {
+class ConfidentialityEmbeddableTest {
 
 	@Test
 	void testBean() {
-		assertThat(ConfidentialityUpdateRequest.class, allOf(
+		assertThat(ConfidentialityEmbeddable.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -26,24 +26,22 @@ class ConfidentialityUpdateRequestTest {
 	@Test
 	void testBuilderMethods() {
 
-		final var changedBy = "user";
 		final var confidential = true;
 		final var legalCitation = "legalCitation";
 
-		final var bean = ConfidentialityUpdateRequest.create()
-			.withChangedBy(changedBy)
+		final var bean = ConfidentialityEmbeddable.create()
 			.withConfidential(confidential)
 			.withLegalCitation(legalCitation);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(bean.getChangedBy()).isEqualTo(changedBy);
-		assertThat(bean.getConfidential()).isTrue();
+		assertThat(bean.isConfidential()).isEqualTo(confidential);
 		assertThat(bean.getLegalCitation()).isEqualTo(legalCitation);
+
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(ConfidentialityUpdateRequest.create()).hasAllNullFieldsOrProperties();
-		assertThat(new ConfidentialityUpdateRequest()).hasAllNullFieldsOrProperties();
+		assertThat(ConfidentialityEmbeddable.create()).hasAllNullFieldsOrPropertiesExcept("confidential");
+		assertThat(new ConfidentialityEmbeddable()).hasAllNullFieldsOrPropertiesExcept("confidential");
 	}
 }

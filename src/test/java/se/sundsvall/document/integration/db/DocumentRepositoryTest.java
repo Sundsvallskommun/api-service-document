@@ -139,7 +139,7 @@ class DocumentRepositoryTest {
 	void findTopByRegistrationNumberOrderByRevisionDesc(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
 
 		// Act
-		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(registrationNumber, filter.getValue());
+		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, filter.getValue());
 
 		// Assert
 		if (shouldHaveMatch) {
@@ -156,7 +156,7 @@ class DocumentRepositoryTest {
 		final var registrationNumber = "2023-2281-123"; // Document 1 (public)
 
 		// Act
-		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(registrationNumber, PUBLIC.getValue()).orElseThrow();
+		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, PUBLIC.getValue()).orElseThrow();
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -181,7 +181,7 @@ class DocumentRepositoryTest {
 		final var registrationNumber = "2023-2281-123"; // Document 1 (public)
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, PUBLIC.getValue());
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, PUBLIC.getValue());
 
 		// Assert
 		assertThat(result)
@@ -201,7 +201,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, filter.getValue(), pageRequest);
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, filter.getValue(), pageRequest);
 
 		// Assert
 		if (shouldHaveMatch) {
@@ -219,7 +219,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, PUBLIC.getValue(), pageRequest);
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, PUBLIC.getValue(), pageRequest);
 
 		// Assert
 		assertThat(result)
@@ -238,7 +238,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, filter.getValue(), pageRequest);
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, filter.getValue(), pageRequest);
 
 		// Assert
 		if (shouldHaveMatch) {
@@ -256,7 +256,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialIn(registrationNumber, PUBLIC.getValue(), pageRequest);
+		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, PUBLIC.getValue(), pageRequest);
 
 		// Assert
 		assertThat(result)
@@ -274,7 +274,7 @@ class DocumentRepositoryTest {
 		final var revision = 1;
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialIn(registrationNumber, revision, filter.getValue());
+		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(registrationNumber, revision, filter.getValue());
 
 		// Assert
 		if (shouldHaveMatch) {
@@ -292,7 +292,7 @@ class DocumentRepositoryTest {
 		final var revision = 2;
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialIn(registrationNumber, revision, PUBLIC.getValue()).orElseThrow();
+		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(registrationNumber, revision, PUBLIC.getValue()).orElseThrow();
 
 		// Assert
 		assertThat(result)

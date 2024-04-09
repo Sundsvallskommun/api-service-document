@@ -40,7 +40,7 @@ class DocumentEntityTest {
 	@Test
 	void testBuilderMethods() {
 
-		final var confidential = true;
+		final var confidentiality = ConfidentialityEmbeddable.create().withConfidential(true).withLegalCitation("legalCitation");
 		final var created = now(systemDefault());
 		final var createdBy = "user";
 		final var description = "description";
@@ -52,7 +52,7 @@ class DocumentEntityTest {
 		final var revision = 5;
 
 		final var bean = DocumentEntity.create()
-			.withConfidential(confidential)
+			.withConfidentiality(confidentiality)
 			.withCreated(created)
 			.withCreatedBy(createdBy)
 			.withDescription(description)
@@ -64,7 +64,7 @@ class DocumentEntityTest {
 			.withRevision(revision);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(bean.isConfidential()).isEqualTo(confidential);
+		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 		assertThat(bean.getDescription()).isEqualTo(description);
