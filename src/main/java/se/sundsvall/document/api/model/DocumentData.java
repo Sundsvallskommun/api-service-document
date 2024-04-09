@@ -24,7 +24,7 @@ public class DocumentData {
 	@Schema(description = "Confidentiality")
 	private Confidentiality confidentiality;
 
-	@Schema(description = "Archive flag.", example = "false")
+	@Schema(description = "Should the document be archived?", example = "false")
 	private boolean archive;
 
 	public static DocumentData create() {
