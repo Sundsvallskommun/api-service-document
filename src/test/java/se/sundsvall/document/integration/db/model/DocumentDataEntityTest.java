@@ -32,13 +32,15 @@ class DocumentDataEntityTest {
 		final var id = randomUUID().toString();
 		final var mimeType = "image/jpeg";
 		final var fileSizeInBytes = 100;
+		final var archive = true;
 
 		final var bean = DocumentDataEntity.create()
 			.withDocumentDataBinary(documentDataBinary)
 			.withFileName(fileName)
 			.withId(id)
 			.withMimeType(mimeType)
-			.withFileSizeInBytes(fileSizeInBytes);
+			.withFileSizeInBytes(fileSizeInBytes)
+			.withArchive(archive);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getDocumentDataBinary()).isEqualTo(documentDataBinary);
@@ -46,11 +48,12 @@ class DocumentDataEntityTest {
 		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getMimeType()).isEqualTo(mimeType);
 		assertThat(bean.getFileSizeInBytes()).isEqualTo(fileSizeInBytes);
+		assertThat(bean.isArchive()).isEqualTo(archive);
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentDataEntity.create()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes");
-		assertThat(new DocumentDataEntity()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes");
+		assertThat(DocumentDataEntity.create()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes", "archive");
+		assertThat(new DocumentDataEntity()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes", "archive");
 	}
 }

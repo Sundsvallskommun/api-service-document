@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,13 +34,15 @@ class DocumentCreateRequestTest {
 		final var description = "description";
 		final var metadataList = List.of(DocumentMetadata.create());
 		final var municipalityId = "municipalityId";
+		final var archiveMap = Map.of("filename", true, "filename2", false);
 
 		final var bean = DocumentCreateRequest.create()
 			.withConfidential(confidential)
 			.withCreatedBy(createdBy)
 			.withDescription(description)
 			.withMetadataList(metadataList)
-			.withMunicipalityId(municipalityId);
+			.withMunicipalityId(municipalityId)
+			.withArchiveMap(archiveMap);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.isConfidential()).isEqualTo(confidential);
@@ -47,6 +50,7 @@ class DocumentCreateRequestTest {
 		assertThat(bean.getDescription()).isEqualTo(description);
 		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
 		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);
+		assertThat(bean.getArchiveMap()).isEqualTo(archiveMap);
 	}
 
 	@Test

@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,16 +32,19 @@ class DocumentUpdateRequestTest {
 		final var createdBy = "user";
 		final var description = "description";
 		final var metadataList = List.of(DocumentMetadata.create());
+		final var archiveMap = Map.of("filename", true, "filename2", false);
 
 		final var bean = DocumentUpdateRequest.create()
 			.withCreatedBy(createdBy)
 			.withDescription(description)
-			.withMetadataList(metadataList);
+			.withMetadataList(metadataList)
+			.withArchiveMap(archiveMap);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 		assertThat(bean.getDescription()).isEqualTo(description);
 		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
+		assertThat(bean.getArchiveMap()).isEqualTo(archiveMap);
 	}
 
 	@Test
