@@ -27,6 +27,7 @@ class DocumentDataEntityTest {
 	@Test
 	void testBuilderMethods() {
 
+		final var confidentiality = ConfidentialityEmbeddable.create().withConfidential(true).withLegalCitation("legalCitation");
 		final var documentDataBinary = DocumentDataBinaryEntity.create();
 		final var fileName = "filename.jpg";
 		final var id = randomUUID().toString();
@@ -35,6 +36,7 @@ class DocumentDataEntityTest {
 		final var archive = true;
 
 		final var bean = DocumentDataEntity.create()
+			.withConfidentiality(confidentiality)
 			.withDocumentDataBinary(documentDataBinary)
 			.withFileName(fileName)
 			.withId(id)
@@ -43,6 +45,7 @@ class DocumentDataEntityTest {
 			.withArchive(archive);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
 		assertThat(bean.getDocumentDataBinary()).isEqualTo(documentDataBinary);
 		assertThat(bean.getFileName()).isEqualTo(fileName);
 		assertThat(bean.getId()).isEqualTo(id);

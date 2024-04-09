@@ -1,22 +1,25 @@
 
     create table document (
         confidential bit not null,
-        revision integer,
+        revision integer not null,
         created datetime(6),
         created_by varchar(255),
         description varchar(8192) not null,
         id varchar(255) not null,
+        legal_citation varchar(255),
         municipality_id varchar(255),
         registration_number varchar(255) not null,
         primary key (id)
     ) engine=InnoDB;
 
     create table document_data (
+        confidential bit not null,
         file_size_in_bytes bigint default 0,
         document_data_binary_id varchar(255),
         document_id varchar(255) not null,
         file_name varchar(255),
         id varchar(255) not null,
+        legal_citation varchar(255),
         mime_type varchar(255),
         primary key (id)
     ) engine=InnoDB;
@@ -30,7 +33,7 @@
     create table document_metadata (
         document_id varchar(255) not null,
         `key` varchar(255),
-        value varchar(255)
+        `value` varchar(255)
     ) engine=InnoDB;
 
     create table registration_number_sequence (

@@ -24,7 +24,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	 *                            true equals confidential document, false equals public document.
 	 * @return                    an Optional of DocumentEntity object.
 	 */
-	Optional<DocumentEntity> findTopByRegistrationNumberAndConfidentialInOrderByRevisionDesc(String registrationNumber, List<Boolean> confidentialValues);
+	Optional<DocumentEntity> findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(String registrationNumber, List<Boolean> confidentialValues);
 
 	/**
 	 * Find all revisions of a document by registrationNumber.
@@ -35,7 +35,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	 * @param  pageable           the pageable object.
 	 * @return                    a Page of DocumentEntity objects.
 	 */
-	Page<DocumentEntity> findByRegistrationNumberAndConfidentialIn(String registrationNumber, List<Boolean> confidentialValues, Pageable pageable);
+	Page<DocumentEntity> findByRegistrationNumberAndConfidentialityConfidentialIn(String registrationNumber, List<Boolean> confidentialValues, Pageable pageable);
 
 	/**
 	 * Find all revisions of a document by registrationNumber.
@@ -45,7 +45,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	 *                            true equals confidential document, false equals public document.
 	 * @return                    a List of DocumentEntity objects.
 	 */
-	List<DocumentEntity> findByRegistrationNumberAndConfidentialIn(String registrationNumber, List<Boolean> confidentialValues);
+	List<DocumentEntity> findByRegistrationNumberAndConfidentialityConfidentialIn(String registrationNumber, List<Boolean> confidentialValues);
 
 	/**
 	 * Find document by registrationNumber and revision.
@@ -56,7 +56,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	 *                            true equals confidential document, false equals public document.
 	 * @return                    an Optional of DocumentEntity object.
 	 */
-	Optional<DocumentEntity> findByRegistrationNumberAndRevisionAndConfidentialIn(String registrationNumber, int revision, List<Boolean> confidentialValues);
+	Optional<DocumentEntity> findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(String registrationNumber, int revision, List<Boolean> confidentialValues);
 
 	/**
 	 * Performs a search in DocumentEntities.

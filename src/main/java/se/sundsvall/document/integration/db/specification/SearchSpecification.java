@@ -3,9 +3,10 @@ package se.sundsvall.document.integration.db.specification;
 import static jakarta.persistence.criteria.JoinType.LEFT;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.springframework.data.jpa.domain.Specification.where;
+import static se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable_.CONFIDENTIAL;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.FILE_NAME;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.MIME_TYPE;
-import static se.sundsvall.document.integration.db.model.DocumentEntity_.CONFIDENTIAL;
+import static se.sundsvall.document.integration.db.model.DocumentEntity_.CONFIDENTIALITY;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.CREATED_BY;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.DESCRIPTION;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.DOCUMENT_DATA;
@@ -41,7 +42,7 @@ public interface SearchSpecification {
 		if (includeConfidential) {
 			return null; // Do not add any filter to return all documents regardless of whether they are confidential or not
 		}
-		return (entity, cq, cb) -> cb.equal(entity.get(CONFIDENTIAL), false); // Return non-confidential documents only
+		return (entity, cq, cb) -> cb.equal(entity.get(CONFIDENTIALITY).get(CONFIDENTIAL), false); // Return non-confidential documents only
 	}
 
 	private static Specification<DocumentEntity> matchesCreatedBy(String query) {

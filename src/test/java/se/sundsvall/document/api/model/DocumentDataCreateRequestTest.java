@@ -5,18 +5,17 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanHashCode;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanToString;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-class DocumentDataTest {
+class DocumentDataCreateRequestTest {
 
 	@Test
 	void testBean() {
-		assertThat(DocumentData.class, allOf(
+		assertThat(DocumentDataCreateRequest.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -27,30 +26,23 @@ class DocumentDataTest {
 	@Test
 	void testBuilderMethods() {
 
-		final var confidentiality = Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation");
-		final var fileName = "file.png";
-		final var fileSizeInBytes = 123L;
-		final var id = randomUUID().toString();
-		final var mimeType = "image/png";
+		final var confidentiality = Confidentiality.create()
+			.withConfidential(true)
+			.withLegalCitation("legalCitation");
+		final var createdBy = "user";
 
-		final var bean = DocumentData.create()
+		final var bean = DocumentDataCreateRequest.create()
 			.withConfidentiality(confidentiality)
-			.withFileName(fileName)
-			.withFileSizeInBytes(fileSizeInBytes)
-			.withId(id)
-			.withMimeType(mimeType);
+			.withCreatedBy(createdBy);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
-		assertThat(bean.getFileName()).isEqualTo(fileName);
-		assertThat(bean.getFileSizeInBytes()).isEqualTo(fileSizeInBytes);
-		assertThat(bean.getId()).isEqualTo(id);
-		assertThat(bean.getMimeType()).isEqualTo(mimeType);
+		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentData.create()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes");
-		assertThat(new DocumentData()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes");
+		assertThat(DocumentDataCreateRequest.create()).hasAllNullFieldsOrProperties();
+		assertThat(new DocumentDataCreateRequest()).hasAllNullFieldsOrProperties();
 	}
 }

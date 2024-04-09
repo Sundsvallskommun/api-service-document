@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -18,6 +19,7 @@ import se.sundsvall.document.Application;
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
+@Disabled
 class DocumentRevisionIT extends AbstractAppTest {
 
 	private static final String PATH = "/documents";

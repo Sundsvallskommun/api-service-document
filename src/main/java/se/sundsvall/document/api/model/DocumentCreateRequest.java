@@ -22,14 +22,11 @@ public class DocumentCreateRequest {
 	private String municipalityId;
 
 	@NotBlank
-	@Schema(description = "Actor that created this revision.", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Actor that created this revision (all modifications will create new revisions)", example = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
-	@Schema(description = """
-		A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
-		If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
-		""", example = "false", defaultValue = "false")
-	private boolean confidential;
+	@Schema(description = "Confidentiality")
+	private Confidentiality confidentiality;
 
 	@NotBlank
 	@Size(max = 8192)
@@ -74,16 +71,16 @@ public class DocumentCreateRequest {
 		return this;
 	}
 
-	public boolean isConfidential() {
-		return confidential;
+	public Confidentiality getConfidentiality() {
+		return confidentiality;
 	}
 
-	public void setConfidential(boolean confidential) {
-		this.confidential = confidential;
+	public void setConfidentiality(Confidentiality confidentiality) {
+		this.confidentiality = confidentiality;
 	}
 
-	public DocumentCreateRequest withConfidential(boolean confidential) {
-		this.confidential = confidential;
+	public DocumentCreateRequest withConfidentiality(Confidentiality confidentiality) {
+		this.confidentiality = confidentiality;
 		return this;
 	}
 
@@ -126,24 +123,13 @@ public class DocumentCreateRequest {
 		return this;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		DocumentCreateRequest that = (DocumentCreateRequest) o;
-		return confidential == that.confidential && Objects.equals(municipalityId, that.municipalityId) && Objects.equals(createdBy, that.createdBy) && Objects.equals(description, that.description) && Objects.equals(metadataList, that.metadataList) && Objects.equals(archiveMap, that.archiveMap);
-	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(municipalityId, createdBy, confidential, description, metadataList, archiveMap);
-	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidential=").append(confidential).append(", description=").append(description).append(", metadataList=").append(
-			metadataList).append(", archiveMap=").append(archiveMap).append("]");
+			metadataList).append("]");
 		return builder.toString();
 	}
 }

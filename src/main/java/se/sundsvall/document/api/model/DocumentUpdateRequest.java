@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Size;
 public class DocumentUpdateRequest {
 
 	@NotBlank
-	@Schema(description = "Actor that created this revision.", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Actor that created this revision (all modifications will create new revisions).", example = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
 	@Size(max = 8192)
