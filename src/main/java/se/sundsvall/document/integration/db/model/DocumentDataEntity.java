@@ -152,13 +152,24 @@ public class DocumentDataEntity implements Serializable {
 		return this;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DocumentDataEntity that = (DocumentDataEntity) o;
+		return fileSizeInBytes == that.fileSizeInBytes && archive == that.archive && Objects.equals(id, that.id) && Objects.equals(mimeType, that.mimeType) && Objects.equals(fileName, that.fileName) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(documentDataBinary, that.documentDataBinary);
+	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, mimeType, fileName, confidentiality, fileSizeInBytes, archive, documentDataBinary);
+	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("DocumentDataEntity [id=").append(id).append(", mimeType=").append(mimeType).append(", fileName=").append(fileName).append(", fileSizeInBytes=").append(fileSizeInBytes).append(
-			", documentDataBinary=").append(documentDataBinary).append("]");
+			", documentDataBinary=").append(documentDataBinary).append(", archive=").append(archive).append(", confidentiality=").append(confidentiality).append("]");
 		return builder.toString();
 	}
 

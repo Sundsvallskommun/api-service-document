@@ -2,6 +2,9 @@
 	"municipalityId": "2281",
 	"createdBy": "username123",
 	"description": "This is a document",
+	"archiveMap": {
+		"image.png": true
+	},
 	"metadataList": [
 		{
 			"key": "Some key",

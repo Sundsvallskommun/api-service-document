@@ -21,7 +21,8 @@
 			"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
 			"fileName": "file5.jpg",
 			"mimeType": "image/jpeg",
-			"fileSizeInBytes": 5068
+			"fileSizeInBytes": 5068,
+			"archive": true
 		}
 	]
 }

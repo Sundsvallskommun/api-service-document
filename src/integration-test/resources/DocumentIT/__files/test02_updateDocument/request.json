@@ -1,5 +1,8 @@
 {
 	"createdBy": "user-x",
+	"archiveMap": {
+		"image.png": true
+	},
 	"metadataList": [
 		{
 			"key": "Updated key",

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -133,7 +134,8 @@ class DocumentServiceTest {
 		final var documentCreateRequest = DocumentCreateRequest.create()
 			.withCreatedBy(CREATED_BY)
 			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
-			.withMunicipalityId(MUNICIPALITY_ID);
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withArchiveMap(Map.of(FILE_NAME, true));
 
 		final var file = new File("src/test/resources/files/image.png");
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
@@ -159,6 +161,7 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(MUNICIPALITY_ID);
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(REGISTRATION_NUMBER);
+		assertThat(capturedDocumentEntity.getDocumentData()).hasSize(1).extracting(DocumentDataEntity::isArchive).containsExactly(true);
 	}
 
 	@Test
@@ -168,7 +171,8 @@ class DocumentServiceTest {
 		final var documentCreateRequest = DocumentCreateRequest.create()
 			.withCreatedBy(CREATED_BY)
 			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
-			.withMunicipalityId(MUNICIPALITY_ID);
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withArchiveMap(Map.of("image.png", true));
 
 		final var file1 = new File("src/test/resources/files/image.png");
 		final var file2 = new File("src/test/resources/files/readme.txt");
@@ -203,6 +207,7 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(MUNICIPALITY_ID);
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(REGISTRATION_NUMBER);
+		assertThat(capturedDocumentEntity.getDocumentData()).hasSize(2).extracting(DocumentDataEntity::isArchive).containsExactly(true, false);
 	}
 
 	@Test
@@ -357,7 +362,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.png\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().get(0).getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getFirst().getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 		verifyNoInteractions(eventlogClientMock);
 	}
@@ -389,7 +394,7 @@ class DocumentServiceTest {
 		final var documentEntity = createDocumentEntity();
 
 		// Set id to something that wont be found.
-		documentEntity.getDocumentData().get(0).setId("Something else");
+		documentEntity.getDocumentData().getFirst().setId("Something else");
 
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue())).thenReturn(Optional.of(documentEntity));
 
@@ -444,7 +449,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.png\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().get(0).getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getFirst().getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 		verifyNoInteractions(eventlogClientMock);
 	}
@@ -466,7 +471,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(REGISTRATION_NUMBER, REVISION, PUBLIC.getValue());
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.png\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().get(0).getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getFirst().getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 		verifyNoInteractions(eventlogClientMock);
 	}
@@ -567,7 +572,8 @@ class DocumentServiceTest {
 		final var documentUpdateRequest = DocumentUpdateRequest.create()
 			.withCreatedBy("changedUser")
 			.withDescription("changedDescription")
-			.withMetadataList(List.of(DocumentMetadata.create().withKey("changedKey").withValue("changedValue")));
+			.withMetadataList(List.of(DocumentMetadata.create().withKey("changedKey").withValue("changedValue")))
+			.withArchiveMap(Map.of("image.png", true));
 
 		// TODO: Cleanup
 
@@ -599,6 +605,7 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey("changedKey").withValue("changedValue")));
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
+		assertThat(capturedDocumentEntity.getDocumentData()).hasSize(1).extracting(DocumentDataEntity::isArchive).containsExactly(true);
 	}
 
 	@Test
@@ -924,7 +931,7 @@ class DocumentServiceTest {
 		// Arrange
 		final var documentEntity = createDocumentEntity();
 
-		documentEntity.getDocumentData().get(0).withId("some-id-that-will-not-be-found");
+		documentEntity.getDocumentData().getFirst().withId("some-id-that-will-not-be-found");
 
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(Optional.of(documentEntity));
 

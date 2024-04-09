@@ -1,6 +1,7 @@
 package se.sundsvall.document.service.mapper;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toCollection;
 import static org.apache.commons.lang3.ObjectUtils.anyNull;
 import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
@@ -243,7 +244,8 @@ public class DocumentMapper {
 				.withFileName(docDataEntity.getFileName())
 				.withFileSizeInBytes(docDataEntity.getFileSizeInBytes())
 				.withId(docDataEntity.getId())
-				.withMimeType(docDataEntity.getMimeType()))
+				.withMimeType(docDataEntity.getMimeType())
+				.withArchive(docDataEntity.isArchive()))
 			.orElse(null);
 	}
 }

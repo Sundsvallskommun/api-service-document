@@ -1,6 +1,8 @@
 package se.sundsvall.document.service;
 
 import static generated.se.sundsvall.eventlog.EventType.UPDATE;
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -80,14 +82,17 @@ public class DocumentService {
 		this.eventLogProperties = eventLogProperties;
 	}
 
-	public Document create(DocumentCreateRequest documentCreateRequest, List<MultipartFile> documentFiles) {
+	public Document create(final DocumentCreateRequest documentCreateRequest, final List<MultipartFile> documentFile) {
 
-		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper, documentCreateRequest.getConfidentiality());
+		final var documentDataEntities = toDocumentDataEntities(documentFile, databaseHelper, documentCreateRequest.getConfidentiality());
 		final var registrationNumber = registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId());
 
 		final var documentEntity = toDocumentEntity(documentCreateRequest)
 			.withRegistrationNumber(registrationNumber)
 			.withDocumentData(documentDataEntities);
+
+		documentEntity.getDocumentData().forEach(data ->
+			Optional.ofNullable(documentCreateRequest.getArchiveMap().get(data.getFileName())).ifPresent(data::setArchive));
 
 		return toDocument(documentRepository.save(documentEntity));
 	}
@@ -208,6 +213,10 @@ public class DocumentService {
 
 		// Do not update existing entity, create a new revision instead.
 		final var newDocumentEntity = toDocumentEntity(documentUpdateRequest, existingDocumentEntity);
+
+		Optional.ofNullable(newDocumentEntity.getDocumentData()).orElse(emptyList()).forEach(data ->
+			Optional.ofNullable(documentUpdateRequest.getArchiveMap()).flatMap(archiveMap ->
+				Optional.ofNullable(archiveMap.get(data.getFileName()))).ifPresent(data::setArchive));
 
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}

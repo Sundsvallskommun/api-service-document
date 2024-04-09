@@ -24,6 +24,9 @@ public class DocumentData {
 	@Schema(description = "Confidentiality")
 	private Confidentiality confidentiality;
 
+	@Schema(description = "Archive flag.", example = "false")
+	private boolean archive;
+
 	public static DocumentData create() {
 		return new DocumentData();
 	}
@@ -80,6 +83,20 @@ public class DocumentData {
 		return this;
 	}
 
+	public boolean isArchive() {
+		return archive;
+	}
+
+	public void setArchive(boolean archive) {
+		this.archive = archive;
+	}
+
+	public DocumentData withArchive(boolean archive) {
+		this.archive = archive;
+		return this;
+	}
+
+
 	public Confidentiality getConfidentiality() {
 		return confidentiality;
 	}
@@ -94,21 +111,23 @@ public class DocumentData {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(confidentiality, fileName, fileSizeInBytes, id, mimeType);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DocumentData that = (DocumentData) o;
+		return fileSizeInBytes == that.fileSizeInBytes && archive == that.archive && Objects.equals(id, that.id) && Objects.equals(fileName, that.fileName) && Objects.equals(mimeType, that.mimeType) && Objects.equals(confidentiality, that.confidentiality);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentData other)) { return false; }
-		return Objects.equals(confidentiality, other.confidentiality) && Objects.equals(fileName, other.fileName) && (fileSizeInBytes == other.fileSizeInBytes) && Objects.equals(id, other.id) && Objects.equals(mimeType, other.mimeType);
+	public int hashCode() {
+		return Objects.hash(id, fileName, mimeType, fileSizeInBytes, confidentiality, archive);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentData [id=").append(id).append(", fileName=").append(fileName).append(", mimeType=").append(mimeType).append(", fileSizeInBytes=").append(fileSizeInBytes).append(", confidentiality=").append(confidentiality).append("]");
+		builder.append("DocumentData [id=").append(id).append(", fileName=").append(fileName).append(", mimeType=").append(mimeType)
+			.append(", fileSizeInBytes=").append(fileSizeInBytes).append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append("]");
 		return builder.toString();
 	}
 }

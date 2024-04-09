@@ -139,7 +139,7 @@ public class DocumentCreateRequest {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidential=").append(confidentiality).append(", description=").append(description).append(", metadataList=").append(
+		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", description=").append(description).append(", metadataList=").append(
 			metadataList).append(", archiveMap=").append(archiveMap).append("]");
 		return builder.toString();
 	}

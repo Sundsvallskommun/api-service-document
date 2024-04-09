@@ -32,12 +32,14 @@ class DocumentDataTest {
 		final var fileSizeInBytes = 123L;
 		final var id = randomUUID().toString();
 		final var mimeType = "image/png";
+		final var archive = true;
 
 		final var bean = DocumentData.create()
 			.withConfidentiality(confidentiality)
 			.withFileName(fileName)
 			.withFileSizeInBytes(fileSizeInBytes)
 			.withId(id)
+			.withArchive(archive)
 			.withMimeType(mimeType);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
@@ -46,11 +48,12 @@ class DocumentDataTest {
 		assertThat(bean.getFileSizeInBytes()).isEqualTo(fileSizeInBytes);
 		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getMimeType()).isEqualTo(mimeType);
+		assertThat(bean.isArchive()).isEqualTo(archive);
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentData.create()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes");
-		assertThat(new DocumentData()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes");
+		assertThat(DocumentData.create()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes", "archive");
+		assertThat(new DocumentData()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes", "archive");
 	}
 }

@@ -17,12 +17,14 @@
 			"id": "${json-unit.any-string}",
 			"fileName": "file3.jpg",
 			"mimeType": "image/jpeg",
+            "archive": false,
 			"fileSizeInBytes": 5068
 		},
 		{
 			"id": "${json-unit.any-string}",
 			"fileName": "image.png",
 			"mimeType": "image/png",
+            "archive": true,
 			"fileSizeInBytes": 227546
 		}
 	]

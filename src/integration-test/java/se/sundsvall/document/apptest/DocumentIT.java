@@ -58,7 +58,7 @@ class DocumentIT extends AbstractAppTest {
 			.withRequest(multipartBodyBuilder.build())
 			.withExpectedResponseStatus(CREATED)
 			.sendRequestAndVerifyResponse()
-			.getResponseHeaders().get("Location").get(0);
+			.getResponseHeaders().get("Location").getFirst();
 
 		setupCall()
 			.withServicePath(location.substring(location.indexOf(PATH)))

@@ -31,7 +31,8 @@
 					"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
 					"fileName": "file3.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive":true
 				}
 			]
 		},
@@ -62,7 +63,8 @@
 					"id": "8f7be4bb-ef79-4a16-95bf-a0619e320745",
 					"fileName": "file4.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive":true
 				}
 			]
 		}

@@ -19,7 +19,8 @@
 					"id": "faa3547e-f775-4799-9ac0-e07fab1df362",
 					"fileName": "file1.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive":true
 				}
 			]
 		},
@@ -46,7 +47,8 @@
 					"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
 					"fileName": "file2.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive":true
 				}
 			]
 		},
@@ -81,7 +83,8 @@
 					"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
 					"fileName": "file3.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive":true
 				}
 			]
 		},
@@ -112,7 +115,8 @@
 					"id": "8f7be4bb-ef79-4a16-95bf-a0619e320745",
 					"fileName": "file4.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive":true
 				}
 			]
 		},
@@ -139,7 +143,8 @@
 					"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
 					"fileName": "file5.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive":true
 				}
 			]
 		}
