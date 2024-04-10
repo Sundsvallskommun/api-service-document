@@ -5,6 +5,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -24,12 +25,14 @@ import org.mariadb.jdbc.MariaDbBlob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable;
 import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
@@ -77,6 +80,28 @@ class DocumentRepositoryTest {
 			.containsExactly(
 				tuple("key1", "value1"),
 				tuple("key2", "value2"));
+	}
+
+	@Test
+	void createWithUniqueConstraintViolation() {
+
+		// Arrange
+		final var registrationNumber = "2023-2281-123";
+		final var entity = createDocumentEntity(registrationNumber)
+			.withDocumentData(List.of(
+				DocumentDataEntity.create()
+					.withFileName("file-name.txt")
+					.withConfidentiality(ConfidentialityEmbeddable.create()),
+				DocumentDataEntity.create()
+					.withFileName("file-name.txt")
+					.withConfidentiality(ConfidentialityEmbeddable.create()))); // Duplicates of fileName
+
+		// Act
+		final var exception = assertThrows(DataIntegrityViolationException.class, () -> documentRepository.saveAndFlush(entity));
+
+		// Assert
+		assertThat(exception).isNotNull();
+		assertThat(exception.getMessage()).contains("Duplicate entry 'file-name.txt' for key 'uq_document_data_file_name'");
 	}
 
 	@Test
@@ -377,6 +402,8 @@ class DocumentRepositoryTest {
 	private static DocumentEntity createDocumentEntity(String registrationNumber) {
 		return DocumentEntity.create()
 			.withCreatedBy(CREATED_BY)
+			.withConfidentiality(ConfidentialityEmbeddable.create())
+			.withDescription("description")
 			.withMetadata(List.of(
 				DocumentMetadataEmbeddable.create().withKey("key1").withValue("value1"),
 				DocumentMetadataEmbeddable.create().withKey("key2").withValue("value2")))

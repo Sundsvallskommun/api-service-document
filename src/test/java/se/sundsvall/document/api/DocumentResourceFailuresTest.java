@@ -601,7 +601,7 @@ class DocumentResourceFailuresTest {
 		multipartBodyBuilder.part("document", documentDataCreateRequest);
 
 		// Act
-		final var response = webTestClient.post()
+		final var response = webTestClient.put()
 			.uri("/documents/" + registrationNumber + "/files")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))

@@ -6,7 +6,6 @@ import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -223,10 +222,15 @@ public class DocumentEntity implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		DocumentEntity that = (DocumentEntity) o;
-		return revision == that.revision && Objects.equals(id, that.id) && Objects.equals(municipalityId, that.municipalityId) && Objects.equals(registrationNumber, that.registrationNumber) && Objects.equals(description, that.description) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(createdBy, that.createdBy) && Objects.equals(created, that.created) && Objects.equals(documentData, that.documentData) && Objects.equals(metadata, that.metadata);
+		if (this == o) {
+			return true;
+		}
+		if ((o == null) || (getClass() != o.getClass())) {
+			return false;
+		}
+		final DocumentEntity that = (DocumentEntity) o;
+		return (revision == that.revision) && Objects.equals(id, that.id) && Objects.equals(municipalityId, that.municipalityId) && Objects.equals(registrationNumber, that.registrationNumber) && Objects.equals(description, that.description) && Objects
+			.equals(confidentiality, that.confidentiality) && Objects.equals(createdBy, that.createdBy) && Objects.equals(created, that.created) && Objects.equals(documentData, that.documentData) && Objects.equals(metadata, that.metadata);
 	}
 
 	@Override

@@ -23,7 +23,8 @@ import jakarta.persistence.UniqueConstraint;
 @Table(
 	name = "document_data",
 	uniqueConstraints = {
-		@UniqueConstraint(name = "uq_document_data_binary_id", columnNames = {"document_data_binary_id"})
+		@UniqueConstraint(name = "uq_document_data_binary_id", columnNames = { "document_data_binary_id" }),
+		@UniqueConstraint(name = "uq_document_data_file_name", columnNames = { "file_name" })
 	})
 public class DocumentDataEntity implements Serializable {
 
@@ -154,10 +155,15 @@ public class DocumentDataEntity implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		DocumentDataEntity that = (DocumentDataEntity) o;
-		return fileSizeInBytes == that.fileSizeInBytes && archive == that.archive && Objects.equals(id, that.id) && Objects.equals(mimeType, that.mimeType) && Objects.equals(fileName, that.fileName) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(documentDataBinary, that.documentDataBinary);
+		if (this == o) {
+			return true;
+		}
+		if ((o == null) || (getClass() != o.getClass())) {
+			return false;
+		}
+		final DocumentDataEntity that = (DocumentDataEntity) o;
+		return (fileSizeInBytes == that.fileSizeInBytes) && (archive == that.archive) && Objects.equals(id, that.id) && Objects.equals(mimeType, that.mimeType) && Objects.equals(fileName, that.fileName) && Objects.equals(confidentiality,
+			that.confidentiality) && Objects.equals(documentDataBinary, that.documentDataBinary);
 	}
 
 	@Override
