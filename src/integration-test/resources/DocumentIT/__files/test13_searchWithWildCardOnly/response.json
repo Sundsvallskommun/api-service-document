@@ -1,96 +1,99 @@
 {
-	"documents": [
-		{
-			"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
-			"registrationNumber": "2023-2281-123",
-			"revision": 3,
-			"confidential": false,
-			"description": "Document 1",
-			"created": "2023-06-28T12:03:00+02:00",
-			"createdBy": "User3",
-			"metadataList": [
-				{
-					"key": "document1-key1",
-					"value": "value-1"
-				},
-				{
-					"key": "document1-key2",
-					"value": "value-2"
-				},
-				{
-					"key": "document1-key3",
-					"value": "value-3"
-				},
-				{
-					"key": "document1-key4",
-					"value": "value-4"
-				}
-			],
-			"documentData": [
-				{
-					"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
-					"fileName": "file3.jpg",
-					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
-				}
-			]
-		},
-		{
-			"id": "8efd63a3-b525-4581-8b0b-9759f381a5a5",
-			"registrationNumber": "2023-2281-123",
-			"revision": 2,
-			"confidential": false,
-			"description": "Document 1",
-			"created": "2023-06-28T12:02:00+02:00",
-			"createdBy": "User2",
-			"metadataList": [
-				{
-					"key": "document1-key1",
-					"value": "value-1"
-				},
-				{
-					"key": "document1-key2",
-					"value": "value-2"
-				}
-			],
-			"documentData": [
-				{
-					"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
-					"fileName": "file2.jpg",
-					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
-				}
-			]
-		},
-		{
-			"id": "159c10bf-1b32-471b-b2d3-c4b4b13ea152",
-			"registrationNumber": "2023-2281-123",
-			"revision": 1,
-			"confidential": false,
-			"description": "Document 1",
-			"created": "2023-06-28T12:01:00+02:00",
-			"createdBy": "User1",
-			"metadataList": [
-				{
-					"key": "document1-key1",
-					"value": "value-1"
-				}
-			],
-			"documentData": [
-				{
-					"id": "faa3547e-f775-4799-9ac0-e07fab1df362",
-					"fileName": "file1.jpg",
-					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
-				}
-			]
-		}
-	],
-	"_meta": {
-		"page": 0,
-		"limit": 20,
-		"count": 3,
-		"totalRecords": 3,
-		"totalPages": 1
-	}
+  "documents": [
+    {
+      "id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
+      "registrationNumber": "2023-2281-123",
+      "revision": 3,
+      "confidential": false,
+      "description": "Document 1",
+      "created": "2023-06-28T12:03:00+02:00",
+      "createdBy": "User3",
+      "metadataList": [
+        {
+          "key": "document1-key1",
+          "value": "value-1"
+        },
+        {
+          "key": "document1-key2",
+          "value": "value-2"
+        },
+        {
+          "key": "document1-key3",
+          "value": "value-3"
+        },
+        {
+          "key": "document1-key4",
+          "value": "value-4"
+        }
+      ],
+      "documentData": [
+        {
+          "id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
+          "fileName": "file3.jpg",
+          "mimeType": "image/jpeg",
+          "fileSizeInBytes": 5068,
+          "archive": true
+        }
+      ]
+    },
+    {
+      "id": "8efd63a3-b525-4581-8b0b-9759f381a5a5",
+      "registrationNumber": "2023-2281-123",
+      "revision": 2,
+      "confidential": false,
+      "description": "Document 1",
+      "created": "2023-06-28T12:02:00+02:00",
+      "createdBy": "User2",
+      "metadataList": [
+        {
+          "key": "document1-key1",
+          "value": "value-1"
+        },
+        {
+          "key": "document1-key2",
+          "value": "value-2"
+        }
+      ],
+      "documentData": [
+        {
+          "id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
+          "fileName": "file2.jpg",
+          "mimeType": "image/jpeg",
+          "fileSizeInBytes": 5068,
+          "archive": true
+        }
+      ]
+    },
+    {
+      "id": "159c10bf-1b32-471b-b2d3-c4b4b13ea152",
+      "registrationNumber": "2023-2281-123",
+      "revision": 1,
+      "confidential": false,
+      "description": "Document 1",
+      "created": "2023-06-28T12:01:00+02:00",
+      "createdBy": "User1",
+      "metadataList": [
+        {
+          "key": "document1-key1",
+          "value": "value-1"
+        }
+      ],
+      "documentData": [
+        {
+          "id": "faa3547e-f775-4799-9ac0-e07fab1df362",
+          "fileName": "file1.jpg",
+          "mimeType": "image/jpeg",
+          "fileSizeInBytes": 5068,
+          "archive": true
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "page": 0,
+    "limit": 20,
+    "count": 3,
+    "totalRecords": 3,
+    "totalPages": 1
+  }
 }

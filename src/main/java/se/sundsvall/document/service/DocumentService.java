@@ -31,6 +31,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.Problem;
 
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
@@ -80,9 +81,9 @@ public class DocumentService {
 		this.eventLogProperties = eventLogProperties;
 	}
 
-	public Document create(DocumentCreateRequest documentCreateRequest, List<MultipartFile> documentFiles) {
+	public Document create(final DocumentCreateRequest documentCreateRequest, final List<MultipartFile> documentFile) {
 
-		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper, documentCreateRequest.getConfidentiality());
+		final var documentDataEntities = toDocumentDataEntities(documentFile, databaseHelper, documentCreateRequest.getConfidentiality());
 		final var registrationNumber = registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId());
 
 		final var documentEntity = toDocumentEntity(documentCreateRequest)
@@ -190,6 +191,7 @@ public class DocumentService {
 			.findFirst()
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND.formatted(documentDataId)))
 			.withConfidentiality(toConfidentialityEmbeddable(documentDataUpdateRequest.getConfidentiality()));
+		Optional.ofNullable(documentDataUpdateRequest.getArchive()).ifPresent(documentDataEntity::setArchive);
 
 		// Do not update existing entity, create a new revision instead.
 		final var newDocumentEntity = copyDocumentEntity(documentEntity)

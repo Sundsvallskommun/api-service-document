@@ -5,12 +5,14 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import java.util.List;
 import java.util.Objects;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "DocumentCreateRequest model.")
 public class DocumentCreateRequest {
@@ -105,23 +107,23 @@ public class DocumentCreateRequest {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(confidentiality, createdBy, description, metadataList, municipalityId);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DocumentCreateRequest that = (DocumentCreateRequest) o;
+		return Objects.equals(municipalityId, that.municipalityId) && Objects.equals(createdBy, that.createdBy) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(description, that.description) && Objects.equals(metadataList, that.metadataList);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentCreateRequest other)) { return false; }
-		return Objects.equals(confidentiality, other.confidentiality) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList) && Objects.equals(municipalityId,
-			other.municipalityId);
+	public int hashCode() {
+		return Objects.hash(municipalityId, createdBy, confidentiality, description, metadataList);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", description=").append(description).append(", metadataList=")
-			.append(metadataList).append("]");
+		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", description=").append(description).append(", metadataList=").append(
+			metadataList).append("]");
 		return builder.toString();
 	}
 }

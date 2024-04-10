@@ -21,6 +21,7 @@
         id varchar(255) not null,
         legal_citation varchar(255),
         mime_type varchar(255),
+        archive boolean not null,
         primary key (id)
     ) engine=InnoDB;
 

@@ -16,6 +16,7 @@
 	"documentData": [
 		{
 			"id": "${json-unit.any-string}",
+			"archive": true,
 			"fileName": "image.png",
 			"mimeType": "image/png",
 			"fileSizeInBytes": 227546

@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mariadb.jdbc.MariaDbBlob;
@@ -51,10 +54,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.ThrowableProblem;
 
-import generated.se.sundsvall.eventlog.Event;
-import generated.se.sundsvall.eventlog.Metadata;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
@@ -71,6 +70,9 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 import se.sundsvall.document.integration.eventlog.EventlogClient;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
+
+import generated.se.sundsvall.eventlog.Event;
+import generated.se.sundsvall.eventlog.Metadata;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
@@ -357,7 +359,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.png\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().get(0).getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getFirst().getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 		verifyNoInteractions(eventlogClientMock);
 	}
@@ -389,7 +391,7 @@ class DocumentServiceTest {
 		final var documentEntity = createDocumentEntity();
 
 		// Set id to something that wont be found.
-		documentEntity.getDocumentData().get(0).setId("Something else");
+		documentEntity.getDocumentData().getFirst().setId("Something else");
 
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue())).thenReturn(Optional.of(documentEntity));
 
@@ -444,7 +446,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, PUBLIC.getValue());
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.png\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().get(0).getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getFirst().getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 		verifyNoInteractions(eventlogClientMock);
 	}
@@ -466,7 +468,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(REGISTRATION_NUMBER, REVISION, PUBLIC.getValue());
 		verify(httpServletResponseMock).addHeader(CONTENT_TYPE, MIME_TYPE);
 		verify(httpServletResponseMock).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"image.png\"");
-		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().get(0).getDocumentDataBinary().getBinaryFile().length());
+		verify(httpServletResponseMock).setContentLength((int) documentEntity.getDocumentData().getFirst().getDocumentDataBinary().getBinaryFile().length());
 		verify(httpServletResponseMock).getOutputStream();
 		verifyNoInteractions(eventlogClientMock);
 	}
@@ -924,7 +926,7 @@ class DocumentServiceTest {
 		// Arrange
 		final var documentEntity = createDocumentEntity();
 
-		documentEntity.getDocumentData().get(0).withId("some-id-that-will-not-be-found");
+		documentEntity.getDocumentData().getFirst().withId("some-id-that-will-not-be-found");
 
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(Optional.of(documentEntity));
 

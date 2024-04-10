@@ -5,10 +5,11 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import java.util.List;
 import java.util.Objects;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "DocumentUpdateRequest model.")
 public class DocumentUpdateRequest {
@@ -68,21 +69,23 @@ public class DocumentUpdateRequest {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DocumentUpdateRequest that = (DocumentUpdateRequest) o;
+		return Objects.equals(createdBy, that.createdBy) && Objects.equals(description, that.description) && Objects.equals(metadataList, that.metadataList);
+	}
+
+	@Override
 	public int hashCode() {
 		return Objects.hash(createdBy, description, metadataList);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentUpdateRequest other)) { return false; }
-		return Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
-	}
-
-	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", description=").append(description).append(", metadataList=").append(metadataList).append("]");
+		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", description=")
+			.append(description).append(", metadataList=").append(metadataList).append("]");
 		return builder.toString();
 	}
 }

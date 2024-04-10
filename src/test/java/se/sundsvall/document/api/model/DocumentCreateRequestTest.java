@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +34,7 @@ class DocumentCreateRequestTest {
 		final var description = "description";
 		final var metadataList = List.of(DocumentMetadata.create());
 		final var municipalityId = "municipalityId";
+		final var archiveMap = Map.of("filename", true, "filename2", false);
 
 		final var bean = DocumentCreateRequest.create()
 			.withConfidentiality(confidentiality)

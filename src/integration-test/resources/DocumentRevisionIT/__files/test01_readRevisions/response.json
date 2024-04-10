@@ -19,7 +19,8 @@
 					"id": "faa3547e-f775-4799-9ac0-e07fab1df362",
 					"fileName": "file1.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive": true
 				}
 			]
 		},
@@ -54,7 +55,8 @@
 					"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
 					"fileName": "file3.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive": true
 				}
 			]
 		},
@@ -81,7 +83,8 @@
 					"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
 					"fileName": "file2.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"fileSizeInBytes": 5068,
+					"archive": true
 				}
 			]
 		}
