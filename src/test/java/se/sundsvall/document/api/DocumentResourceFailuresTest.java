@@ -597,8 +597,7 @@ class DocumentResourceFailuresTest {
 				.withLegalCitation("legalCitation"))
 			.withCreatedBy(" ");
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFiles", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("documentFiles", "file-content").filename("test2.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", documentDataCreateRequest);
 
 		// Act

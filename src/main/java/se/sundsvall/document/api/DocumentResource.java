@@ -149,14 +149,13 @@ public class DocumentResource {
 	public ResponseEntity<Void> addFiles(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
 		@RequestPart("document") @Schema(description = "Document", implementation = DocumentDataCreateRequest.class) String documentDataString,
-		@RequestPart(value = "documentFiles") List<MultipartFile> documentFiles) throws JsonProcessingException {
+		@RequestPart(value = "documentFile") MultipartFile documentFile) throws JsonProcessingException {
 
 		// If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		final var documentDataCreateRequest = objectMapper.readValue(documentDataString, DocumentDataCreateRequest.class);
 		validate(documentDataCreateRequest);
 
-		// TODO: Implement
-		// documentService.addFiles(documentDataCreateRequest, documentFiles);
+		documentService.addFile(registrationNumber, documentDataCreateRequest, documentFile);
 
 		return noContent().build();
 	}
