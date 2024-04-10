@@ -48,7 +48,7 @@ public class DocumentDataEntity implements Serializable {
 	private long fileSizeInBytes;
 
 	@Column(name = "archive")
-	private boolean archive = false;
+	private boolean archive;
 
 	@OneToOne(fetch = LAZY, cascade = ALL, orphanRemoval = true)
 	@JoinColumn(

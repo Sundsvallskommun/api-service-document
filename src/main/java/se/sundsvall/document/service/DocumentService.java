@@ -1,8 +1,6 @@
 package se.sundsvall.document.service;
 
 import static generated.se.sundsvall.eventlog.EventType.UPDATE;
-import static java.util.Collections.emptyList;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -33,6 +31,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.Problem;
 
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
@@ -90,9 +89,6 @@ public class DocumentService {
 		final var documentEntity = toDocumentEntity(documentCreateRequest)
 			.withRegistrationNumber(registrationNumber)
 			.withDocumentData(documentDataEntities);
-
-		documentEntity.getDocumentData().forEach(data ->
-			Optional.ofNullable(documentCreateRequest.getArchiveMap().get(data.getFileName())).ifPresent(data::setArchive));
 
 		return toDocument(documentRepository.save(documentEntity));
 	}
@@ -195,6 +191,7 @@ public class DocumentService {
 			.findFirst()
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND.formatted(documentDataId)))
 			.withConfidentiality(toConfidentialityEmbeddable(documentDataUpdateRequest.getConfidentiality()));
+		Optional.ofNullable(documentDataUpdateRequest.getArchive()).ifPresent(documentDataEntity::setArchive);
 
 		// Do not update existing entity, create a new revision instead.
 		final var newDocumentEntity = copyDocumentEntity(documentEntity)
@@ -213,10 +210,6 @@ public class DocumentService {
 
 		// Do not update existing entity, create a new revision instead.
 		final var newDocumentEntity = toDocumentEntity(documentUpdateRequest, existingDocumentEntity);
-
-		Optional.ofNullable(newDocumentEntity.getDocumentData()).orElse(emptyList()).forEach(data ->
-			Optional.ofNullable(documentUpdateRequest.getArchiveMap()).flatMap(archiveMap ->
-				Optional.ofNullable(archiveMap.get(data.getFileName()))).ifPresent(data::setArchive));
 
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}

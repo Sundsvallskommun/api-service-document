@@ -37,14 +37,12 @@ class DocumentUpdateRequestTest {
 		final var bean = DocumentUpdateRequest.create()
 			.withCreatedBy(createdBy)
 			.withDescription(description)
-			.withMetadataList(metadataList)
-			.withArchiveMap(archiveMap);
+			.withMetadataList(metadataList);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 		assertThat(bean.getDescription()).isEqualTo(description);
 		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
-		assertThat(bean.getArchiveMap()).isEqualTo(archiveMap);
 	}
 
 	@Test

@@ -33,16 +33,18 @@ class DocumentDataCreateRequestTest {
 
 		final var bean = DocumentDataCreateRequest.create()
 			.withConfidentiality(confidentiality)
-			.withCreatedBy(createdBy);
+			.withCreatedBy(createdBy)
+			.withArchive(false);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
+		assertThat(bean.getArchive()).isFalse();
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentDataCreateRequest.create()).hasAllNullFieldsOrProperties();
-		assertThat(new DocumentDataCreateRequest()).hasAllNullFieldsOrProperties();
+		assertThat(DocumentDataCreateRequest.create()).hasAllNullFieldsOrPropertiesExcept("archive");
+		assertThat(new DocumentDataCreateRequest()).hasAllNullFieldsOrPropertiesExcept("archive");
 	}
 }

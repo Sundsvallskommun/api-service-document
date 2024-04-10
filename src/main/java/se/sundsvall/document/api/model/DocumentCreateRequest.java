@@ -1,18 +1,18 @@
 package se.sundsvall.document.api.model;
 
-import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "DocumentCreateRequest model.")
 public class DocumentCreateRequest {
@@ -36,10 +36,6 @@ public class DocumentCreateRequest {
 	@NotEmpty
 	@Schema(description = "List of DocumentMetadata objects.", requiredMode = REQUIRED)
 	private List<@Valid DocumentMetadata> metadataList;
-
-	@Schema(description = "Key is filename and value represents if a specific file should be archived.", requiredMode = NOT_REQUIRED)
-	private Map<String, Boolean> archiveMap;
-
 
 	public static DocumentCreateRequest create() {
 		return new DocumentCreateRequest();
@@ -110,37 +106,24 @@ public class DocumentCreateRequest {
 		return this;
 	}
 
-	public Map<String, Boolean> getArchiveMap() {
-		return archiveMap;
-	}
-
-	public void setArchiveMap(final Map<String, Boolean> archiveMap) {
-		this.archiveMap = archiveMap;
-	}
-
-	public DocumentCreateRequest withArchiveMap(final Map<String, Boolean> archiveMap) {
-		this.archiveMap = archiveMap;
-		return this;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		DocumentCreateRequest that = (DocumentCreateRequest) o;
-		return Objects.equals(municipalityId, that.municipalityId) && Objects.equals(createdBy, that.createdBy) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(description, that.description) && Objects.equals(metadataList, that.metadataList) && Objects.equals(archiveMap, that.archiveMap);
+		return Objects.equals(municipalityId, that.municipalityId) && Objects.equals(createdBy, that.createdBy) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(description, that.description) && Objects.equals(metadataList, that.metadataList);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(municipalityId, createdBy, confidentiality, description, metadataList, archiveMap);
+		return Objects.hash(municipalityId, createdBy, confidentiality, description, metadataList);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", description=").append(description).append(", metadataList=").append(
-			metadataList).append(", archiveMap=").append(archiveMap).append("]");
+			metadataList).append("]");
 		return builder.toString();
 	}
 }

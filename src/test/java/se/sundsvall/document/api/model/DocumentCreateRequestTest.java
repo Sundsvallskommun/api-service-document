@@ -41,8 +41,7 @@ class DocumentCreateRequestTest {
 			.withCreatedBy(createdBy)
 			.withDescription(description)
 			.withMetadataList(metadataList)
-			.withMunicipalityId(municipalityId)
-			.withArchiveMap(archiveMap);
+			.withMunicipalityId(municipalityId);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
@@ -50,7 +49,6 @@ class DocumentCreateRequestTest {
 		assertThat(bean.getDescription()).isEqualTo(description);
 		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
 		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);
-		assertThat(bean.getArchiveMap()).isEqualTo(archiveMap);
 	}
 
 	@Test

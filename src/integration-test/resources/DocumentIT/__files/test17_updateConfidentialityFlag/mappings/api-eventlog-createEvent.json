@@ -1,39 +1,39 @@
 {
-	"name": "api-eventlog-createEvent",
-	"request": {
-		"method": "POST",
-		"urlPath": "/api-eventlog/9043c3d3-14ff-4d44-a2a8-ffb45122f2c6",
-		"headers": {
-			"Authorization": {
-				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
-			}
-		},
-		"bodyPatterns": [
-			{
-			   "ignoreArrayOrder" : true,
-				"equalToJson": {
-					"type": "UPDATE",
-					"message": "Confidentiality flag updated to: 'true' for document with registrationNumber: '2023-2281-123'. Action performed by: 'username123'",
-					"expires": "${json-unit.any-string}",
-					"owner": "Document",
-					"metadata": [
-						{
-							"key": "ExecutedBy",
-							"value": "username123"
-						},
-						{
-							"key": "RegistrationNumber",
-							"value": "2023-2281-123"
-						}
-					]
-				}
-			}
-		]
-	},
-	"response": {
-		"headers": {
-			"Content-Type": "application/json"
-		},
-		"status": 202
-	}
+  "name": "api-eventlog-createEvent",
+  "request": {
+    "method": "POST",
+    "urlPath": "/api-eventlog/9043c3d3-14ff-4d44-a2a8-ffb45122f2c6",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+      }
+    },
+    "bodyPatterns": [
+      {
+        "ignoreArrayOrder": true,
+        "equalToJson": {
+          "type": "UPDATE",
+          "message": "Confidentiality flag updated to: 'true' for document with registrationNumber: '2023-2281-123'. Action performed by: 'username123'",
+          "expires": "${json-unit.any-string}",
+          "owner": "Document",
+          "metadata": [
+            {
+              "key": "ExecutedBy",
+              "value": "username123"
+            },
+            {
+              "key": "RegistrationNumber",
+              "value": "2023-2281-123"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "status": 202
+  }
 }

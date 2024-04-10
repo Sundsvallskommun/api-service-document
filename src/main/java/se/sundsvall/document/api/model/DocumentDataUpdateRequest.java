@@ -4,8 +4,9 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 import java.util.Objects;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "DocumentDataUpdateRequest model.")
 public class DocumentDataUpdateRequest {
@@ -16,6 +17,9 @@ public class DocumentDataUpdateRequest {
 
 	@Schema(description = "Confidentiality")
 	private Confidentiality confidentiality;
+
+	@Schema(description = "Should the document be archived?", example = "false")
+	private Boolean archive;
 
 	public static DocumentDataUpdateRequest create() {
 		return new DocumentDataUpdateRequest();
@@ -47,22 +51,36 @@ public class DocumentDataUpdateRequest {
 		return this;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(confidentiality, createdBy);
+	public Boolean getArchive() {
+		return archive;
+	}
+
+	public void setArchive(Boolean archive) {
+		this.archive = archive;
+	}
+
+	public DocumentDataUpdateRequest withArchive(Boolean archive) {
+		this.archive = archive;
+		return this;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (!(obj instanceof final DocumentDataUpdateRequest other)) { return false; }
-		return Objects.equals(confidentiality, other.confidentiality) && Objects.equals(createdBy, other.createdBy);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DocumentDataUpdateRequest that = (DocumentDataUpdateRequest) o;
+		return Objects.equals(createdBy, that.createdBy) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(archive, that.archive);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(createdBy, confidentiality, archive);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentDataUpdateRequest [createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append("]");
+		builder.append("DocumentDataUpdateRequest [createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append("]");
 		return builder.toString();
 	}
 }
