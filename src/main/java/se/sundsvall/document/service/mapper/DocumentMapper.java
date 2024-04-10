@@ -51,13 +51,19 @@ public class DocumentMapper {
 	public static List<DocumentDataEntity> toDocumentDataEntities(List<MultipartFile> multipartFiles, DatabaseHelper databaseHelper, Confidentiality confidentiality) {
 		return Optional.ofNullable(multipartFiles)
 			.map(files -> files.stream()
-				.map(file -> DocumentDataEntity.create()
-					.withConfidentiality(toConfidentialityEmbeddable(confidentiality))
-					.withDocumentDataBinary(toDocumentDataBinaryEntity(file, databaseHelper))
-					.withMimeType(file.getContentType())
-					.withFileName(file.getOriginalFilename())
-					.withFileSizeInBytes(file.getSize()))
+				.map(file -> toDocumentDataEntity(file, databaseHelper, confidentiality))
 				.toList())
+			.orElse(null);
+	}
+
+	public static DocumentDataEntity toDocumentDataEntity(MultipartFile multipartFiles, DatabaseHelper databaseHelper, Confidentiality confidentiality) {
+		return Optional.ofNullable(multipartFiles)
+			.map(file -> DocumentDataEntity.create()
+				.withConfidentiality(toConfidentialityEmbeddable(confidentiality))
+				.withDocumentDataBinary(toDocumentDataBinaryEntity(file, databaseHelper))
+				.withMimeType(file.getContentType())
+				.withFileName(file.getOriginalFilename())
+				.withFileSizeInBytes(file.getSize()))
 			.orElse(null);
 	}
 
@@ -232,7 +238,7 @@ public class DocumentMapper {
 		return Optional.ofNullable(documentDataEntityList)
 			.map(list -> list.stream()
 				.map(DocumentMapper::toDocumentData)
-				.toList())
+				.collect(toCollection(ArrayList::new)))
 			.orElse(null);
 	}
 

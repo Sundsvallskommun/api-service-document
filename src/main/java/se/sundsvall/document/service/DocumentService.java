@@ -1,6 +1,7 @@
 package se.sundsvall.document.service;
 
 import static generated.se.sundsvall.eventlog.EventType.UPDATE;
+import static java.util.Collections.emptyList;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -28,6 +29,7 @@ import static se.sundsvall.document.service.mapper.EventlogMapper.toEvent;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +46,7 @@ import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
+import se.sundsvall.document.api.model.DocumentDataCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
@@ -113,7 +116,14 @@ public class DocumentService {
 	}
 
 	public PagedDocumentResponse search(String query, boolean includeConfidential, Pageable pageable) {
-		return toPagedDocumentResponse(documentRepository.search(query, includeConfidential, pageable));
+		final var list = toPagedDocumentResponse(documentRepository.search(query, includeConfidential, pageable));
+
+		// Remove all confidential documentData elements.
+		list.getDocuments().stream()
+			.forEach(document -> document.getDocumentData()
+				.removeIf(documentData -> !includeConfidential && Optional.ofNullable(documentData.getConfidentiality()).orElse(Confidentiality.create()).isConfidential()));
+
+		return list;
 	}
 
 	public void readFile(String registrationNumber, String documentDataId, boolean includeConfidential, HttpServletResponse response) {
@@ -148,6 +158,25 @@ public class DocumentService {
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND.formatted(documentDataId)));
 
 		addFileContentToResponse(documentDataEntity, response);
+	}
+
+	public Document addFile(String registrationNumber, DocumentDataCreateRequest documentDataCreateRequest, MultipartFile documentFile) {
+
+		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, CONFIDENTIAL_AND_PUBLIC.getValue())
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
+
+		// Add documentData element to existing list.
+		final var newDocumentDataEntity = DocumentMapper.toDocumentDataEntity(documentFile, databaseHelper, documentDataCreateRequest.getConfidentiality());
+		final var documentDataList = new ArrayList<>(Optional.ofNullable(documentEntity.getDocumentData()).orElse(emptyList()));
+		documentDataList.add(newDocumentDataEntity);
+
+		// Do not update existing entity, create a new revision instead.
+		final var newDocumentEntity = copyDocumentEntity(documentEntity)
+			.withRevision(documentEntity.getRevision() + 1)
+			.withCreatedBy(documentDataCreateRequest.getCreatedBy())
+			.withDocumentData(documentDataList);
+
+		return toDocument(documentRepository.save(newDocumentEntity));
 	}
 
 	public void deleteFile(String registrationNumber, String documentDataId) {
@@ -224,7 +253,8 @@ public class DocumentService {
 			documentEntity.setConfidentiality(newConfidentialitySettings);
 
 			// Set confidentiality settings on document-data-level.
-			documentEntity.getDocumentData().forEach(documentDataEntity -> documentDataEntity.setConfidentiality(newConfidentialitySettings));
+			Optional.ofNullable(documentEntity.getDocumentData()).orElse(emptyList())
+				.forEach(documentDataEntity -> documentDataEntity.setConfidentiality(newConfidentialitySettings));
 		});
 
 		// Send info to Eventlog.
