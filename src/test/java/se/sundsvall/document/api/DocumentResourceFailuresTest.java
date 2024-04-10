@@ -597,12 +597,11 @@ class DocumentResourceFailuresTest {
 				.withLegalCitation("legalCitation"))
 			.withCreatedBy(" ");
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFiles", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("documentFiles", "file-content").filename("test2.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", documentDataCreateRequest);
 
 		// Act
-		final var response = webTestClient.post()
+		final var response = webTestClient.put()
 			.uri("/documents/" + registrationNumber + "/files")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))

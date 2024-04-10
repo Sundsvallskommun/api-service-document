@@ -13,6 +13,7 @@
     ) engine=InnoDB;
 
     create table document_data (
+        archive bit,
         confidential bit not null,
         file_size_in_bytes bigint default 0,
         document_data_binary_id varchar(255),
@@ -21,7 +22,6 @@
         id varchar(255) not null,
         legal_citation varchar(255),
         mime_type varchar(255),
-        archive boolean not null,
         primary key (id)
     ) engine=InnoDB;
 
@@ -63,6 +63,9 @@
 
     alter table if exists document_data 
        add constraint uq_document_data_binary_id unique (document_data_binary_id);
+
+    alter table if exists document_data 
+       add constraint uq_document_data_file_name unique (file_name);
 
     create index ix_key 
        on document_metadata (`key`);

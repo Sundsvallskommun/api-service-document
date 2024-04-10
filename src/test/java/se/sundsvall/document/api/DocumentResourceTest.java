@@ -333,7 +333,7 @@ class DocumentResourceTest {
 	}
 
 	@Test
-	void addFiles() {
+	void addFile() {
 
 		// Arrange
 		final var registrationNumber = "2023-1337";
@@ -345,15 +345,13 @@ class DocumentResourceTest {
 				.withLegalCitation("legalCitation"))
 			.withCreatedBy("user");
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFiles", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("documentFiles", "file-content").filename("test2.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFile", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", documentDataCreateRequest);
 
-		// TODO: Mock service
-		// when(documentServiceMock.addFiles(any(), any())).thenReturn(Document.create());
+		when(documentServiceMock.addFile(any(), any(), any())).thenReturn(Document.create());
 
 		// Act
-		webTestClient.post()
+		webTestClient.put()
 			.uri("/documents/" + registrationNumber + "/files")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
@@ -363,8 +361,7 @@ class DocumentResourceTest {
 			.isEmpty();
 
 		// Assert
-		// TODO: Perform verification
-		// verify(documentServiceMock).addFiles(eq(documentDataCreateRequest), ArgumentMatchers.<List<MultipartFile>>any());
+		verify(documentServiceMock).addFile(eq(registrationNumber), eq(documentDataCreateRequest), ArgumentMatchers.<MultipartFile>any());
 	}
 
 	@Test
