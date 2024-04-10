@@ -724,7 +724,52 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getConfidentiality()).isEqualTo(existingEntity.getConfidentiality());
 		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo("changedUser");
 		assertThat(capturedDocumentEntity.getDescription()).isEqualTo(existingEntity.getDescription());
-		assertThat(capturedDocumentEntity.getDocumentData()).hasSize(2).extracting(DocumentDataEntity::getFileName).containsExactlyInAnyOrder("image.png", "image2.png");
+		assertThat(capturedDocumentEntity.getDocumentData())
+			.hasSize(2)
+			.extracting(DocumentDataEntity::getFileName, DocumentDataEntity::getConfidentiality)
+			.containsExactlyInAnyOrder(
+				tuple("image.png", ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL).withLegalCitation(LEGAL_CITATION)),
+				tuple("image2.png", ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL).withLegalCitation(LEGAL_CITATION)));
+		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(existingEntity.getMetadata());
+		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
+		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
+	}
+
+	@Test
+	void addFileWithSameName() throws IOException {
+
+		final var existingEntity = createDocumentEntity();
+		final var documentDataCreateRequest = DocumentDataCreateRequest.create()
+			.withCreatedBy("changedUser")
+			.withConfidentiality(Confidentiality.create()
+				.withConfidential(CONFIDENTIAL)
+				.withLegalCitation("Other value"));
+
+		final var file = new File("src/test/resources/files/image2.png");
+		final var multipartFile = (MultipartFile) new MockMultipartFile("file", FILE_NAME, "image/png", toByteArray(new FileInputStream(file))); // Same name as in "existingEntity"
+
+		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(Optional.of(existingEntity));
+		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
+
+		// Act
+		final var result = documentService.addFile(REGISTRATION_NUMBER, documentDataCreateRequest, multipartFile);
+
+		// Assert
+		assertThat(result).isNotNull();
+
+		verify(databaseHelperMock).convertToBlob(multipartFile);
+		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
+		verifyNoInteractions(registrationNumberServiceMock, eventlogClientMock);
+
+		final var capturedDocumentEntity = documentEntityCaptor.getValue();
+		assertThat(capturedDocumentEntity).isNotNull();
+		assertThat(capturedDocumentEntity.getConfidentiality()).isEqualTo(existingEntity.getConfidentiality());
+		assertThat(capturedDocumentEntity.getCreatedBy()).isEqualTo("changedUser");
+		assertThat(capturedDocumentEntity.getDescription()).isEqualTo(existingEntity.getDescription());
+		assertThat(capturedDocumentEntity.getDocumentData())
+			.hasSize(1)
+			.extracting(DocumentDataEntity::getFileName, DocumentDataEntity::getConfidentiality)
+			.containsExactlyInAnyOrder(tuple("image.png", ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL).withLegalCitation("Other value")));
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(existingEntity.getMetadata());
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
@@ -967,7 +1012,7 @@ class DocumentServiceTest {
 
 		try {
 			return DocumentDataEntity.create()
-				.withConfidentiality(ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL))
+				.withConfidentiality(ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL).withLegalCitation(LEGAL_CITATION))
 				.withId(DOCUMENT_DATA_ID)
 				.withDocumentDataBinary(DocumentDataBinaryEntity.create().withBinaryFile(new MariaDbBlob(toByteArray(new FileInputStream(new File("src/test/resources/files/image.png"))))))
 				.withFileName(FILE_NAME)

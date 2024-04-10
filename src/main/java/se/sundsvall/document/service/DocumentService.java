@@ -53,6 +53,7 @@ import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.integration.db.DatabaseHelper;
 import se.sundsvall.document.integration.db.DocumentRepository;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
+import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.eventlog.EventlogClient;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
 import se.sundsvall.document.service.mapper.DocumentMapper;
@@ -167,14 +168,14 @@ public class DocumentService {
 
 		// Add documentData element to existing list.
 		final var newDocumentDataEntity = DocumentMapper.toDocumentDataEntity(documentFile, databaseHelper, documentDataCreateRequest.getConfidentiality());
-		final var documentDataList = new ArrayList<>(Optional.ofNullable(documentEntity.getDocumentData()).orElse(emptyList()));
-		documentDataList.add(newDocumentDataEntity);
 
 		// Do not update existing entity, create a new revision instead.
 		final var newDocumentEntity = copyDocumentEntity(documentEntity)
 			.withRevision(documentEntity.getRevision() + 1)
-			.withCreatedBy(documentDataCreateRequest.getCreatedBy())
-			.withDocumentData(documentDataList);
+			.withCreatedBy(documentDataCreateRequest.getCreatedBy());
+
+		// Adds the new documentData element if the file name doesn't exist already, otherwise the old element is replaced.
+		addOrReplaceDocumentDataEntity(newDocumentEntity, newDocumentDataEntity);
 
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}
@@ -296,5 +297,16 @@ public class DocumentService {
 			registrationNumber,
 			TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_FILE.formatted(confidentiality.isConfidential(), confidentiality.getLegalCitation(), registrationNumber, fileName, documentDataUpdateRequest.getCreatedBy()),
 			documentDataUpdateRequest.getCreatedBy()));
+	}
+
+	private void addOrReplaceDocumentDataEntity(DocumentEntity documentEntity, DocumentDataEntity documentDataEntity) {
+
+		final var documentDataList = Optional.ofNullable(documentEntity.getDocumentData()).orElse(new ArrayList<>());
+
+		// Remove existing documentData element if the filename already exists.
+		documentDataList.removeIf(documentData -> documentData.getFileName().equalsIgnoreCase(documentDataEntity.getFileName()));
+
+		// Add new documentData element.
+		documentDataList.add(documentDataEntity);
 	}
 }

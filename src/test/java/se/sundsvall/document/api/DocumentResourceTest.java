@@ -349,7 +349,7 @@ class DocumentResourceTest {
 		when(documentServiceMock.addFile(any(), any(), any())).thenReturn(Document.create());
 
 		// Act
-		webTestClient.post()
+		webTestClient.put()
 			.uri("/documents/" + registrationNumber + "/files")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
