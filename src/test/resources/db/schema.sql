@@ -64,9 +64,6 @@
     alter table if exists document_data 
        add constraint uq_document_data_binary_id unique (document_data_binary_id);
 
-    alter table if exists document_data 
-       add constraint uq_document_data_file_name unique (file_name);
-
     create index ix_key 
        on document_metadata (`key`);
 
