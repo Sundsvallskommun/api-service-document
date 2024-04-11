@@ -144,10 +144,10 @@ public class DocumentResource {
 	}
 
 	@PutMapping(path = "/{registrationNumber}/files", consumes = { MULTIPART_FORM_DATA_VALUE }, produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Add document file data")
+	@Operation(summary = "Add document file data (or replace existing if filename already exists on the document object)")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Void> addFiles(
+	public ResponseEntity<Void> addOrReplaceFile(
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
 		@RequestPart("document") @Schema(description = "Document", implementation = DocumentDataCreateRequest.class) String documentDataString,
 		@RequestPart(value = "documentFile") MultipartFile documentFile) throws JsonProcessingException {
@@ -156,7 +156,7 @@ public class DocumentResource {
 		final var documentDataCreateRequest = objectMapper.readValue(documentDataString, DocumentDataCreateRequest.class);
 		validate(documentDataCreateRequest);
 
-		documentService.addFile(registrationNumber, documentDataCreateRequest, documentFile);
+		documentService.addOrReplaceFile(registrationNumber, documentDataCreateRequest, documentFile);
 
 		return noContent().build();
 	}

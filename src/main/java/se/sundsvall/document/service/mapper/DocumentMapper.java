@@ -56,8 +56,8 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	public static DocumentDataEntity toDocumentDataEntity(MultipartFile multipartFiles, DatabaseHelper databaseHelper, Confidentiality confidentiality) {
-		return Optional.ofNullable(multipartFiles)
+	public static DocumentDataEntity toDocumentDataEntity(MultipartFile multipartFile, DatabaseHelper databaseHelper, Confidentiality confidentiality) {
+		return Optional.ofNullable(multipartFile)
 			.map(file -> DocumentDataEntity.create()
 				.withConfidentiality(toConfidentialityEmbeddable(confidentiality))
 				.withDocumentDataBinary(toDocumentDataBinaryEntity(file, databaseHelper))

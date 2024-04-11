@@ -2,6 +2,7 @@ package se.sundsvall.document.service;
 
 import static generated.se.sundsvall.eventlog.EventType.UPDATE;
 import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -22,6 +23,7 @@ import static se.sundsvall.document.service.mapper.DocumentMapper.copyDocumentEn
 import static se.sundsvall.document.service.mapper.DocumentMapper.toConfidentialityEmbeddable;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocument;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntities;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntity;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentEntity;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toInclusionFilter;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toPagedDocumentResponse;
@@ -33,8 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.Problem;
 
+import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
@@ -85,9 +86,9 @@ public class DocumentService {
 		this.eventLogProperties = eventLogProperties;
 	}
 
-	public Document create(final DocumentCreateRequest documentCreateRequest, final List<MultipartFile> documentFile) {
+	public Document create(final DocumentCreateRequest documentCreateRequest, final List<MultipartFile> documentFiles) {
 
-		final var documentDataEntities = toDocumentDataEntities(documentFile, databaseHelper, documentCreateRequest.getConfidentiality());
+		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper, documentCreateRequest.getConfidentiality());
 		final var registrationNumber = registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId());
 
 		final var documentEntity = toDocumentEntity(documentCreateRequest)
@@ -162,13 +163,13 @@ public class DocumentService {
 		addFileContentToResponse(documentDataEntity, response);
 	}
 
-	public Document addFile(String registrationNumber, DocumentDataCreateRequest documentDataCreateRequest, MultipartFile documentFile) {
+	public Document addOrReplaceFile(String registrationNumber, DocumentDataCreateRequest documentDataCreateRequest, MultipartFile documentFile) {
 
 		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, CONFIDENTIAL_AND_PUBLIC.getValue())
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
-		// Add documentData element to existing list.
-		final var newDocumentDataEntity = DocumentMapper.toDocumentDataEntity(documentFile, databaseHelper, documentDataCreateRequest.getConfidentiality());
+		// Create documentData element to add/replace.
+		final var newDocumentDataEntity = toDocumentDataEntity(documentFile, databaseHelper, documentDataCreateRequest.getConfidentiality());
 
 		// Do not update existing entity, create a new revision instead.
 		final var newDocumentEntity = copyDocumentEntity(documentEntity)
@@ -305,10 +306,12 @@ public class DocumentService {
 
 		final var documentDataList = Optional.ofNullable(documentEntity.getDocumentData()).orElse(new ArrayList<>());
 
-		// Remove existing documentData element if the filename already exists.
-		documentDataList.removeIf(documentData -> documentData.getFileName().equalsIgnoreCase(documentDataEntity.getFileName()));
+		// Remove existing documentData element, if the filename already exists.
+		documentDataList.removeIf(documentData -> equalsIgnoreCase(documentData.getFileName(), documentDataEntity.getFileName()));
 
 		// Add new documentData element.
 		documentDataList.add(documentDataEntity);
+
+		documentEntity.setDocumentData(documentDataList);
 	}
 }
