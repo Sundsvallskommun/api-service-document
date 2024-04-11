@@ -36,9 +36,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mariadb.jdbc.MariaDbBlob;
@@ -54,6 +51,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.ThrowableProblem;
 
+import generated.se.sundsvall.eventlog.Event;
+import generated.se.sundsvall.eventlog.Metadata;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
@@ -71,9 +72,6 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 import se.sundsvall.document.integration.eventlog.EventlogClient;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
-
-import generated.se.sundsvall.eventlog.Event;
-import generated.se.sundsvall.eventlog.Metadata;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
@@ -712,7 +710,7 @@ class DocumentServiceTest {
 		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
 
 		// Act
-		final var result = documentService.addFile(REGISTRATION_NUMBER, documentDataCreateRequest, multipartFile);
+		final var result = documentService.addOrReplaceFile(REGISTRATION_NUMBER, documentDataCreateRequest, multipartFile);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -754,7 +752,7 @@ class DocumentServiceTest {
 		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
 
 		// Act
-		final var result = documentService.addFile(REGISTRATION_NUMBER, documentDataCreateRequest, multipartFile);
+		final var result = documentService.addOrReplaceFile(REGISTRATION_NUMBER, documentDataCreateRequest, multipartFile);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -793,7 +791,7 @@ class DocumentServiceTest {
 		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(any(), any())).thenReturn(Optional.empty());
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.addFile(REGISTRATION_NUMBER, documentDataCreateRequest, multipartFile));
+		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.addOrReplaceFile(REGISTRATION_NUMBER, documentDataCreateRequest, multipartFile));
 
 		// Assert
 		assertThat(exception).isNotNull();

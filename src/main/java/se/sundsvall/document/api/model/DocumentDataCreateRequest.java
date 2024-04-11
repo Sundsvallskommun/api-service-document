@@ -4,9 +4,8 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 import java.util.Objects;
 
-import jakarta.validation.constraints.NotBlank;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "DocumentDataCreateRequest model.")
 public class DocumentDataCreateRequest {
@@ -18,8 +17,8 @@ public class DocumentDataCreateRequest {
 	@Schema(description = "Confidentiality")
 	private Confidentiality confidentiality;
 
-	@Schema(description = "Should the document be archived?", example = "false")
-	private Boolean archive;
+	@Schema(description = "Should the document be archived?", example = "false", requiredMode = REQUIRED)
+	private boolean archive;
 
 	public static DocumentDataCreateRequest create() {
 		return new DocumentDataCreateRequest();
@@ -51,11 +50,11 @@ public class DocumentDataCreateRequest {
 		return this;
 	}
 
-	public Boolean getArchive() {
+	public boolean getArchive() {
 		return archive;
 	}
 
-	public void setArchive(Boolean archive) {
+	public void setArchive(boolean archive) {
 		this.archive = archive;
 	}
 
@@ -65,16 +64,15 @@ public class DocumentDataCreateRequest {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		DocumentDataCreateRequest that = (DocumentDataCreateRequest) o;
-		return Objects.equals(createdBy, that.createdBy) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(archive, that.archive);
+	public int hashCode() {
+		return Objects.hash(archive, confidentiality, createdBy);
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(createdBy, confidentiality, archive);
+	public boolean equals(Object obj) {
+		if (this == obj) { return true; }
+		if (!(obj instanceof final DocumentDataCreateRequest other)) { return false; }
+		return (archive == other.archive) && Objects.equals(confidentiality, other.confidentiality) && Objects.equals(createdBy, other.createdBy);
 	}
 
 	@Override

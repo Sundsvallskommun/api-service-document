@@ -18,8 +18,6 @@ import static org.springframework.web.reactive.function.BodyInserters.fromMultip
 
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +30,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
@@ -348,7 +347,7 @@ class DocumentResourceTest {
 		multipartBodyBuilder.part("documentFile", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", documentDataCreateRequest);
 
-		when(documentServiceMock.addFile(any(), any(), any())).thenReturn(Document.create());
+		when(documentServiceMock.addOrReplaceFile(any(), any(), any())).thenReturn(Document.create());
 
 		// Act
 		webTestClient.put()
@@ -361,7 +360,7 @@ class DocumentResourceTest {
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).addFile(eq(registrationNumber), eq(documentDataCreateRequest), ArgumentMatchers.<MultipartFile>any());
+		verify(documentServiceMock).addOrReplaceFile(eq(registrationNumber), eq(documentDataCreateRequest), ArgumentMatchers.<MultipartFile>any());
 	}
 
 	@Test
