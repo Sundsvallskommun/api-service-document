@@ -32,6 +32,7 @@ import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentData;
+import se.sundsvall.document.api.model.DocumentFiles;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.integration.db.DatabaseHelper;
@@ -464,12 +465,12 @@ class DocumentMapperTest {
 		final var file = new File("src/test/resources/files/image.png");
 		final var fileName = file.getName();
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", fileName, mimeType, toByteArray(new FileInputStream(file)));
-		final var multipartFiles = List.of(multipartFile);
+		final var documents = DocumentFiles.create().withFiles(List.of(multipartFile));
 
 		when(databaseHelperMock.convertToBlob(multipartFile)).thenReturn(blob);
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntities(multipartFiles, databaseHelperMock, confidentiality);
+		final var result = DocumentMapper.toDocumentDataEntities(documents, databaseHelperMock, confidentiality);
 
 		// Assert
 		assertThat(result)
@@ -500,12 +501,12 @@ class DocumentMapperTest {
 		final var file = new File("src/test/resources/files/image.png");
 		final var fileName = file.getName();
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", fileName, mimeType, toByteArray(new FileInputStream(file)));
-		final var multipartFiles = List.of(multipartFile);
+		final var documents = DocumentFiles.create().withFiles(List.of(multipartFile));
 
 		when(databaseHelperMock.convertToBlob(multipartFile)).thenReturn(blob);
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntities(multipartFiles, databaseHelperMock, null);
+		final var result = DocumentMapper.toDocumentDataEntities(documents, databaseHelperMock, null);
 
 		// Assert
 		assertThat(result)

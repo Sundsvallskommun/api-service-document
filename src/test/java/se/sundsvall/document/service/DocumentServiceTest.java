@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mariadb.jdbc.MariaDbBlob;
@@ -51,16 +54,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.ThrowableProblem;
 
-import generated.se.sundsvall.eventlog.Event;
-import generated.se.sundsvall.eventlog.Metadata;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
+import se.sundsvall.document.api.model.DocumentFiles;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.integration.db.DatabaseHelper;
@@ -72,6 +72,9 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 import se.sundsvall.document.integration.eventlog.EventlogClient;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
+
+import generated.se.sundsvall.eventlog.Event;
+import generated.se.sundsvall.eventlog.Metadata;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
@@ -138,13 +141,13 @@ class DocumentServiceTest {
 
 		final var file = new File("src/test/resources/files/image.png");
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
-		final var multipartFiles = List.of(multipartFile);
+		final var documentFiles = DocumentFiles.create().withFiles(List.of(multipartFile));
 
 		when(registrationNumberServiceMock.generateRegistrationNumber(MUNICIPALITY_ID)).thenReturn(REGISTRATION_NUMBER);
 		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
 
 		// Act
-		final var result = documentService.create(documentCreateRequest, multipartFiles);
+		final var result = documentService.create(documentCreateRequest, documentFiles);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -175,13 +178,13 @@ class DocumentServiceTest {
 		final var file2 = new File("src/test/resources/files/readme.txt");
 		final var multipartFile1 = (MultipartFile) new MockMultipartFile("file1", file1.getName(), "image/png", toByteArray(new FileInputStream(file1)));
 		final var multipartFile2 = (MultipartFile) new MockMultipartFile("file2", file2.getName(), "text/plain", toByteArray(new FileInputStream(file2)));
-		final var multipartFiles = List.of(multipartFile1, multipartFile2);
+		final var documentFiles = DocumentFiles.create().withFiles(List.of(multipartFile1, multipartFile2));
 
 		when(registrationNumberServiceMock.generateRegistrationNumber(MUNICIPALITY_ID)).thenReturn(REGISTRATION_NUMBER);
 		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
 
 		// Act
-		final var result = documentService.create(documentCreateRequest, multipartFiles);
+		final var result = documentService.create(documentCreateRequest, documentFiles);
 
 		// Assert
 		assertThat(result).isNotNull();
