@@ -32,8 +32,9 @@ import static se.sundsvall.document.service.mapper.EventlogMapper.toEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +44,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.Problem;
 
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
+import se.sundsvall.document.api.model.DocumentFiles;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.integration.db.DatabaseHelper;
@@ -86,7 +87,8 @@ public class DocumentService {
 		this.eventLogProperties = eventLogProperties;
 	}
 
-	public Document create(final DocumentCreateRequest documentCreateRequest, final List<MultipartFile> documentFiles) {
+
+	public Document create(final DocumentCreateRequest documentCreateRequest, final DocumentFiles documentFiles) {
 
 		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper, documentCreateRequest.getConfidentiality());
 		final var registrationNumber = registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId());

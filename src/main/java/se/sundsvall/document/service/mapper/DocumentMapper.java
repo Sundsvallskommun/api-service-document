@@ -19,6 +19,7 @@ import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentData;
+import se.sundsvall.document.api.model.DocumentFiles;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
@@ -48,8 +49,8 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	public static List<DocumentDataEntity> toDocumentDataEntities(List<MultipartFile> multipartFiles, DatabaseHelper databaseHelper, Confidentiality confidentiality) {
-		return Optional.ofNullable(multipartFiles)
+	public static List<DocumentDataEntity> toDocumentDataEntities(final DocumentFiles documentFiles, final DatabaseHelper databaseHelper, final Confidentiality confidentiality) {
+		return Optional.ofNullable(documentFiles).map(DocumentFiles::getFiles)
 			.map(files -> files.stream()
 				.map(file -> toDocumentDataEntity(file, databaseHelper, confidentiality))
 				.toList())

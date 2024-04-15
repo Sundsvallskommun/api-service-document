@@ -2,10 +2,12 @@ package se.sundsvall.document.api;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.data.domain.Sort.Order.asc;
@@ -15,8 +17,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.web.reactive.function.BodyInserters.fromMultipartData;
+import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -29,8 +34,8 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.multipart.MultipartFile;
+import org.zalando.problem.violations.ConstraintViolationProblem;
 
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
@@ -38,6 +43,7 @@ import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
+import se.sundsvall.document.api.model.DocumentFiles;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
@@ -68,7 +74,7 @@ class DocumentResourceTest {
 
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("documentFiles", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("documentFiles", "file-content").filename("test2.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("tesst2.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", documentCreateRequest);
 
 		when(documentServiceMock.create(any(), any())).thenReturn(Document.create());
@@ -87,7 +93,45 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).create(eq(documentCreateRequest), ArgumentMatchers.<List<MultipartFile>>any());
+		verify(documentServiceMock).create(eq(documentCreateRequest), ArgumentMatchers.<DocumentFiles>any());
+	}
+
+	@Test
+	void createWithDuplicateFileNames() {
+		final var documentCreateRequest = DocumentCreateRequest.create()
+			.withConfidentiality(Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation"))
+			.withCreatedBy("user")
+			.withDescription("description")
+			.withMunicipalityId("2281")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value")));
+
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("duplicateName.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("duplicateName.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", documentCreateRequest);
+
+		when(documentServiceMock.create(any(), any())).thenReturn(Document.create());
+
+		final var response = webTestClient.post()
+			.uri("/documents")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).satisfies(problem -> {
+			assertThat(problem.getTitle()).isEqualTo("Constraint Violation");
+			assertThat(problem.getStatus()).isEqualTo(BAD_REQUEST);
+			assertThat(problem.getViolations()).extracting("field", "message")
+				.containsExactlyInAnyOrder(tuple("files", "no duplicate file names allowed in the list of files"));
+		});
+
+		verifyNoInteractions(documentServiceMock);
 	}
 
 	@Test
