@@ -2,6 +2,7 @@
 	"municipalityId": "2281",
 	"createdBy": "username123",
 	"description": "This is a document",
+	"archive": true,
 	"archiveMap": {
 		"image.png": true
 	},

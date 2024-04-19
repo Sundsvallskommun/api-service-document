@@ -1,5 +1,6 @@
 
     create table document (
+        archive bit,
         confidential bit not null,
         revision integer not null,
         created datetime(6),
@@ -13,14 +14,11 @@
     ) engine=InnoDB;
 
     create table document_data (
-        archive bit,
-        confidential bit not null,
         file_size_in_bytes bigint default 0,
         document_data_binary_id varchar(255),
         document_id varchar(255) not null,
         file_name varchar(255),
         id varchar(255) not null,
-        legal_citation varchar(255),
         mime_type varchar(255),
         primary key (id)
     ) engine=InnoDB;

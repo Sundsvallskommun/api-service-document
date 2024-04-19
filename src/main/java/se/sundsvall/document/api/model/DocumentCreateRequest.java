@@ -5,14 +5,12 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import java.util.List;
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "DocumentCreateRequest model.")
 public class DocumentCreateRequest {
@@ -27,6 +25,9 @@ public class DocumentCreateRequest {
 
 	@Schema(description = "Confidentiality")
 	private Confidentiality confidentiality;
+
+	@Schema(description = "Tells if the document is eligible for archiving", example = "false")
+	private boolean archive;
 
 	@NotBlank
 	@Size(max = 8192)
@@ -80,6 +81,19 @@ public class DocumentCreateRequest {
 		return this;
 	}
 
+	public boolean isArchive() {
+		return archive;
+	}
+
+	public void setArchive(boolean archive) {
+		this.archive = archive;
+	}
+
+	public DocumentCreateRequest withArchive(boolean archive) {
+		this.archive = archive;
+		return this;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -107,23 +121,29 @@ public class DocumentCreateRequest {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		DocumentCreateRequest that = (DocumentCreateRequest) o;
-		return Objects.equals(municipalityId, that.municipalityId) && Objects.equals(createdBy, that.createdBy) && Objects.equals(confidentiality, that.confidentiality) && Objects.equals(description, that.description) && Objects.equals(metadataList, that.metadataList);
+	public int hashCode() {
+		return Objects.hash(archive, confidentiality, createdBy, description, metadataList, municipalityId);
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(municipalityId, createdBy, confidentiality, description, metadataList);
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof DocumentCreateRequest)) {
+			return false;
+		}
+		DocumentCreateRequest other = (DocumentCreateRequest) obj;
+		return archive == other.archive && Objects.equals(confidentiality, other.confidentiality) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList)
+			&& Objects.equals(municipalityId, other.municipalityId);
 	}
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", description=").append(description).append(", metadataList=").append(
-			metadataList).append("]");
+		StringBuilder builder = new StringBuilder();
+		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append(", description=")
+			.append(description).append(", metadataList=").append(metadataList).append("]");
 		return builder.toString();
 	}
+
 }

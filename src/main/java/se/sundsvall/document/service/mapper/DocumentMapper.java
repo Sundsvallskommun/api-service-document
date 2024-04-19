@@ -41,6 +41,7 @@ public class DocumentMapper {
 	public static DocumentEntity toDocumentEntity(DocumentCreateRequest documentCreateRequest) {
 		return Optional.ofNullable(documentCreateRequest)
 			.map(doc -> DocumentEntity.create()
+				.withArchive(documentCreateRequest.isArchive())
 				.withConfidentiality(toConfidentialityEmbeddable(documentCreateRequest.getConfidentiality()))
 				.withCreatedBy(doc.getCreatedBy())
 				.withDescription(doc.getDescription())
@@ -49,18 +50,17 @@ public class DocumentMapper {
 			.orElse(null);
 	}
 
-	public static List<DocumentDataEntity> toDocumentDataEntities(final DocumentFiles documentFiles, final DatabaseHelper databaseHelper, final Confidentiality confidentiality) {
+	public static List<DocumentDataEntity> toDocumentDataEntities(final DocumentFiles documentFiles, final DatabaseHelper databaseHelper) {
 		return Optional.ofNullable(documentFiles).map(DocumentFiles::getFiles)
 			.map(files -> files.stream()
-				.map(file -> toDocumentDataEntity(file, databaseHelper, confidentiality))
+				.map(file -> toDocumentDataEntity(file, databaseHelper))
 				.toList())
 			.orElse(null);
 	}
 
-	public static DocumentDataEntity toDocumentDataEntity(MultipartFile multipartFile, DatabaseHelper databaseHelper, Confidentiality confidentiality) {
+	public static DocumentDataEntity toDocumentDataEntity(MultipartFile multipartFile, DatabaseHelper databaseHelper) {
 		return Optional.ofNullable(multipartFile)
 			.map(file -> DocumentDataEntity.create()
-				.withConfidentiality(toConfidentialityEmbeddable(confidentiality))
 				.withDocumentDataBinary(toDocumentDataBinaryEntity(file, databaseHelper))
 				.withMimeType(file.getContentType())
 				.withFileName(file.getOriginalFilename())
@@ -86,6 +86,7 @@ public class DocumentMapper {
 			.withRegistrationNumber(existingDocumentEntity.getRegistrationNumber())
 			.withRevision(existingDocumentEntity.getRevision() + 1)
 			.withConfidentiality(existingDocumentEntity.getConfidentiality())
+			.withArchive(Optional.ofNullable(documentUpdateRequest.getArchive()).orElse(existingDocumentEntity.isArchive()))
 			.withDescription(Optional.ofNullable(documentUpdateRequest.getDescription()).orElse(existingDocumentEntity.getDescription()))
 			.withMetadata(Optional.ofNullable(documentUpdateRequest.getMetadataList())
 				.map(DocumentMapper::toDocumentMetadataEmbeddableList)
@@ -136,6 +137,7 @@ public class DocumentMapper {
 		return Optional.ofNullable(documentEntity)
 			.map(docEntity -> Document.create()
 				.withConfidentiality(toConfidentiality(docEntity.getConfidentiality()))
+				.withArchive(docEntity.isArchive())
 				.withCreated(docEntity.getCreated())
 				.withCreatedBy(docEntity.getCreatedBy())
 				.withDescription(docEntity.getDescription())
@@ -164,6 +166,7 @@ public class DocumentMapper {
 		return Optional.ofNullable(documentEntity)
 			.map(docEntity -> DocumentEntity.create()
 				.withConfidentiality(docEntity.getConfidentiality())
+				.withArchive(documentEntity.isArchive())
 				.withCreatedBy(docEntity.getCreatedBy())
 				.withDescription(docEntity.getDescription())
 				.withDocumentData(copyDocumentDataEntities(docEntity.getDocumentData()))
@@ -177,7 +180,6 @@ public class DocumentMapper {
 	public static DocumentDataEntity copyDocumentDataEntity(DocumentDataEntity documentDataEntity) {
 		return Optional.ofNullable(documentDataEntity)
 			.map(docEntity -> DocumentDataEntity.create()
-				.withConfidentiality(docEntity.getConfidentiality())
 				.withMimeType(docEntity.getMimeType())
 				.withFileName(docEntity.getFileName())
 				.withFileSizeInBytes(docEntity.getFileSizeInBytes())
@@ -246,12 +248,10 @@ public class DocumentMapper {
 	private static DocumentData toDocumentData(DocumentDataEntity documentDataEntity) {
 		return Optional.ofNullable(documentDataEntity)
 			.map(docDataEntity -> DocumentData.create()
-				.withConfidentiality(toConfidentiality(docDataEntity.getConfidentiality()))
 				.withFileName(docDataEntity.getFileName())
 				.withFileSizeInBytes(docDataEntity.getFileSizeInBytes())
 				.withId(docDataEntity.getId())
-				.withMimeType(docDataEntity.getMimeType())
-				.withArchive(docDataEntity.isArchive()))
+				.withMimeType(docDataEntity.getMimeType()))
 			.orElse(null);
 	}
 }

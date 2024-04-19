@@ -5,11 +5,10 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import java.util.List;
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "DocumentUpdateRequest model.")
 public class DocumentUpdateRequest {
@@ -21,6 +20,9 @@ public class DocumentUpdateRequest {
 	@Size(max = 8192)
 	@Schema(description = "Document description", example = "A brief description of this object. Maximum 8192 characters.")
 	private String description;
+
+	@Schema(description = "Tells if the document is eligible for archiving", example = "false")
+	private Boolean archive;
 
 	@Schema(description = "List of DocumentMetadata objects.")
 	private List<@Valid DocumentMetadata> metadataList;
@@ -55,6 +57,19 @@ public class DocumentUpdateRequest {
 		return this;
 	}
 
+	public Boolean getArchive() {
+		return archive;
+	}
+
+	public void setArchive(Boolean archive) {
+		this.archive = archive;
+	}
+
+	public DocumentUpdateRequest withArchive(Boolean archive) {
+		this.archive = archive;
+		return this;
+	}
+
 	public List<DocumentMetadata> getMetadataList() {
 		return metadataList;
 	}
@@ -69,23 +84,26 @@ public class DocumentUpdateRequest {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		DocumentUpdateRequest that = (DocumentUpdateRequest) o;
-		return Objects.equals(createdBy, that.createdBy) && Objects.equals(description, that.description) && Objects.equals(metadataList, that.metadataList);
+	public int hashCode() {
+		return Objects.hash(archive, createdBy, description, metadataList);
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(createdBy, description, metadataList);
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof DocumentUpdateRequest)) {
+			return false;
+		}
+		DocumentUpdateRequest other = (DocumentUpdateRequest) obj;
+		return Objects.equals(archive, other.archive) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
 	}
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", description=")
-			.append(description).append(", metadataList=").append(metadataList).append("]");
+		StringBuilder builder = new StringBuilder();
+		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", description=").append(description).append(", archive=").append(archive).append(", metadataList=").append(metadataList).append("]");
 		return builder.toString();
 	}
 }

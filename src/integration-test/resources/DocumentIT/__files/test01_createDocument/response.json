@@ -3,10 +3,13 @@
 	"municipalityId": "2281",
 	"registrationNumber": "${json-unit.any-string}",
 	"revision": 0,
-	"confidential": false,
+	"confidentiality": {
+		"confidential": false
+	},
 	"description": "This is a document",
 	"created": "${json-unit.any-string}",
 	"createdBy": "username123",
+	"archive": true,
 	"metadataList": [
 		{
 			"key": "Some key",
@@ -16,7 +19,6 @@
 	"documentData": [
 		{
 			"id": "${json-unit.any-string}",
-			"archive": true,
 			"fileName": "image.png",
 			"mimeType": "image/png",
 			"fileSizeInBytes": 227546

@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.client.MultipartBodyBuilder;
@@ -35,7 +34,6 @@ import se.sundsvall.document.Application;
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
-@Disabled
 class DocumentIT extends AbstractAppTest {
 
 	private static final String PATH = "/documents";
@@ -72,17 +70,10 @@ class DocumentIT extends AbstractAppTest {
 
 	@Test
 	void test02_updateDocument() throws FileNotFoundException {
-
-		final var testFile = getFile(this.setupPaths().getTestDirectoryPath() + "image.png");
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFile", new FileSystemResource(testFile)).filename(testFile.getName()).contentType(IMAGE_PNG);
-		multipartBodyBuilder.part("document", fromTestFile(REQUEST_FILE));
-
 		setupCall()
 			.withServicePath(PATH + "/2023-2281-123")
 			.withHttpMethod(PATCH)
-			.withContentType(MULTIPART_FORM_DATA)
-			.withRequest(multipartBodyBuilder.build())
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -191,7 +182,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test13_searchWithWildCardOnly() {
 		setupCall()
-			.withServicePath(PATH + "?query=*")
+			.withServicePath(PATH + "?query=*&sort=revision,desc")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -230,7 +221,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test17_updateConfidentialityFlag() {
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123/confidential")
+			.withServicePath(PATH + "/2023-2281-123/confidentiality")
 			.withHttpMethod(PATCH)
 			.withContentType(APPLICATION_JSON)
 			.withRequest(REQUEST_FILE)

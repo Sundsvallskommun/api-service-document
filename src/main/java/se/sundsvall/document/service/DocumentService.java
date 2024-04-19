@@ -1,7 +1,6 @@
 package se.sundsvall.document.service;
 
 import static generated.se.sundsvall.eventlog.EventType.UPDATE;
-import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -17,7 +16,6 @@ import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REG
 import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND;
 import static se.sundsvall.document.service.Constants.TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE;
 import static se.sundsvall.document.service.Constants.TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_DOCUMENT;
-import static se.sundsvall.document.service.Constants.TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_FILE;
 import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
 import static se.sundsvall.document.service.mapper.DocumentMapper.copyDocumentEntity;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toConfidentialityEmbeddable;
@@ -34,8 +32,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -44,12 +40,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.Problem;
 
-import se.sundsvall.document.api.model.Confidentiality;
+import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataCreateRequest;
-import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
 import se.sundsvall.document.api.model.DocumentFiles;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
@@ -90,7 +85,7 @@ public class DocumentService {
 
 	public Document create(final DocumentCreateRequest documentCreateRequest, final DocumentFiles documentFiles) {
 
-		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper, documentCreateRequest.getConfidentiality());
+		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper);
 		final var registrationNumber = registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId());
 
 		final var documentEntity = toDocumentEntity(documentCreateRequest)
@@ -121,14 +116,7 @@ public class DocumentService {
 	}
 
 	public PagedDocumentResponse search(String query, boolean includeConfidential, Pageable pageable) {
-		final var list = toPagedDocumentResponse(documentRepository.search(query, includeConfidential, pageable));
-
-		// Remove all confidential documentData elements.
-		list.getDocuments().stream()
-			.forEach(document -> document.getDocumentData()
-				.removeIf(documentData -> !includeConfidential && Optional.ofNullable(documentData.getConfidentiality()).orElse(Confidentiality.create()).isConfidential()));
-
-		return list;
+		return toPagedDocumentResponse(documentRepository.search(query, includeConfidential, pageable));
 	}
 
 	public void readFile(String registrationNumber, String documentDataId, boolean includeConfidential, HttpServletResponse response) {
@@ -171,7 +159,7 @@ public class DocumentService {
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		// Create documentData element to add/replace.
-		final var newDocumentDataEntity = toDocumentDataEntity(documentFile, databaseHelper, documentDataCreateRequest.getConfidentiality());
+		final var newDocumentDataEntity = toDocumentDataEntity(documentFile, databaseHelper);
 
 		// Do not update existing entity, create a new revision instead.
 		final var newDocumentEntity = copyDocumentEntity(documentEntity)
@@ -209,33 +197,6 @@ public class DocumentService {
 		documentRepository.save(newDocumentEntity);
 	}
 
-	public Document updateFile(String registrationNumber, String documentDataId, boolean includeConfidential, DocumentDataUpdateRequest documentDataUpdateRequest) {
-
-		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
-
-		if (isEmpty(documentEntity.getDocumentData())) {
-			throw Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber));
-		}
-
-		// Update confidentiality settings on documentDataEntity.
-		final var documentDataEntity = documentEntity.getDocumentData().stream()
-			.filter(docData -> docData.getId().equals(documentDataId))
-			.findFirst()
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND.formatted(documentDataId)))
-			.withConfidentiality(toConfidentialityEmbeddable(documentDataUpdateRequest.getConfidentiality()));
-		Optional.ofNullable(documentDataUpdateRequest.getArchive()).ifPresent(documentDataEntity::setArchive);
-
-		// Do not update existing entity, create a new revision instead.
-		final var newDocumentEntity = copyDocumentEntity(documentEntity)
-			.withRevision(documentEntity.getRevision() + 1);
-
-		// Send info to Eventlog.
-		eventLogForDocumentFile(registrationNumber, documentDataEntity.getFileName(), documentDataUpdateRequest);
-
-		return toDocument(documentRepository.save(newDocumentEntity));
-	}
-
 	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest) {
 
 		final var existingDocumentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
@@ -257,10 +218,6 @@ public class DocumentService {
 
 			// Set confidentiality settings on document-level.
 			documentEntity.setConfidentiality(newConfidentialitySettings);
-
-			// Set confidentiality settings on document-data-level.
-			Optional.ofNullable(documentEntity.getDocumentData()).orElse(emptyList())
-				.forEach(documentDataEntity -> documentDataEntity.setConfidentiality(newConfidentialitySettings));
 		});
 
 		// Send info to Eventlog.
@@ -291,17 +248,6 @@ public class DocumentService {
 			TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_DOCUMENT
 				.formatted(confidentialityUpdateRequest.getConfidential(), confidentialityUpdateRequest.getLegalCitation(), registrationNumber, confidentialityUpdateRequest.getChangedBy()),
 			confidentialityUpdateRequest.getChangedBy()));
-	}
-
-	private void eventLogForDocumentFile(String registrationNumber, String fileName, DocumentDataUpdateRequest documentDataUpdateRequest) {
-
-		final var confidentiality = Optional.ofNullable(documentDataUpdateRequest.getConfidentiality()).orElse(Confidentiality.create());
-
-		eventLogClient.createEvent(eventLogProperties.logKeyUuid(), toEvent(
-			UPDATE,
-			registrationNumber,
-			TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_FILE.formatted(confidentiality.isConfidential(), confidentiality.getLegalCitation(), registrationNumber, fileName, documentDataUpdateRequest.getCreatedBy()),
-			documentDataUpdateRequest.getCreatedBy()));
 	}
 
 	private void addOrReplaceDocumentDataEntity(DocumentEntity documentEntity, DocumentDataEntity documentDataEntity) {

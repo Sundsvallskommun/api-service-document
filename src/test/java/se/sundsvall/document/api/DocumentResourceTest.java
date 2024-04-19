@@ -21,8 +21,6 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +34,13 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
+import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataCreateRequest;
-import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
 import se.sundsvall.document.api.model.DocumentFiles;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
@@ -383,9 +381,6 @@ class DocumentResourceTest {
 
 		// Arrange
 		final var documentDataCreateRequest = DocumentDataCreateRequest.create()
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(true)
-				.withLegalCitation("legalCitation"))
 			.withCreatedBy("user");
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("documentFile", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
@@ -405,37 +400,6 @@ class DocumentResourceTest {
 
 		// Assert
 		verify(documentServiceMock).addOrReplaceFile(eq(registrationNumber), eq(documentDataCreateRequest), ArgumentMatchers.<MultipartFile>any());
-	}
-
-	@Test
-	void updateFile() {
-
-		// Arrange
-		final var includeConfidential = true;
-		final var documentDataId = randomUUID().toString();
-		final var registrationNumber = "2023-1337";
-		final var documentDataUpdateRequest = DocumentDataUpdateRequest.create()
-			.withCreatedBy("user")
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(true)
-				.withLegalCitation("legalCitation"));
-
-		when(documentServiceMock.update(any(), anyBoolean(), any())).thenReturn(Document.create());
-
-		// Act
-		webTestClient.patch()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/files/" + documentDataId)
-				.queryParam("includeConfidential", includeConfidential)
-				.build())
-			.contentType(APPLICATION_JSON)
-			.bodyValue(documentDataUpdateRequest)
-			.exchange()
-			.expectStatus().isNoContent()
-			.expectBody()
-			.isEmpty();
-
-		// Assert
-		verify(documentServiceMock).updateFile(registrationNumber, documentDataId, includeConfidential, documentDataUpdateRequest);
 	}
 
 	@Test

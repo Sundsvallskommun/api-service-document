@@ -4,10 +4,14 @@
 			"id": "03d33a6a-bc8c-410c-95f6-2c890822967d",
 			"registrationNumber": "2024-2281-999",
 			"revision": 1,
-			"confidential": true,
+			"confidentiality": {
+				"confidential": true,
+				"legalCitation": "Law §7.1"
+			},
 			"description": "Document 2",
 			"created": "2023-06-28T12:01:00+02:00",
 			"createdBy": "User4",
+			"archive": true,
 			"metadataList": [
 				{
 					"key": "document2-key1",
@@ -27,8 +31,7 @@
 					"id": "8f7be4bb-ef79-4a16-95bf-a0619e320745",
 					"fileName": "file4.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068,
-					"archive": true
+					"fileSizeInBytes": 5068
 				}
 			]
 		},
@@ -36,10 +39,14 @@
 			"id": "435bb041-2b02-4bb3-b3e7-3782a13f47d5",
 			"registrationNumber": "2024-2281-999",
 			"revision": 2,
-			"confidential": true,
+			"confidentiality": {
+				"confidential": true,
+				"legalCitation": "Law §7.2"
+			},
 			"description": "Document 2",
 			"created": "2023-06-28T12:01:00+02:00",
 			"createdBy": "User5",
+			"archive": true,
 			"metadataList": [
 				{
 					"key": "document2-key1",
@@ -55,8 +62,7 @@
 					"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
 					"fileName": "file5.jpg",
 					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068,
-					"archive": true
+					"fileSizeInBytes": 5068
 				}
 			]
 		}

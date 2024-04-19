@@ -1,4 +1,5 @@
 {
-  "value": true,
-  "changedBy": "username123"
+	"confidential": true,
+	"legalCitation": "25 kap. 1 § OSL",
+	"changedBy": "username123"
 }
