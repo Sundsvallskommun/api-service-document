@@ -64,7 +64,7 @@ public class DocumentEntity implements Serializable {
 	@Embedded
 	private ConfidentialityEmbeddable confidentiality;
 
-	@Column(name = "archive")
+	@Column(name = "archive", nullable = false)
 	private boolean archive;
 
 	@Column(name = "created_by")

@@ -214,11 +214,8 @@ public class DocumentService {
 
 		final var newConfidentialitySettings = toConfidentialityEmbeddable(confidentialityUpdateRequest);
 
-		documentEntities.forEach(documentEntity -> {
-
-			// Set confidentiality settings on document-level.
-			documentEntity.setConfidentiality(newConfidentialitySettings);
-		});
+		// Set confidentiality settings on document-level.
+		documentEntities.forEach(documentEntity -> documentEntity.setConfidentiality(newConfidentialitySettings));
 
 		// Send info to Eventlog.
 		eventLogForDocument(registrationNumber, confidentialityUpdateRequest);

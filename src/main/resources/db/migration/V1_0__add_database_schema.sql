@@ -1,6 +1,6 @@
 
     create table document (
-        archive bit,
+        archive bit not null,
         confidential bit not null,
         revision integer not null,
         created datetime(6),

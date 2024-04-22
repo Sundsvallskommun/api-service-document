@@ -251,6 +251,5 @@ class DocumentIT extends AbstractAppTest {
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
-
 	}
 }
