@@ -27,36 +27,32 @@ class DocumentDataEntityTest {
 	@Test
 	void testBuilderMethods() {
 
-		final var confidentiality = ConfidentialityEmbeddable.create().withConfidential(true).withLegalCitation("legalCitation");
 		final var documentDataBinary = DocumentDataBinaryEntity.create();
 		final var fileName = "filename.jpg";
 		final var id = randomUUID().toString();
 		final var mimeType = "image/jpeg";
 		final var fileSizeInBytes = 100;
-		final var archive = true;
 
 		final var bean = DocumentDataEntity.create()
-			.withConfidentiality(confidentiality)
 			.withDocumentDataBinary(documentDataBinary)
 			.withFileName(fileName)
 			.withId(id)
 			.withMimeType(mimeType)
-			.withFileSizeInBytes(fileSizeInBytes)
-			.withArchive(archive);
+			.withFileSizeInBytes(fileSizeInBytes);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
 		assertThat(bean.getDocumentDataBinary()).isEqualTo(documentDataBinary);
 		assertThat(bean.getFileName()).isEqualTo(fileName);
 		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getMimeType()).isEqualTo(mimeType);
 		assertThat(bean.getFileSizeInBytes()).isEqualTo(fileSizeInBytes);
-		assertThat(bean.isArchive()).isEqualTo(archive);
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentDataEntity.create()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes", "archive");
-		assertThat(new DocumentDataEntity()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes", "archive");
+		assertThat(DocumentDataEntity.create()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes")
+			.hasFieldOrPropertyWithValue("fileSizeInBytes", 0L);
+		assertThat(new DocumentDataEntity()).hasAllNullFieldsOrPropertiesExcept("fileSizeInBytes")
+			.hasFieldOrPropertyWithValue("fileSizeInBytes", 0L);
 	}
 }

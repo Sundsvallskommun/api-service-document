@@ -40,6 +40,7 @@ class DocumentEntityTest {
 	@Test
 	void testBuilderMethods() {
 
+		final var archive = true;
 		final var confidentiality = ConfidentialityEmbeddable.create().withConfidential(true).withLegalCitation("legalCitation");
 		final var created = now(systemDefault());
 		final var createdBy = "user";
@@ -52,6 +53,7 @@ class DocumentEntityTest {
 		final var revision = 5;
 
 		final var bean = DocumentEntity.create()
+			.withArchive(archive)
 			.withConfidentiality(confidentiality)
 			.withCreated(created)
 			.withCreatedBy(createdBy)
@@ -64,6 +66,7 @@ class DocumentEntityTest {
 			.withRevision(revision);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(bean.isArchive()).isEqualTo(archive);
 		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
@@ -78,7 +81,11 @@ class DocumentEntityTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentEntity.create()).hasAllNullFieldsOrPropertiesExcept("revision", "confidential");
-		assertThat(new DocumentEntity()).hasAllNullFieldsOrPropertiesExcept("revision", "confidential");
+		assertThat(DocumentEntity.create()).hasAllNullFieldsOrPropertiesExcept("revision", "archive")
+			.hasFieldOrPropertyWithValue("revision", 0)
+			.hasFieldOrPropertyWithValue("archive", false);
+		assertThat(new DocumentEntity()).hasAllNullFieldsOrPropertiesExcept("revision", "archive")
+			.hasFieldOrPropertyWithValue("revision", 0)
+			.hasFieldOrPropertyWithValue("archive", false);
 	}
 }

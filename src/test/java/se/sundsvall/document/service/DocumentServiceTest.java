@@ -36,9 +36,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mariadb.jdbc.MariaDbBlob;
@@ -54,12 +51,14 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.ThrowableProblem;
 
-import se.sundsvall.document.api.model.Confidentiality;
+import generated.se.sundsvall.eventlog.Event;
+import generated.se.sundsvall.eventlog.Metadata;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataCreateRequest;
-import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
 import se.sundsvall.document.api.model.DocumentFiles;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
@@ -72,9 +71,6 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 import se.sundsvall.document.integration.eventlog.EventlogClient;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
-
-import generated.se.sundsvall.eventlog.Event;
-import generated.se.sundsvall.eventlog.Metadata;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
@@ -564,32 +560,6 @@ class DocumentServiceTest {
 	}
 
 	@Test
-	void searchWhenConfidentialElementsShouldNotBeIncluded() {
-
-		// Arrange;
-		final var includeConfidential = false;
-		final var search = "search-string";
-		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
-
-		when(pageMock.getContent()).thenReturn(List.of(createDocumentEntity()));
-		when(pageMock.getPageable()).thenReturn(pageRequest);
-		when(documentRepositoryMock.search(any(), anyBoolean(), any())).thenReturn(pageMock);
-
-		// Act
-		final var result = documentService.search(search, includeConfidential, pageRequest);
-
-		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result.getDocuments())
-			.extracting(Document::getCreated, Document::getCreatedBy, Document::getId, Document::getMunicipalityId, Document::getRegistrationNumber, Document::getRevision)
-			.containsExactly(tuple(CREATED, CREATED_BY, ID, MUNICIPALITY_ID, REGISTRATION_NUMBER, REVISION));
-		assertThat(result.getDocuments().getFirst().getDocumentData()).isEmpty(); // Document contains a confidential documentData element and we are setting includeConfidential=false
-
-		verify(documentRepositoryMock).search(search, includeConfidential, pageRequest);
-		verifyNoInteractions(eventlogClientMock);
-	}
-
-	@Test
 	void update() {
 
 		// Arrange
@@ -701,10 +671,7 @@ class DocumentServiceTest {
 
 		final var existingEntity = createDocumentEntity();
 		final var documentDataCreateRequest = DocumentDataCreateRequest.create()
-			.withCreatedBy("changedUser")
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(CONFIDENTIAL)
-				.withLegalCitation(LEGAL_CITATION));
+			.withCreatedBy("changedUser");
 
 		final var file = new File("src/test/resources/files/image2.png");
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "image/png", toByteArray(new FileInputStream(file)));
@@ -729,10 +696,10 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getDescription()).isEqualTo(existingEntity.getDescription());
 		assertThat(capturedDocumentEntity.getDocumentData())
 			.hasSize(2)
-			.extracting(DocumentDataEntity::getFileName, DocumentDataEntity::getConfidentiality)
+			.extracting(DocumentDataEntity::getFileName)
 			.containsExactlyInAnyOrder(
-				tuple("image.png", ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL).withLegalCitation(LEGAL_CITATION)),
-				tuple("image2.png", ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL).withLegalCitation(LEGAL_CITATION)));
+				"image.png",
+				"image2.png");
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(existingEntity.getMetadata());
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
@@ -743,10 +710,7 @@ class DocumentServiceTest {
 
 		final var existingEntity = createDocumentEntity();
 		final var documentDataCreateRequest = DocumentDataCreateRequest.create()
-			.withCreatedBy("changedUser")
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(CONFIDENTIAL)
-				.withLegalCitation("Other value"));
+			.withCreatedBy("changedUser");
 
 		final var file = new File("src/test/resources/files/image2.png");
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", FILE_NAME, "image/png", toByteArray(new FileInputStream(file))); // Same name as in "existingEntity"
@@ -771,8 +735,8 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getDescription()).isEqualTo(existingEntity.getDescription());
 		assertThat(capturedDocumentEntity.getDocumentData())
 			.hasSize(1)
-			.extracting(DocumentDataEntity::getFileName, DocumentDataEntity::getConfidentiality)
-			.containsExactlyInAnyOrder(tuple("image.png", ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL).withLegalCitation("Other value")));
+			.extracting(DocumentDataEntity::getFileName)
+			.containsExactlyInAnyOrder("image.png");
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(existingEntity.getMetadata());
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
@@ -783,10 +747,7 @@ class DocumentServiceTest {
 
 		// Arrange
 		final var documentDataCreateRequest = DocumentDataCreateRequest.create()
-			.withCreatedBy("changedUser")
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(CONFIDENTIAL)
-				.withLegalCitation(LEGAL_CITATION));
+			.withCreatedBy("changedUser");
 
 		final var file = new File("src/test/resources/files/image2.png");
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "image/png", toByteArray(new FileInputStream(file)));
@@ -800,104 +761,6 @@ class DocumentServiceTest {
 		assertThat(exception).isNotNull();
 		assertThat(exception.getMessage()).isEqualTo("Not Found: No document with registrationNumber: '2023-2281-4' could be found!");
 
-		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
-		verifyNoMoreInteractions(documentRepositoryMock);
-		verifyNoInteractions(eventlogClientMock);
-	}
-
-	@Test
-	void updateFileByRegistrationNumberAndDocumentDataId() {
-
-		// Arrange
-		final var eventLogKey = UUID.randomUUID().toString();
-		final var documentEntity = createDocumentEntity();
-		final var documentDataUpdateRequest = DocumentDataUpdateRequest.create()
-			.withCreatedBy(CREATED_BY)
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(true)
-				.withLegalCitation(LEGAL_CITATION));
-
-		when(eventlogPropertiesMock.logKeyUuid()).thenReturn(eventLogKey);
-		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(Optional.of(documentEntity));
-
-		// Act
-		documentService.updateFile(REGISTRATION_NUMBER, DOCUMENT_DATA_ID, CONFIDENTIAL, documentDataUpdateRequest);
-
-		// Assert
-		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
-		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
-		verify(eventlogClientMock).createEvent(eq(eventLogKey), eventCaptor.capture());
-
-		// Assert captured documentEntity-save event.
-		final var capturedEntity = documentEntityCaptor.getValue();
-		assertThat(capturedEntity).isNotNull();
-		assertThat(capturedEntity.getCreatedBy()).isEqualTo(CREATED_BY);
-		assertThat(capturedEntity.getDocumentData()).hasSize(1);
-		assertThat(capturedEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
-		assertThat(capturedEntity.getMunicipalityId()).isEqualTo(MUNICIPALITY_ID);
-		assertThat(capturedEntity.getRegistrationNumber()).isEqualTo(REGISTRATION_NUMBER);
-		assertThat(capturedEntity.getRevision()).isEqualTo(REVISION + 1);
-
-		// Assert captured Eventlog event.
-		final var capturedEvent = eventCaptor.getValue();
-		assertThat(capturedEvent).isNotNull();
-		assertThat(capturedEvent.getExpires()).isCloseTo(now(systemDefault()).plusYears(10), within(2, SECONDS));
-		assertThat(capturedEvent.getType()).isEqualTo(UPDATE);
-		assertThat(capturedEvent.getMessage()).isEqualTo("Confidentiality flag updated to: 'true' with legal citation: 'legalCitation' for document with registrationNumber: '2023-2281-4' and file with name: 'image.png'. Action performed by: 'User'");
-		assertThat(capturedEvent.getOwner()).isEqualTo("Document");
-		assertThat(capturedEvent.getMetadata())
-			.extracting(Metadata::getKey, Metadata::getValue)
-			.containsExactlyInAnyOrder(
-				tuple("RegistrationNumber", REGISTRATION_NUMBER),
-				tuple("ExecutedBy", CREATED_BY));
-	}
-
-	@Test
-	void updateFileByRegistrationNumberAndDocumentDataIdWhenDocumentNotFound() {
-
-		// Arrange
-		final var documentDataUpdateRequest = DocumentDataUpdateRequest.create()
-			.withCreatedBy(CREATED_BY)
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(true)
-				.withLegalCitation(LEGAL_CITATION));
-
-		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(any(), any())).thenReturn(Optional.empty());
-
-		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.updateFile(REGISTRATION_NUMBER, DOCUMENT_DATA_ID, CONFIDENTIAL, documentDataUpdateRequest));
-
-		// Assert
-		assertThat(exception).isNotNull();
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No document with registrationNumber: '2023-2281-4' could be found!");
-
-		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
-		verifyNoMoreInteractions(documentRepositoryMock);
-		verifyNoInteractions(eventlogClientMock);
-	}
-
-	@Test
-	void updateFileByRegistrationNumberAndDocumentDataIdWhenDocumentDataFound() {
-
-		// Arrange
-		final var documentEntity = createDocumentEntity();
-		final var documentDataId = "does-not-exist";
-		final var documentDataUpdateRequest = DocumentDataUpdateRequest.create()
-			.withCreatedBy(CREATED_BY)
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(true)
-				.withLegalCitation(LEGAL_CITATION));
-
-		when(documentRepositoryMock.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(Optional.of(documentEntity));
-
-		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> documentService.updateFile(REGISTRATION_NUMBER, documentDataId, CONFIDENTIAL, documentDataUpdateRequest));
-
-		// Assert
-		assertThat(exception).isNotNull();
-		assertThat(exception.getMessage()).isEqualTo("Not Found: No document file content with ID: 'does-not-exist' could be found!");
-
-		// Assert
 		verify(documentRepositoryMock).findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verifyNoMoreInteractions(documentRepositoryMock);
 		verifyNoInteractions(eventlogClientMock);
@@ -1015,7 +878,6 @@ class DocumentServiceTest {
 
 		try {
 			return DocumentDataEntity.create()
-				.withConfidentiality(ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL).withLegalCitation(LEGAL_CITATION))
 				.withId(DOCUMENT_DATA_ID)
 				.withDocumentDataBinary(DocumentDataBinaryEntity.create().withBinaryFile(new MariaDbBlob(toByteArray(new FileInputStream(new File("src/test/resources/files/image.png"))))))
 				.withFileName(FILE_NAME)

@@ -64,6 +64,9 @@ public class DocumentEntity implements Serializable {
 	@Embedded
 	private ConfidentialityEmbeddable confidentiality;
 
+	@Column(name = "archive", nullable = false)
+	private boolean archive;
+
 	@Column(name = "created_by")
 	private String createdBy;
 
@@ -168,6 +171,19 @@ public class DocumentEntity implements Serializable {
 		return this;
 	}
 
+	public boolean isArchive() {
+		return archive;
+	}
+
+	public void setArchive(final boolean archive) {
+		this.archive = archive;
+	}
+
+	public DocumentEntity withArchive(final boolean archive) {
+		this.archive = archive;
+		return this;
+	}
+
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -221,28 +237,31 @@ public class DocumentEntity implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if ((o == null) || (getClass() != o.getClass())) {
-			return false;
-		}
-		final DocumentEntity that = (DocumentEntity) o;
-		return (revision == that.revision) && Objects.equals(id, that.id) && Objects.equals(municipalityId, that.municipalityId) && Objects.equals(registrationNumber, that.registrationNumber) && Objects.equals(description, that.description) && Objects
-			.equals(confidentiality, that.confidentiality) && Objects.equals(createdBy, that.createdBy) && Objects.equals(created, that.created) && Objects.equals(documentData, that.documentData) && Objects.equals(metadata, that.metadata);
+	public int hashCode() {
+		return Objects.hash(archive, confidentiality, created, createdBy, description, documentData, id, metadata, municipalityId, registrationNumber, revision);
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id, revision, municipalityId, registrationNumber, description, confidentiality, createdBy, created, documentData, metadata);
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof DocumentEntity)) {
+			return false;
+		}
+		DocumentEntity other = (DocumentEntity) obj;
+		return archive == other.archive && Objects.equals(confidentiality, other.confidentiality) && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects
+			.equals(documentData, other.documentData) && Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber)
+			&& revision == other.revision;
 	}
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder();
 		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", description=").append(description)
-			.append(", confidentiality=").append(confidentiality).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentData=").append(documentData).append(", metadata=").append(metadata).append("]");
+			.append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentData=").append(documentData).append(", metadata=")
+			.append(metadata).append("]");
 		return builder.toString();
 	}
+
 }

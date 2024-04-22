@@ -1,7 +1,6 @@
 package se.sundsvall.document.api;
 
 import static java.util.Collections.emptyList;
-import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -27,11 +26,9 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import org.zalando.problem.violations.Violation;
 
 import se.sundsvall.document.Application;
-import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataCreateRequest;
-import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.service.DocumentService;
@@ -592,9 +589,6 @@ class DocumentResourceFailuresTest {
 
 		// Arrange
 		final var documentDataCreateRequest = DocumentDataCreateRequest.create()
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(true)
-				.withLegalCitation("legalCitation"))
 			.withCreatedBy(" ");
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("documentFile", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
@@ -621,36 +615,4 @@ class DocumentResourceFailuresTest {
 		verifyNoInteractions(documentServiceMock);
 	}
 
-	@Test
-	void updateFileWithBlankCreatedBy() {
-
-		// Arrange
-		final var documentDataId = randomUUID().toString();
-		final var registrationNumber = "2023-1337";
-		final var documentDataUpdateRequest = DocumentDataUpdateRequest.create()
-			.withCreatedBy(" ")
-			.withConfidentiality(Confidentiality.create()
-				.withConfidential(true)
-				.withLegalCitation("legalCitation"));
-
-		// Act
-		final var response = webTestClient.patch()
-			.uri("/documents/" + registrationNumber + "/files/" + documentDataId)
-			.contentType(APPLICATION_JSON)
-			.bodyValue(documentDataUpdateRequest)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		// Assert
-		assertThat(response).isNotNull();
-		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("createdBy", "must not be blank"));
-
-		verifyNoInteractions(documentServiceMock);
-	}
 }

@@ -1,13 +1,13 @@
 {
-	"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
+	"id": "${json-unit.any-string}",
 	"registrationNumber": "2023-2281-123",
-	"revision": 3,
+	"revision": 4,
 	"confidentiality": {
 		"confidential": false
 	},
 	"description": "Document 1",
-	"created": "2023-06-28T12:03:00+02:00",
-	"createdBy": "User3",
+	"created": "${json-unit.any-string}",
+	"createdBy": "user-x",
 	"archive": true,
 	"metadataList": [
 		{
@@ -29,10 +29,16 @@
 	],
 	"documentData": [
 		{
-			"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
+			"id": "${json-unit.any-string}",
 			"fileName": "file3.jpg",
 			"mimeType": "image/jpeg",
 			"fileSizeInBytes": 5068
+		},
+		{
+			"id": "${json-unit.any-string}",
+			"fileName": "image.png",
+			"mimeType": "image/png",
+			"fileSizeInBytes": 227546
 		}
 	]
 }

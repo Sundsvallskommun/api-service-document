@@ -28,6 +28,7 @@ class DocumentCreateRequestTest {
 	@Test
 	void testBuilderMethods() {
 
+		final var archive = true;
 		final var confidentiality = Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation");
 		final var createdBy = "user";
 		final var description = "description";
@@ -35,6 +36,7 @@ class DocumentCreateRequestTest {
 		final var municipalityId = "municipalityId";
 
 		final var bean = DocumentCreateRequest.create()
+			.withArchive(archive)
 			.withConfidentiality(confidentiality)
 			.withCreatedBy(createdBy)
 			.withDescription(description)
@@ -42,6 +44,7 @@ class DocumentCreateRequestTest {
 			.withMunicipalityId(municipalityId);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(bean.isArchive()).isEqualTo(archive);
 		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 		assertThat(bean.getDescription()).isEqualTo(description);
@@ -51,7 +54,9 @@ class DocumentCreateRequestTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(DocumentCreateRequest.create()).hasAllNullFieldsOrProperties();
-		assertThat(new DocumentCreateRequest()).hasAllNullFieldsOrProperties();
+		assertThat(DocumentCreateRequest.create()).hasAllNullFieldsOrPropertiesExcept("archive")
+			.hasFieldOrPropertyWithValue("archive", false);
+		assertThat(new DocumentCreateRequest()).hasAllNullFieldsOrPropertiesExcept("archive")
+			.hasFieldOrPropertyWithValue("archive", false);
 	}
 }

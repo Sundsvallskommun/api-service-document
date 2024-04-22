@@ -40,6 +40,7 @@ class DocumentTest {
 	@Test
 	void testBuilderMethods() {
 
+		final var archive = true;
 		final var confidentiality = Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation");
 		final var created = now(systemDefault());
 		final var createdBy = "user";
@@ -52,6 +53,7 @@ class DocumentTest {
 		final var revision = 5;
 
 		final var bean = Document.create()
+			.withArchive(archive)
 			.withConfidentiality(confidentiality)
 			.withCreated(created)
 			.withCreatedBy(createdBy)
@@ -64,6 +66,7 @@ class DocumentTest {
 			.withRevision(revision);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(bean.isArchive()).isEqualTo(archive);
 		assertThat(bean.getConfidentiality()).isEqualTo(confidentiality);
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
@@ -78,7 +81,11 @@ class DocumentTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(Document.create()).hasAllNullFieldsOrPropertiesExcept("revision", "confidential");
-		assertThat(new Document()).hasAllNullFieldsOrPropertiesExcept("revision", "confidential");
+		assertThat(Document.create()).hasAllNullFieldsOrPropertiesExcept("revision", "archive")
+			.hasFieldOrPropertyWithValue("revision", 0)
+			.hasFieldOrPropertyWithValue("archive", false);
+		assertThat(new Document()).hasAllNullFieldsOrPropertiesExcept("revision", "archive")
+			.hasFieldOrPropertyWithValue("revision", 0)
+			.hasFieldOrPropertyWithValue("archive", false);
 	}
 }

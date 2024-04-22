@@ -17,6 +17,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mariadb.jdbc.MariaDbBlob;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,6 +48,7 @@ import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 @ExtendWith(MockitoExtension.class)
 class DocumentMapperTest {
 
+	private static final boolean ARCHIVE = true;
 	private static final boolean CONFIDENTIAL = true;
 	private static final String DESCRIPTION = "Description";
 	private static final OffsetDateTime CREATED = now(systemDefault());
@@ -104,8 +108,10 @@ class DocumentMapperTest {
 		assertThat(DocumentMapper.toDocumentEntity((DocumentCreateRequest) null)).isNull();
 	}
 
-	@Test
-	void toDocumentEntityFromDocumentUpdateRequest() throws IOException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	@NullSource
+	void toDocumentEntityFromDocumentUpdateRequest(Boolean archive) throws IOException {
 
 		// Arrange
 		final var blob = new MariaDbBlob();
@@ -122,6 +128,7 @@ class DocumentMapperTest {
 		List.of(multipartFile1, multipartFile2);
 
 		final var documentUpdateRequest = DocumentUpdateRequest.create()
+			.withArchive(archive)
 			.withCreatedBy("Updated user")
 			.withDescription("Updated text")
 			.withMetadataList(List.of(DocumentMetadata.create()
@@ -129,6 +136,7 @@ class DocumentMapperTest {
 				.withValue("Updated-value")));
 
 		final var existingDocumentEntity = DocumentEntity.create()
+			.withArchive(ARCHIVE)
 			.withConfidentiality(ConfidentialityEmbeddable.create()
 				.withConfidential(CONFIDENTIAL)
 				.withLegalCitation(LEGAL_CITATION))
@@ -136,14 +144,12 @@ class DocumentMapperTest {
 			.withDescription(DESCRIPTION)
 			.withDocumentData(List.of(
 				DocumentDataEntity.create()
-					.withConfidentiality(ConfidentialityEmbeddable.create().withConfidential(false))
 					.withFileName(fileName1)
 					.withFileSizeInBytes(file1.length())
 					.withMimeType(mimeType)
 					.withDocumentDataBinary(DocumentDataBinaryEntity.create()
 						.withBinaryFile(blob)),
 				DocumentDataEntity.create()
-					.withConfidentiality(ConfidentialityEmbeddable.create().withConfidential(false))
 					.withFileName(fileName2)
 					.withFileSizeInBytes(file2.length())
 					.withMimeType(mimeType)
@@ -163,6 +169,7 @@ class DocumentMapperTest {
 		assertThat(result)
 			.isNotNull()
 			.isEqualTo(DocumentEntity.create()
+				.withArchive(archive == null ? existingDocumentEntity.isArchive() : archive)
 				.withConfidentiality(ConfidentialityEmbeddable.create()
 					.withConfidential(CONFIDENTIAL)
 					.withLegalCitation(LEGAL_CITATION))
@@ -170,14 +177,12 @@ class DocumentMapperTest {
 				.withDescription("Updated text")
 				.withDocumentData(List.of(
 					DocumentDataEntity.create()
-						.withConfidentiality(ConfidentialityEmbeddable.create().withConfidential(false))
 						.withFileName(fileName1)
 						.withFileSizeInBytes(file1.length())
 						.withMimeType(mimeType)
 						.withDocumentDataBinary(DocumentDataBinaryEntity.create()
 							.withBinaryFile(blob)),
 					DocumentDataEntity.create()
-						.withConfidentiality(ConfidentialityEmbeddable.create().withConfidential(false))
 						.withFileName(fileName2)
 						.withFileSizeInBytes(file2.length())
 						.withMimeType(mimeType)
@@ -298,6 +303,7 @@ class DocumentMapperTest {
 
 		// Arrange
 		final var documentEntity = DocumentEntity.create()
+			.withArchive(ARCHIVE)
 			.withConfidentiality(ConfidentialityEmbeddable.create()
 				.withConfidential(CONFIDENTIAL)
 				.withLegalCitation(LEGAL_CITATION))
@@ -306,17 +312,11 @@ class DocumentMapperTest {
 			.withDescription(DESCRIPTION)
 			.withDocumentData(List.of(
 				DocumentDataEntity.create()
-					.withConfidentiality(ConfidentialityEmbeddable.create()
-						.withConfidential(CONFIDENTIAL)
-						.withLegalCitation(LEGAL_CITATION))
 					.withFileName(FILE_1_NAME)
 					.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
 					.withId(ID)
 					.withMimeType(MIME_TYPE_1),
 				DocumentDataEntity.create()
-					.withConfidentiality(ConfidentialityEmbeddable.create()
-						.withConfidential(CONFIDENTIAL)
-						.withLegalCitation(LEGAL_CITATION))
 					.withFileName(FILE_2_NAME)
 					.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
 					.withId(ID)
@@ -336,6 +336,7 @@ class DocumentMapperTest {
 		assertThat(result)
 			.hasSize(1)
 			.containsExactly(Document.create()
+				.withArchive(ARCHIVE)
 				.withConfidentiality(Confidentiality.create()
 					.withConfidential(CONFIDENTIAL)
 					.withLegalCitation(LEGAL_CITATION))
@@ -344,17 +345,11 @@ class DocumentMapperTest {
 				.withDescription(DESCRIPTION)
 				.withDocumentData(List.of(
 					DocumentData.create()
-						.withConfidentiality(Confidentiality.create()
-							.withConfidential(CONFIDENTIAL)
-							.withLegalCitation(LEGAL_CITATION))
 						.withFileName(FILE_1_NAME)
 						.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
 						.withId(ID)
 						.withMimeType(MIME_TYPE_1),
 					DocumentData.create()
-						.withConfidentiality(Confidentiality.create()
-							.withConfidential(CONFIDENTIAL)
-							.withLegalCitation(LEGAL_CITATION))
 						.withFileName(FILE_2_NAME)
 						.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
 						.withId(ID)
@@ -378,6 +373,7 @@ class DocumentMapperTest {
 
 		// Arrange
 		final var documentEntity = DocumentEntity.create()
+			.withArchive(ARCHIVE)
 			.withConfidentiality(ConfidentialityEmbeddable.create()
 				.withConfidential(CONFIDENTIAL)
 				.withLegalCitation(LEGAL_CITATION))
@@ -386,17 +382,11 @@ class DocumentMapperTest {
 			.withDescription(DESCRIPTION)
 			.withDocumentData(List.of(
 				DocumentDataEntity.create()
-					.withConfidentiality(ConfidentialityEmbeddable.create()
-						.withConfidential(CONFIDENTIAL)
-						.withLegalCitation(LEGAL_CITATION + "1"))
 					.withFileName(FILE_1_NAME)
 					.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
 					.withId(ID)
 					.withMimeType(MIME_TYPE_1),
 				DocumentDataEntity.create()
-					.withConfidentiality(ConfidentialityEmbeddable.create()
-						.withConfidential(CONFIDENTIAL)
-						.withLegalCitation(LEGAL_CITATION + "2"))
 					.withFileName(FILE_2_NAME)
 					.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
 					.withId(ID)
@@ -416,6 +406,7 @@ class DocumentMapperTest {
 		assertThat(result)
 			.isNotNull()
 			.isEqualTo(Document.create()
+				.withArchive(ARCHIVE)
 				.withConfidentiality(Confidentiality.create()
 					.withConfidential(CONFIDENTIAL)
 					.withLegalCitation(LEGAL_CITATION))
@@ -424,17 +415,11 @@ class DocumentMapperTest {
 				.withDescription(DESCRIPTION)
 				.withDocumentData(List.of(
 					DocumentData.create()
-						.withConfidentiality(Confidentiality.create()
-							.withConfidential(CONFIDENTIAL)
-							.withLegalCitation(LEGAL_CITATION + "1"))
 						.withFileName(FILE_1_NAME)
 						.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
 						.withId(ID)
 						.withMimeType(MIME_TYPE_1),
 					DocumentData.create()
-						.withConfidentiality(Confidentiality.create()
-							.withConfidential(CONFIDENTIAL)
-							.withLegalCitation(LEGAL_CITATION + "2"))
 						.withFileName(FILE_2_NAME)
 						.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
 						.withId(ID)
@@ -457,9 +442,6 @@ class DocumentMapperTest {
 	void toDocumentDataEntitiesFromMultipart() throws IOException {
 
 		// Arrange
-		final var confidentiality = Confidentiality.create()
-			.withConfidential(CONFIDENTIAL)
-			.withLegalCitation(LEGAL_CITATION);
 		final var blob = new MariaDbBlob();
 		final var mimeType = "image/png";
 		final var file = new File("src/test/resources/files/image.png");
@@ -470,7 +452,7 @@ class DocumentMapperTest {
 		when(databaseHelperMock.convertToBlob(multipartFile)).thenReturn(blob);
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntities(documents, databaseHelperMock, confidentiality);
+		final var result = DocumentMapper.toDocumentDataEntities(documents, databaseHelperMock);
 
 		// Assert
 		assertThat(result)
@@ -480,50 +462,12 @@ class DocumentMapperTest {
 				DocumentDataEntity::getFileName,
 				DocumentDataEntity::getMimeType,
 				DocumentDataEntity::getFileSizeInBytes,
-				DocumentDataEntity::getDocumentDataBinary,
-				DocumentDataEntity::getConfidentiality)
+				DocumentDataEntity::getDocumentDataBinary)
 			.containsExactly(tuple(
 				fileName,
 				mimeType,
 				file.length(),
-				DocumentDataBinaryEntity.create().withBinaryFile(blob),
-				ConfidentialityEmbeddable.create().withConfidential(CONFIDENTIAL).withLegalCitation(LEGAL_CITATION)));
-
-		verify(databaseHelperMock).convertToBlob(multipartFile);
-	}
-
-	@Test
-	void toDocumentDataEntitiesFromMultipartWhenConfidentialityIsNull() throws IOException {
-
-		// Arrange
-		final var blob = new MariaDbBlob();
-		final var mimeType = "image/png";
-		final var file = new File("src/test/resources/files/image.png");
-		final var fileName = file.getName();
-		final var multipartFile = (MultipartFile) new MockMultipartFile("file", fileName, mimeType, toByteArray(new FileInputStream(file)));
-		final var documents = DocumentFiles.create().withFiles(List.of(multipartFile));
-
-		when(databaseHelperMock.convertToBlob(multipartFile)).thenReturn(blob);
-
-		// Act
-		final var result = DocumentMapper.toDocumentDataEntities(documents, databaseHelperMock, null);
-
-		// Assert
-		assertThat(result)
-			.isNotNull()
-			.isNotEmpty()
-			.extracting(
-				DocumentDataEntity::getFileName,
-				DocumentDataEntity::getMimeType,
-				DocumentDataEntity::getFileSizeInBytes,
-				DocumentDataEntity::getDocumentDataBinary,
-				DocumentDataEntity::getConfidentiality)
-			.containsExactly(tuple(
-				fileName,
-				mimeType,
-				file.length(),
-				DocumentDataBinaryEntity.create().withBinaryFile(blob),
-				ConfidentialityEmbeddable.create().withConfidential(false).withLegalCitation(null)));
+				DocumentDataBinaryEntity.create().withBinaryFile(blob)));
 
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 	}
@@ -532,7 +476,7 @@ class DocumentMapperTest {
 	void toDocumentDataEntitiesFromMultipartWhenInputIsNull() throws IOException {
 
 		// Act
-		final var result = DocumentMapper.toDocumentDataEntities(null, databaseHelperMock, null);
+		final var result = DocumentMapper.toDocumentDataEntities(null, databaseHelperMock);
 
 		// Assert
 		assertThat(result).isNull();
@@ -543,6 +487,7 @@ class DocumentMapperTest {
 
 		// Arrange
 		final var documentEntity = DocumentEntity.create()
+			.withArchive(ARCHIVE)
 			.withConfidentiality(ConfidentialityEmbeddable.create()
 				.withConfidential(CONFIDENTIAL)
 				.withLegalCitation(LEGAL_CITATION))
@@ -551,17 +496,11 @@ class DocumentMapperTest {
 			.withDescription(DESCRIPTION)
 			.withDocumentData(List.of(
 				DocumentDataEntity.create()
-					.withConfidentiality(ConfidentialityEmbeddable.create()
-						.withConfidential(CONFIDENTIAL)
-						.withLegalCitation(LEGAL_CITATION + "1"))
 					.withFileName(FILE_1_NAME)
 					.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
 					.withId(ID)
 					.withMimeType(MIME_TYPE_1),
 				DocumentDataEntity.create()
-					.withConfidentiality(ConfidentialityEmbeddable.create()
-						.withConfidential(CONFIDENTIAL)
-						.withLegalCitation(LEGAL_CITATION + "2"))
 					.withFileName(FILE_2_NAME)
 					.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
 					.withId(ID)
@@ -582,6 +521,7 @@ class DocumentMapperTest {
 			.isNotNull()
 			.isNotSameAs(documentEntity)
 			.isEqualTo(DocumentEntity.create()
+				.withArchive(ARCHIVE)
 				.withConfidentiality(ConfidentialityEmbeddable.create()
 					.withConfidential(CONFIDENTIAL)
 					.withLegalCitation(LEGAL_CITATION))
@@ -589,16 +529,10 @@ class DocumentMapperTest {
 				.withDescription(DESCRIPTION)
 				.withDocumentData(List.of(
 					DocumentDataEntity.create()
-						.withConfidentiality(ConfidentialityEmbeddable.create()
-							.withConfidential(CONFIDENTIAL)
-							.withLegalCitation(LEGAL_CITATION + "1"))
 						.withFileName(FILE_1_NAME)
 						.withFileSizeInBytes(FILE_1_SIZE_IN_BYTES)
 						.withMimeType(MIME_TYPE_1),
 					DocumentDataEntity.create()
-						.withConfidentiality(ConfidentialityEmbeddable.create()
-							.withConfidential(CONFIDENTIAL)
-							.withLegalCitation(LEGAL_CITATION + "2"))
 						.withFileName(FILE_2_NAME)
 						.withFileSizeInBytes(FILE_2_SIZE_IN_BYTES)
 						.withMimeType(MIME_TYPE_2)))

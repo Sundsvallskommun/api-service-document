@@ -1,12 +1,10 @@
 {
-  "createdBy": "user-x",
-  "archiveMap": {
-    "image.png": true
-  },
-  "metadataList": [
-    {
-      "key": "Updated key",
-      "value": "Updated value"
-    }
-  ]
+	"createdBy": "user-x",
+	"archive": false,
+	"metadataList": [
+		{
+			"key": "Updated key",
+			"value": "Updated value"
+		}
+	]
 }

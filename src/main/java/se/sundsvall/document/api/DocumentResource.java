@@ -15,15 +15,6 @@ import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -43,16 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
-import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
-import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
-import se.sundsvall.document.api.model.Document;
-import se.sundsvall.document.api.model.DocumentCreateRequest;
-import se.sundsvall.document.api.model.DocumentDataCreateRequest;
-import se.sundsvall.document.api.model.DocumentDataUpdateRequest;
-import se.sundsvall.document.api.model.DocumentFiles;
-import se.sundsvall.document.api.model.DocumentUpdateRequest;
-import se.sundsvall.document.api.model.PagedDocumentResponse;
-import se.sundsvall.document.service.DocumentService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -61,6 +44,21 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
+import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
+import se.sundsvall.document.api.model.Document;
+import se.sundsvall.document.api.model.DocumentCreateRequest;
+import se.sundsvall.document.api.model.DocumentDataCreateRequest;
+import se.sundsvall.document.api.model.DocumentFiles;
+import se.sundsvall.document.api.model.DocumentUpdateRequest;
+import se.sundsvall.document.api.model.PagedDocumentResponse;
+import se.sundsvall.document.service.DocumentService;
 
 @RestController
 @Validated
@@ -162,21 +160,6 @@ public class DocumentResource {
 		validate(documentDataCreateRequest);
 
 		documentService.addOrReplaceFile(registrationNumber, documentDataCreateRequest, documentFile);
-
-		return noContent().build();
-	}
-
-	@PatchMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
-	@Operation(summary = "Update document file data")
-	@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	public ResponseEntity<Void> updateFile(
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "documentDataId", description = "Document data ID", example = "082ba08f-03c7-409f-b8a6-940a1397ba38") @PathVariable("documentDataId") @ValidUuid String documentDataId,
-		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
-		@NotNull @Valid @RequestBody DocumentDataUpdateRequest body) {
-
-		documentService.updateFile(registrationNumber, documentDataId, includeConfidential, body);
 
 		return noContent().build();
 	}

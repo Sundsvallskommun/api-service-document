@@ -24,6 +24,7 @@ spring:
       hibernate:
         format_sql: true
         auto_quote_keyword: true
+        show_sql: false
       jakarta:
         persistence:
           schema-generation:
