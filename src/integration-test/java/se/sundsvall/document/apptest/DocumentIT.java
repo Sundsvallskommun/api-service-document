@@ -6,6 +6,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -227,5 +228,29 @@ class DocumentIT extends AbstractAppTest {
 			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test18_addFileToDocument() throws FileNotFoundException {
+		final var testFile = getFile(this.setupPaths().getTestDirectoryPath() + "image.png");
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFile", new FileSystemResource(testFile)).filename(testFile.getName()).contentType(IMAGE_PNG);
+		multipartBodyBuilder.part("document", fromTestFile(REQUEST_FILE));
+
+		setupCall()
+			.withServicePath(PATH + "/2023-2281-123/files")
+			.withHttpMethod(PUT)
+			.withContentType(MULTIPART_FORM_DATA)
+			.withRequest(multipartBodyBuilder.build())
+			.withExpectedResponseStatus(NO_CONTENT)
+			.sendRequestAndVerifyResponse();
+
+		setupCall()
+			.withServicePath(PATH + "/2023-2281-123")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+
 	}
 }

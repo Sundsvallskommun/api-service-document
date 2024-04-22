@@ -1,0 +1,44 @@
+{
+	"id": "${json-unit.any-string}",
+	"registrationNumber": "2023-2281-123",
+	"revision": 4,
+	"confidentiality": {
+		"confidential": false
+	},
+	"description": "Document 1",
+	"created": "${json-unit.any-string}",
+	"createdBy": "user-x",
+	"archive": true,
+	"metadataList": [
+		{
+			"key": "document1-key1",
+			"value": "value-1"
+		},
+		{
+			"key": "document1-key2",
+			"value": "value-2"
+		},
+		{
+			"key": "document1-key3",
+			"value": "value-3"
+		},
+		{
+			"key": "document1-key4",
+			"value": "value-4"
+		}
+	],
+	"documentData": [
+		{
+			"id": "${json-unit.any-string}",
+			"fileName": "file3.jpg",
+			"mimeType": "image/jpeg",
+			"fileSizeInBytes": 5068
+		},
+		{
+			"id": "${json-unit.any-string}",
+			"fileName": "image.png",
+			"mimeType": "image/png",
+			"fileSizeInBytes": 227546
+		}
+	]
+}
