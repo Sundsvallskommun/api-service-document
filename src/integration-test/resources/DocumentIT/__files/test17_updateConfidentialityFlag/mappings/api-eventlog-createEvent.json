@@ -2,10 +2,10 @@
 	"name": "api-eventlog-createEvent",
 	"request": {
 		"method": "POST",
-		"urlPath": "/api-eventlog/9043c3d3-14ff-4d44-a2a8-ffb45122f2c6",
+		"urlPath": "/api-eventlog/00000000-0000-0000-0000-000000000000",
 		"headers": {
 			"Authorization": {
-				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+				"equalTo": "Bearer 0000000000000000AAAAAAAAAAAAAAAA"
 			}
 		},
 		"bodyPatterns": [
