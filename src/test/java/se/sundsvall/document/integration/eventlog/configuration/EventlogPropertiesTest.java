@@ -20,6 +20,6 @@ class EventlogPropertiesTest {
 	void testProperties() {
 		assertThat(properties.connectTimeout()).isEqualTo(19);
 		assertThat(properties.readTimeout()).isEqualTo(21);
-		assertThat(properties.logKeyUuid()).isEqualTo("9043c3d3-14ff-4d44-a2a8-ffb45122f2c6");
+		assertThat(properties.logKeyUuid()).isEqualTo("00000000-0000-0000-0000-000000000000");
 	}
 }
