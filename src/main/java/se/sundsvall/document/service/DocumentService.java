@@ -115,8 +115,8 @@ public class DocumentService {
 		return toPagedDocumentResponse(documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, toInclusionFilter(includeConfidential), pageable));
 	}
 
-	public PagedDocumentResponse search(String query, boolean includeConfidential, Pageable pageable) {
-		return toPagedDocumentResponse(documentRepository.search(query, includeConfidential, pageable));
+	public PagedDocumentResponse search(String query, boolean includeConfidential, boolean onlyLatestRevision, Pageable pageable) {
+		return toPagedDocumentResponse(documentRepository.search(query, includeConfidential, onlyLatestRevision, pageable));
 	}
 
 	public void readFile(String registrationNumber, String documentDataId, boolean includeConfidential, HttpServletResponse response) {

@@ -22,6 +22,8 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -228,7 +230,7 @@ class DocumentResourceTest {
 		final var size = 10;
 		final var sort = "created,asc";
 
-		when(documentServiceMock.search(any(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+		when(documentServiceMock.search(any(), anyBoolean(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
@@ -247,20 +249,20 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).search(query, false, PageRequest.of(page, size, Sort.by(asc("created"))));
+		verify(documentServiceMock).search(query, false, false, PageRequest.of(page, size, Sort.by(asc("created"))));
 	}
 
-	@Test
-	void searchWithIncludeConfidential() {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void searchWithIncludeConfidential(boolean includeConfidential) {
 
 		// Arrange
-		final var includeConfidential = true;
 		final var query = "string";
 		final var page = 1;
 		final var size = 10;
 		final var sort = "created,asc";
 
-		when(documentServiceMock.search(any(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+		when(documentServiceMock.search(any(), anyBoolean(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
@@ -280,7 +282,40 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).search(query, includeConfidential, PageRequest.of(page, size, Sort.by(asc("created"))));
+		verify(documentServiceMock).search(query, includeConfidential, false, PageRequest.of(page, size, Sort.by(asc("created"))));
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void searchWithOnlyLatestRevision(boolean onlyLatestRevision) {
+
+		// Arrange
+		final var query = "string";
+		final var page = 1;
+		final var size = 10;
+		final var sort = "created,asc";
+
+		when(documentServiceMock.search(any(), anyBoolean(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+
+		// Act
+		final var response = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/documents")
+				.queryParam("query", query)
+				.queryParam("page", page)
+				.queryParam("size", size)
+				.queryParam("sort", sort)
+				.queryParam("onlyLatestRevision", onlyLatestRevision)
+				.build())
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader().contentType(APPLICATION_JSON)
+			.expectBody()
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		verify(documentServiceMock).search(query, false, onlyLatestRevision, PageRequest.of(page, size, Sort.by(asc("created"))));
 	}
 
 	@Test
