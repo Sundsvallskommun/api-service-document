@@ -310,7 +310,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
 
 		// Act
-		final var result = documentRepository.search(search, true, pageRequest);
+		final var result = documentRepository.search(search, true, false, pageRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -329,7 +329,45 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
 
 		// Act
-		final var result = documentRepository.search(search, false, pageRequest);
+		final var result = documentRepository.search(search, false, false, pageRequest);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(result.getContent())
+			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
+			.containsExactly(
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User3"));
+	}
+
+	@Test
+	void searchByKeyInAllRevisions() {
+
+		// Arrange
+		final var search = "document1-key1";
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
+
+		// Act
+		final var result = documentRepository.search(search, false, false, pageRequest);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(result.getContent())
+			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
+			.containsExactly(
+				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-2281-123", "User1"),
+				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User2"),
+				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User3"));
+	}
+
+	@Test
+	void searchByKeyInLatestRevision() {
+
+		// Arrange
+		final var search = "document1-key1";
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
+
+		// Act
+		final var result = documentRepository.search(search, false, true, pageRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -347,7 +385,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "registrationNumber", "revision"));
 
 		// Act
-		final var result = documentRepository.search(search, true, pageRequest);
+		final var result = documentRepository.search(search, true, false, pageRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -368,7 +406,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
 
 		// Act
-		final var result = documentRepository.search(search, true, pageRequest);
+		final var result = documentRepository.search(search, true, false, pageRequest);
 
 		// Assert
 		assertThat(result).isNotNull();

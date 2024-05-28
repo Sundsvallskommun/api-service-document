@@ -1,0 +1,49 @@
+{
+	"documents": [
+		{
+			"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
+			"registrationNumber": "2023-2281-123",
+			"revision": 3,
+			"confidentiality": {
+				"confidential": false
+			},
+			"description": "Document 1",
+			"created": "2023-06-28T12:03:00+02:00",
+			"createdBy": "User3",
+			"archive": true,
+			"metadataList": [
+				{
+					"key": "document1-key1",
+					"value": "value-1"
+				},
+				{
+					"key": "document1-key2",
+					"value": "value-2"
+				},
+				{
+					"key": "document1-key3",
+					"value": "value-3"
+				},
+				{
+					"key": "document1-key4",
+					"value": "value-4"
+				}
+			],
+			"documentData": [
+				{
+					"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
+					"fileName": "file3.jpg",
+					"mimeType": "image/jpeg",
+					"fileSizeInBytes": 5068
+				}
+			]
+		}
+	],
+	"_meta": {
+		"page": 0,
+		"limit": 20,
+		"count": 1,
+		"totalRecords": 1,
+		"totalPages": 1
+	}
+}

@@ -38,6 +38,8 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mariadb.jdbc.MariaDbBlob;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -533,20 +535,20 @@ class DocumentServiceTest {
 		verifyNoInteractions(httpServletResponseMock, eventlogClientMock);
 	}
 
-	@Test
-	void search() {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void searchConfidential(boolean includeConfidential) {
 
 		// Arrange
-		final var includeConfidential = true;
 		final var search = "search-string";
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
 
 		when(pageMock.getContent()).thenReturn(List.of(createDocumentEntity()));
 		when(pageMock.getPageable()).thenReturn(pageRequest);
-		when(documentRepositoryMock.search(any(), anyBoolean(), any())).thenReturn(pageMock);
+		when(documentRepositoryMock.search(any(), anyBoolean(), anyBoolean(), any())).thenReturn(pageMock);
 
 		// Act
-		final var result = documentService.search(search, includeConfidential, pageRequest);
+		final var result = documentService.search(search, includeConfidential, false, pageRequest);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -555,7 +557,33 @@ class DocumentServiceTest {
 			.containsExactly(tuple(CREATED, CREATED_BY, ID, MUNICIPALITY_ID, REGISTRATION_NUMBER, REVISION));
 		assertThat(result.getDocuments().getFirst().getDocumentData()).hasSize(1); // Document contains a confidential documentData element and we are setting includeConfidential=true
 
-		verify(documentRepositoryMock).search(search, includeConfidential, pageRequest);
+		verify(documentRepositoryMock).search(search, includeConfidential, false, pageRequest);
+		verifyNoInteractions(eventlogClientMock);
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void searchLatestRevision(boolean onlyLatestRevision) {
+
+		// Arrange
+		final var search = "search-string";
+		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
+
+		when(pageMock.getContent()).thenReturn(List.of(createDocumentEntity()));
+		when(pageMock.getPageable()).thenReturn(pageRequest);
+		when(documentRepositoryMock.search(any(), anyBoolean(), anyBoolean(), any())).thenReturn(pageMock);
+
+		// Act
+		final var result = documentService.search(search, false, onlyLatestRevision, pageRequest);
+
+		// Assert
+		assertThat(result).isNotNull();
+		assertThat(result.getDocuments())
+			.extracting(Document::getCreated, Document::getCreatedBy, Document::getId, Document::getMunicipalityId, Document::getRegistrationNumber, Document::getRevision)
+			.containsExactly(tuple(CREATED, CREATED_BY, ID, MUNICIPALITY_ID, REGISTRATION_NUMBER, REVISION));
+		assertThat(result.getDocuments().getFirst().getDocumentData()).hasSize(1); // Document contains a confidential documentData element and we are setting includeConfidential=true
+
+		verify(documentRepositoryMock).search(search, false, onlyLatestRevision, pageRequest);
 		verifyNoInteractions(eventlogClientMock);
 	}
 

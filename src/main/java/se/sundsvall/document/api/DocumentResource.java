@@ -182,9 +182,10 @@ public class DocumentResource {
 	public ResponseEntity<PagedDocumentResponse> search(
 		@Parameter(name = "query", description = "Search query. Use asterisk-character [*] as wildcard.", example = "hello*") @RequestParam(value = "query", required = true) @NotBlank String query,
 		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
+		@Parameter(name = "onlyLatestRevision", description = "Only perform search against the latest document revision", example = "true") @RequestParam(name = "onlyLatestRevision", defaultValue = "false") boolean onlyLatestRevision,
 		@ParameterObject Pageable pageable) {
 
-		return ok(documentService.search(query, includeConfidential, pageable));
+		return ok(documentService.search(query, includeConfidential, onlyLatestRevision, pageable));
 	}
 
 	private <T> void validate(T t) {

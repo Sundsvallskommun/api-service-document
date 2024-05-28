@@ -191,7 +191,17 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test14_searchWithWildCardOnlyConfidential() {
+	void test14_searchInLatestRevisionWithWildCardOnly() {
+		setupCall()
+			.withServicePath(PATH + "?query=*&onlyLatestRevision=true")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test15_searchWithWildCardOnlyConfidential() {
 		setupCall()
 			.withServicePath(PATH + "?query=*&includeConfidential=true")
 			.withHttpMethod(GET)
@@ -201,7 +211,17 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test15_deleteFile() {
+	void test16_searchInLatestRevisionWithWildCardOnlyConfidential() {
+		setupCall()
+			.withServicePath(PATH + "?query=*&includeConfidential=true&onlyLatestRevision=true")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test17_deleteFile() {
 		setupCall()
 			.withServicePath(PATH + "/2023-2281-123/files/4f0a04af-942d-4ad2-b2d9-151887fc995c")
 			.withHttpMethod(DELETE)
@@ -210,7 +230,7 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test16_deleteFileNotFound() {
+	void test18_deleteFileNotFound() {
 		setupCall()
 			.withServicePath(PATH + "/2023-2281-123/files/6619a286-a6cc-4001-9f55-945734805e7d") // ID doesn't exist
 			.withHttpMethod(DELETE)
@@ -220,18 +240,7 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test17_updateConfidentialityFlag() {
-		setupCall()
-			.withServicePath(PATH + "/2023-2281-123/confidentiality")
-			.withHttpMethod(PATCH)
-			.withContentType(APPLICATION_JSON)
-			.withRequest(REQUEST_FILE)
-			.withExpectedResponseStatus(NO_CONTENT)
-			.sendRequestAndVerifyResponse();
-	}
-
-	@Test
-	void test18_addFileToDocument() throws FileNotFoundException {
+	void test19_addFileToDocument() throws FileNotFoundException {
 		final var testFile = getFile(this.setupPaths().getTestDirectoryPath() + "image.png");
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
 		multipartBodyBuilder.part("documentFile", new FileSystemResource(testFile)).filename(testFile.getName()).contentType(IMAGE_PNG);
@@ -250,6 +259,17 @@ class DocumentIT extends AbstractAppTest {
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test20_updateConfidentialityFlag() {
+		setupCall()
+			.withServicePath(PATH + "/2023-2281-123/confidentiality")
+			.withHttpMethod(PATCH)
+			.withContentType(APPLICATION_JSON)
+			.withRequest(REQUEST_FILE)
+			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse();
 	}
 }

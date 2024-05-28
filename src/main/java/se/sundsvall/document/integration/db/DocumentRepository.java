@@ -61,12 +61,13 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	/**
 	 * Performs a search in DocumentEntities.
 	 *
-	 * @param  query               the string to search for.
-	 * @param  includeConfidential option if confidential documents should be included or not.
-	 * @param  pageable            the pageable object.
-	 * @return                     a Page of DocumentEntity objects that matches the search string.
+	 * @param query               the string to search for.
+	 * @param includeConfidential option if confidential documents should be included or not.
+	 * @param onlyLatestRevision  option if only latest revision should be included or not.
+	 * @param pageable            the pageable object.
+	 * @return a Page of DocumentEntity objects that matches the search string.
 	 */
-	default Page<DocumentEntity> search(String query, boolean includeConfidential, Pageable pageable) {
-		return this.findAll(withSearchQuery(query, includeConfidential), pageable);
+	default Page<DocumentEntity> search(String query, boolean includeConfidential, boolean onlyLatestRevision, Pageable pageable) {
+		return this.findAll(withSearchQuery(query, includeConfidential, onlyLatestRevision), pageable);
 	}
 }

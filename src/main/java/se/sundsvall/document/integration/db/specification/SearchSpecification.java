@@ -2,7 +2,6 @@ package se.sundsvall.document.integration.db.specification;
 
 import static jakarta.persistence.criteria.JoinType.LEFT;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.springframework.data.jpa.domain.Specification.where;
 import static se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable_.CONFIDENTIAL;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.FILE_NAME;
 import static se.sundsvall.document.integration.db.model.DocumentDataEntity_.MIME_TYPE;
@@ -13,6 +12,7 @@ import static se.sundsvall.document.integration.db.model.DocumentEntity_.DOCUMEN
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.METADATA;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.MUNICIPALITY_ID;
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.REGISTRATION_NUMBER;
+import static se.sundsvall.document.integration.db.model.DocumentEntity_.REVISION;
 import static se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable_.KEY;
 import static se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable_.VALUE;
 
@@ -24,18 +24,35 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 
 public interface SearchSpecification {
 
-	static Specification<DocumentEntity> withSearchQuery(String query, boolean includeConfidential) {
+	static Specification<DocumentEntity> withSearchQuery(String query, boolean includeConfidential, boolean onlyLatestRevision) {
 		final var queryString = toQueryString(query);
-		return where(matchesCreatedBy(queryString))
-			.or(matchesDescription(queryString))
-			.or(matchesMunicipalityId(queryString))
-			.or(matchesRegistrationNumber(queryString))
-			.or(matchesFileName(queryString))
-			.or(matchesMimeType(queryString))
-			.or(matchesMetadataKey(queryString))
-			.or(matchesMetadataValue(queryString))
+		
+		return onlyLatestRevisionOfDocuments(onlyLatestRevision)
+			.and(matchesCreatedBy(queryString)
+				.or(matchesDescription(queryString))
+				.or(matchesMunicipalityId(queryString))
+				.or(matchesRegistrationNumber(queryString))
+				.or(matchesFileName(queryString))
+				.or(matchesMimeType(queryString))
+				.or(matchesMetadataKey(queryString))
+				.or(matchesMetadataValue(queryString)))
 			.and(includeConfidentialDocuments(includeConfidential))
 			.and(distinct());
+	}
+
+	private static Specification<DocumentEntity> onlyLatestRevisionOfDocuments(boolean onlyLatestRevision) {
+		if (!onlyLatestRevision) {
+			return Specification.where(null); // Do not add any filter to return all documents regardless of revision
+		}
+
+		return (root, query, cb) -> {
+			var subQuery = query.subquery(Integer.class);
+			var subRoot = subQuery.from(DocumentEntity.class);
+			subQuery.select(cb.max(subRoot.get(REVISION)))
+				.where(cb.equal(root.get(REGISTRATION_NUMBER), subRoot.get(REGISTRATION_NUMBER)));
+			return cb.equal(root.get(REVISION), subQuery);
+
+		}; // Only return latest revision of documents
 	}
 
 	private static Specification<DocumentEntity> includeConfidentialDocuments(boolean includeConfidential) {
