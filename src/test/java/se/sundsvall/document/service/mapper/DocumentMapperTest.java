@@ -473,7 +473,7 @@ class DocumentMapperTest {
 	}
 
 	@Test
-	void toDocumentDataEntitiesFromMultipartWhenInputIsNull() throws IOException {
+	void toDocumentDataEntitiesFromMultipartWhenInputIsNull() {
 
 		// Act
 		final var result = DocumentMapper.toDocumentDataEntities(null, databaseHelperMock);
