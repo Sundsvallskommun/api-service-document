@@ -15,7 +15,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
-import java.sql.SQLException;
 
 import org.hibernate.LobHelper;
 import org.hibernate.Session;
@@ -86,7 +85,7 @@ class DatabaseHelperTest {
 	}
 
 	@Test
-	void convertToBlobWhenNull() throws IOException, SQLException {
+	void convertToBlobWhenNull() {
 
 		// Act
 		final var result = databaseHelper.convertToBlob(null);
