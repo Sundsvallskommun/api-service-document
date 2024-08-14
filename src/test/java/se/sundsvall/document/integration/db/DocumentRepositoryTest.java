@@ -53,6 +53,7 @@ import se.sundsvall.document.service.InclusionFilter;
 class DocumentRepositoryTest {
 
 	private static final String CREATED_BY = "User123";
+	private static final String MUNICIPALITY_ID = "2281";
 
 	@Autowired
 	private DocumentRepository documentRepository;
@@ -140,7 +141,7 @@ class DocumentRepositoryTest {
 	void findTopByRegistrationNumberOrderByRevisionDesc(String registrationNumber, InclusionFilter filter, boolean shouldHaveMatch) {
 
 		// Act
-		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, filter.getValue());
+		final var result = documentRepository.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(MUNICIPALITY_ID, registrationNumber, filter.getValue());
 
 		// Assert
 		if (shouldHaveMatch) {
@@ -157,7 +158,7 @@ class DocumentRepositoryTest {
 		final var registrationNumber = "2023-2281-123"; // Document 1 (public)
 
 		// Act
-		final var result = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, PUBLIC.getValue()).orElseThrow();
+		final var result = documentRepository.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(MUNICIPALITY_ID, registrationNumber, PUBLIC.getValue()).orElseThrow();
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -182,7 +183,7 @@ class DocumentRepositoryTest {
 		final var registrationNumber = "2023-2281-123"; // Document 1 (public)
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, PUBLIC.getValue());
+		final var result = documentRepository.findByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialIn(MUNICIPALITY_ID, registrationNumber, PUBLIC.getValue());
 
 		// Assert
 		assertThat(result)
@@ -202,7 +203,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, filter.getValue(), pageRequest);
+		final var result = documentRepository.findByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialIn(MUNICIPALITY_ID, registrationNumber, filter.getValue(), pageRequest);
 
 		// Assert
 		if (shouldHaveMatch) {
@@ -220,7 +221,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(DESC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, PUBLIC.getValue(), pageRequest);
+		final var result = documentRepository.findByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialIn(MUNICIPALITY_ID, registrationNumber, PUBLIC.getValue(), pageRequest);
 
 		// Assert
 		assertThat(result)
@@ -239,7 +240,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, filter.getValue(), pageRequest);
+		final var result = documentRepository.findByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialIn(MUNICIPALITY_ID, registrationNumber, filter.getValue(), pageRequest);
 
 		// Assert
 		if (shouldHaveMatch) {
@@ -257,7 +258,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, PUBLIC.getValue(), pageRequest);
+		final var result = documentRepository.findByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialIn(MUNICIPALITY_ID, registrationNumber, PUBLIC.getValue(), pageRequest);
 
 		// Assert
 		assertThat(result)
@@ -275,7 +276,7 @@ class DocumentRepositoryTest {
 		final var revision = 1;
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(registrationNumber, revision, filter.getValue());
+		final var result = documentRepository.findByMunicipalityIdAndRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(MUNICIPALITY_ID, registrationNumber, revision, filter.getValue());
 
 		// Assert
 		if (shouldHaveMatch) {
@@ -293,7 +294,7 @@ class DocumentRepositoryTest {
 		final var revision = 2;
 
 		// Act
-		final var result = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(registrationNumber, revision, PUBLIC.getValue()).orElseThrow();
+		final var result = documentRepository.findByMunicipalityIdAndRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(MUNICIPALITY_ID, registrationNumber, revision, PUBLIC.getValue()).orElseThrow();
 
 		// Assert
 		assertThat(result)
@@ -310,7 +311,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
 
 		// Act
-		final var result = documentRepository.search(search, true, false, pageRequest);
+		final var result = documentRepository.search(search, true, false, pageRequest, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -329,7 +330,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
 
 		// Act
-		final var result = documentRepository.search(search, false, false, pageRequest);
+		final var result = documentRepository.search(search, false, false, pageRequest, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -347,7 +348,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
 		// Act
-		final var result = documentRepository.search(search, false, false, pageRequest);
+		final var result = documentRepository.search(search, false, false, pageRequest, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -367,7 +368,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "revision"));
 
 		// Act
-		final var result = documentRepository.search(search, false, true, pageRequest);
+		final var result = documentRepository.search(search, false, true, pageRequest, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -385,7 +386,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "registrationNumber", "revision"));
 
 		// Act
-		final var result = documentRepository.search(search, true, false, pageRequest);
+		final var result = documentRepository.search(search, true, false, pageRequest, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result).isNotNull();
@@ -406,7 +407,7 @@ class DocumentRepositoryTest {
 		final var pageRequest = PageRequest.of(0, 10, Sort.by(ASC, "created"));
 
 		// Act
-		final var result = documentRepository.search(search, true, false, pageRequest);
+		final var result = documentRepository.search(search, true, false, pageRequest, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result).isNotNull();

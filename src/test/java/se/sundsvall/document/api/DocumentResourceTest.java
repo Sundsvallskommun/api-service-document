@@ -67,7 +67,6 @@ class DocumentResourceTest {
 			.withConfidentiality(Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation"))
 			.withCreatedBy("user")
 			.withDescription("description")
-			.withMunicipalityId("2281")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
 				.withValue("value")));
@@ -77,23 +76,23 @@ class DocumentResourceTest {
 		multipartBodyBuilder.part("documentFiles", "file-content").filename("tesst2.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", documentCreateRequest);
 
-		when(documentServiceMock.create(any(), any())).thenReturn(Document.create());
+		when(documentServiceMock.create(any(), any(), any())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.post()
-			.uri("/documents")
+			.uri("/2281/documents")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
 			.expectStatus().isCreated()
 			.expectHeader().contentType(ALL_VALUE)
 			.expectHeader().exists(LOCATION)
-			.expectHeader().valuesMatch(LOCATION, "^/documents/(.*)$")
+			.expectHeader().valuesMatch(LOCATION, "^/2281/documents/(.*)$")
 			.expectBody().isEmpty();
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).create(eq(documentCreateRequest), ArgumentMatchers.<DocumentFiles>any());
+		verify(documentServiceMock).create(eq(documentCreateRequest), ArgumentMatchers.<DocumentFiles>any(), eq("2281"));
 	}
 
 	@Test
@@ -102,7 +101,6 @@ class DocumentResourceTest {
 			.withConfidentiality(Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation"))
 			.withCreatedBy("user")
 			.withDescription("description")
-			.withMunicipalityId("2281")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
 				.withValue("value")));
@@ -112,10 +110,10 @@ class DocumentResourceTest {
 		multipartBodyBuilder.part("documentFiles", "file-content").filename("duplicateName.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", documentCreateRequest);
 
-		when(documentServiceMock.create(any(), any())).thenReturn(Document.create());
+		when(documentServiceMock.create(any(), any(), any())).thenReturn(Document.create());
 
 		final var response = webTestClient.post()
-			.uri("/documents")
+			.uri("/2281/documents")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
@@ -145,11 +143,11 @@ class DocumentResourceTest {
 				.withKey("key")
 				.withValue("value")));
 
-		when(documentServiceMock.update(any(), anyBoolean(), any())).thenReturn(Document.create());
+		when(documentServiceMock.update(any(), anyBoolean(), any(), any())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri("/documents/" + registrationNumber)
+			.uri("/2281/documents/" + registrationNumber)
 			.contentType(APPLICATION_JSON)
 			.bodyValue(documentUpdateRequest)
 			.exchange()
@@ -161,7 +159,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).update(registrationNumber, false, documentUpdateRequest);
+		verify(documentServiceMock).update(registrationNumber, false, documentUpdateRequest, "2281");
 	}
 
 	@Test
@@ -176,7 +174,7 @@ class DocumentResourceTest {
 
 		// Act
 		webTestClient.patch()
-			.uri("/documents/" + registrationNumber + "/confidentiality")
+			.uri("/2281/documents/" + registrationNumber + "/confidentiality")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(confidentialityUpdateRequest)
 			.exchange()
@@ -185,7 +183,7 @@ class DocumentResourceTest {
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).updateConfidentiality(registrationNumber, confidentialityUpdateRequest);
+		verify(documentServiceMock).updateConfidentiality(registrationNumber, confidentialityUpdateRequest, "2281");
 	}
 
 	@Test
@@ -200,11 +198,11 @@ class DocumentResourceTest {
 				.withKey("key")
 				.withValue("value")));
 
-		when(documentServiceMock.update(any(), anyBoolean(), any())).thenReturn(Document.create());
+		when(documentServiceMock.update(any(), anyBoolean(), any(), any())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber)
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents/" + registrationNumber)
 				.queryParam("includeConfidential", includeConfidential)
 				.build())
 			.contentType(APPLICATION_JSON)
@@ -218,7 +216,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).update(registrationNumber, includeConfidential, documentUpdateRequest);
+		verify(documentServiceMock).update(registrationNumber, includeConfidential, documentUpdateRequest, "2281");
 	}
 
 	@Test
@@ -230,11 +228,11 @@ class DocumentResourceTest {
 		final var size = 10;
 		final var sort = "created,asc";
 
-		when(documentServiceMock.search(any(), anyBoolean(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+		when(documentServiceMock.search(any(), anyBoolean(), anyBoolean(), any(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents")
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents")
 				.queryParam("query", query)
 				.queryParam("page", page)
 				.queryParam("size", size)
@@ -249,7 +247,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).search(query, false, false, PageRequest.of(page, size, Sort.by(asc("created"))));
+		verify(documentServiceMock).search(query, false, false, PageRequest.of(page, size, Sort.by(asc("created"))), "2281");
 	}
 
 	@ParameterizedTest
@@ -262,11 +260,11 @@ class DocumentResourceTest {
 		final var size = 10;
 		final var sort = "created,asc";
 
-		when(documentServiceMock.search(any(), anyBoolean(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+		when(documentServiceMock.search(any(), anyBoolean(), anyBoolean(), any(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents")
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents")
 				.queryParam("query", query)
 				.queryParam("page", page)
 				.queryParam("size", size)
@@ -282,7 +280,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).search(query, includeConfidential, false, PageRequest.of(page, size, Sort.by(asc("created"))));
+		verify(documentServiceMock).search(query, includeConfidential, false, PageRequest.of(page, size, Sort.by(asc("created"))), "2281");
 	}
 
 	@ParameterizedTest
@@ -295,11 +293,11 @@ class DocumentResourceTest {
 		final var size = 10;
 		final var sort = "created,asc";
 
-		when(documentServiceMock.search(any(), anyBoolean(), anyBoolean(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
+		when(documentServiceMock.search(any(), anyBoolean(), anyBoolean(), any(), any())).thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents")
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents")
 				.queryParam("query", query)
 				.queryParam("page", page)
 				.queryParam("size", size)
@@ -315,7 +313,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).search(query, false, onlyLatestRevision, PageRequest.of(page, size, Sort.by(asc("created"))));
+		verify(documentServiceMock).search(query, false, onlyLatestRevision, PageRequest.of(page, size, Sort.by(asc("created"))), "2281");
 	}
 
 	@Test
@@ -324,11 +322,11 @@ class DocumentResourceTest {
 		// Arrange
 		final var registrationNumber = "2023-1337";
 
-		when(documentServiceMock.read(any(), anyBoolean())).thenReturn(Document.create());
+		when(documentServiceMock.read(any(), anyBoolean(), any())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents/" + registrationNumber)
+			.uri("/2281/documents/" + registrationNumber)
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -338,7 +336,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).read(registrationNumber, false);
+		verify(documentServiceMock).read(registrationNumber, false, "2281");
 	}
 
 	@Test
@@ -348,11 +346,11 @@ class DocumentResourceTest {
 		final var includeConfidential = true;
 		final var registrationNumber = "2023-1337";
 
-		when(documentServiceMock.read(any(), anyBoolean())).thenReturn(Document.create());
+		when(documentServiceMock.read(any(), anyBoolean(), any())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber)
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents/" + registrationNumber)
 				.queryParam("includeConfidential", includeConfidential)
 				.build())
 			.exchange()
@@ -364,7 +362,7 @@ class DocumentResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).read(registrationNumber, includeConfidential);
+		verify(documentServiceMock).read(registrationNumber, includeConfidential, "2281");
 	}
 
 	@Test
@@ -376,14 +374,14 @@ class DocumentResourceTest {
 
 		// Act
 		webTestClient.get()
-			.uri("/documents/" + registrationNumber + "/files/" + documentDataId)
+			.uri("/2281/documents/" + registrationNumber + "/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody()
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), eq(documentDataId), eq(false), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(documentDataId), eq(false), any(HttpServletResponse.class), eq("2281"));
 	}
 
 	@Test
@@ -396,7 +394,7 @@ class DocumentResourceTest {
 
 		// Act
 		webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/files/" + documentDataId)
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents/" + registrationNumber + "/files/" + documentDataId)
 				.queryParam("includeConfidential", includeConfidential)
 				.build())
 			.exchange()
@@ -405,7 +403,7 @@ class DocumentResourceTest {
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), eq(documentDataId), eq(includeConfidential), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(documentDataId), eq(includeConfidential), any(HttpServletResponse.class), eq("2281"));
 	}
 
 	@Test
@@ -421,11 +419,11 @@ class DocumentResourceTest {
 		multipartBodyBuilder.part("documentFile", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", documentDataCreateRequest);
 
-		when(documentServiceMock.addOrReplaceFile(any(), any(), any())).thenReturn(Document.create());
+		when(documentServiceMock.addOrReplaceFile(any(), any(), any(), any())).thenReturn(Document.create());
 
 		// Act
 		webTestClient.put()
-			.uri("/documents/" + registrationNumber + "/files")
+			.uri("/2281/documents/" + registrationNumber + "/files")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
@@ -434,7 +432,7 @@ class DocumentResourceTest {
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).addOrReplaceFile(eq(registrationNumber), eq(documentDataCreateRequest), ArgumentMatchers.<MultipartFile>any());
+		verify(documentServiceMock).addOrReplaceFile(eq(registrationNumber), eq(documentDataCreateRequest), ArgumentMatchers.<MultipartFile>any(), eq("2281"));
 	}
 
 	@Test
@@ -446,13 +444,13 @@ class DocumentResourceTest {
 
 		// Act
 		webTestClient.delete()
-			.uri("/documents/" + registrationNumber + "/files/" + documentDataId)
+			.uri("/2281/documents/" + registrationNumber + "/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isNoContent()
 			.expectBody()
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).deleteFile(registrationNumber, documentDataId);
+		verify(documentServiceMock).deleteFile(registrationNumber, documentDataId, "2281");
 	}
 }

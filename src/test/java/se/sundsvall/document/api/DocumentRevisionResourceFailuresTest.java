@@ -34,7 +34,7 @@ class DocumentRevisionResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents/2023-1337/revisions/-1")
+			.uri("/2281/documents/2023-1337/revisions/-1")
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -59,7 +59,7 @@ class DocumentRevisionResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents/2023-1337/revisions/-1/files/" + documentDataId)
+			.uri("/2281/documents/2023-1337/revisions/-1/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -84,7 +84,7 @@ class DocumentRevisionResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents/2023-1337/revisions/1/files/" + documentDataId)
+			.uri("/2281/documents/2023-1337/revisions/1/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)

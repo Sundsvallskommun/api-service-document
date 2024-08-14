@@ -38,7 +38,7 @@ public class DocumentMapper {
 	 * API to Database mappings.
 	 */
 
-	public static DocumentEntity toDocumentEntity(DocumentCreateRequest documentCreateRequest) {
+	public static DocumentEntity toDocumentEntity(DocumentCreateRequest documentCreateRequest, String municipalityId) {
 		return Optional.ofNullable(documentCreateRequest)
 			.map(doc -> DocumentEntity.create()
 				.withArchive(documentCreateRequest.isArchive())
@@ -46,7 +46,7 @@ public class DocumentMapper {
 				.withCreatedBy(doc.getCreatedBy())
 				.withDescription(doc.getDescription())
 				.withMetadata(toDocumentMetadataEmbeddableList(doc.getMetadataList()))
-				.withMunicipalityId(doc.getMunicipalityId()))
+				.withMunicipalityId(municipalityId))
 			.orElse(null);
 	}
 

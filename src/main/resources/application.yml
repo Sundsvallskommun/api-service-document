@@ -5,6 +5,9 @@ integration:
 logging:
   level:
     root: INFO
+mdc:
+  municipalityId:
+    enabled: true
 openapi:
   name: ${spring.application.name}
   title: ${spring.application.name}

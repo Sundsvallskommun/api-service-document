@@ -20,7 +20,7 @@ import se.sundsvall.document.Application;
 })
 class DocumentRevisionIT extends AbstractAppTest {
 
-	private static final String PATH = "/documents";
+	private static final String PATH = "/2281/documents";
 	private static final String RESPONSE_FILE = "response.json";
 	private static final String RESPONSE_FILE_BINARY = "image.jpg";
 
@@ -95,7 +95,7 @@ class DocumentRevisionIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test08_readRevisionFileConfidentialFail() throws IOException {
+	void test08_readRevisionFileConfidentialFail() {
 		setupCall()
 			.withServicePath(PATH + "/2024-2281-999/revisions/2/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e")
 			.withHttpMethod(GET)

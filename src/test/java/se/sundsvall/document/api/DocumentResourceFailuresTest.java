@@ -52,7 +52,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri("/documents")
+			.uri("/2281/documents")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
@@ -78,7 +78,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.post()
-			.uri("/documents")
+			.uri("/2281/documents")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
@@ -96,40 +96,6 @@ class DocumentResourceFailuresTest {
 	}
 
 	@Test
-	void createWithMissingMunicipalityId() {
-
-		// Arrange
-		final var multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
-		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
-			.withCreatedBy("user")
-			.withDescription("description")
-			.withMetadataList(List.of(DocumentMetadata.create()
-				.withKey("key")
-				.withValue("value"))));
-
-		// Act
-		final var response = webTestClient.post()
-			.uri("/documents")
-			.contentType(MULTIPART_FORM_DATA)
-			.body(fromMultipartData(multipartBodyBuilder.build()))
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		// Assert
-		assertThat(response).isNotNull();
-		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("municipalityId", "not a valid municipality ID"));
-
-		verifyNoInteractions(documentServiceMock);
-	}
-
-	@Test
 	void createWithMissingDescription() {
 
 		// Arrange
@@ -139,12 +105,11 @@ class DocumentResourceFailuresTest {
 			.withCreatedBy("user")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
-				.withValue("value")))
-			.withMunicipalityId("2281"));
+				.withValue("value"))));
 
 		// Act
 		final var response = webTestClient.post()
-			.uri("/documents")
+			.uri("/2281/documents")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
@@ -174,12 +139,11 @@ class DocumentResourceFailuresTest {
 			.withCreatedBy("user")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
-				.withValue("value")))
-			.withMunicipalityId("2281"));
+				.withValue("value"))));
 
 		// Act
 		final var response = webTestClient.post()
-			.uri("/documents")
+			.uri("/2281/documents")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
@@ -207,12 +171,11 @@ class DocumentResourceFailuresTest {
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
 			.withDescription("description")
-			.withMunicipalityId("2281")
 			.withMetadataList(emptyList()));
 
 		// Act
 		final var response = webTestClient.post()
-			.uri("/documents")
+			.uri("/2281/documents")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
@@ -239,12 +202,11 @@ class DocumentResourceFailuresTest {
 		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withDescription("description")
-			.withCreatedBy("user")
-			.withMunicipalityId("2281"));
+			.withCreatedBy("user"));
 
 		// Act
 		final var response = webTestClient.post()
-			.uri("/documents")
+			.uri("/2281/documents")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
@@ -272,14 +234,13 @@ class DocumentResourceFailuresTest {
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
 			.withDescription("description")
-			.withMunicipalityId("666") // Invalid municipalityId
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
 				.withValue("value"))));
 
 		// Act
 		final var response = webTestClient.post()
-			.uri("/documents")
+			.uri("/666/documents") // Invalid municipalityId
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()
@@ -293,7 +254,7 @@ class DocumentResourceFailuresTest {
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("municipalityId", "not a valid municipality ID"));
+			.containsExactlyInAnyOrder(tuple("create.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(documentServiceMock);
 	}
@@ -312,7 +273,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri("/documents/2023-1337")
+			.uri("/2281/documents/2023-1337")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(requestBody)
 			.exchange()
@@ -345,7 +306,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri("/documents/2023-1337")
+			.uri("/2281/documents/2023-1337")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(requestBody)
 			.exchange()
@@ -377,7 +338,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri("/documents/2023-1337")
+			.uri("/2281/documents/2023-1337")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(requestBody)
 			.exchange()
@@ -410,7 +371,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri("/documents/2023-1337")
+			.uri("/2281/documents/2023-1337")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(requestBody)
 			.exchange()
@@ -438,7 +399,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri("/documents/2023-1337/confidentiality")
+			.uri("/2281/documents/2023-1337/confidentiality")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(requestBody)
 			.exchange()
@@ -468,7 +429,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.patch()
-			.uri("/documents/2023-1337/confidentiality")
+			.uri("/2281/documents/2023-1337/confidentiality")
 			.contentType(APPLICATION_JSON)
 			.bodyValue(requestBody)
 			.exchange()
@@ -492,7 +453,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents")
+			.uri("/2281/documents")
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -512,7 +473,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents")
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents")
 				.queryParam("query", " ")
 				.build())
 			.exchange()
@@ -539,7 +500,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents/2023-1337/files/" + documentDataId)
+			.uri("/2281/documents/2023-1337/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -564,7 +525,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.delete()
-			.uri("/documents/2023-1337/files/" + documentDataId)
+			.uri("/2281/documents/2023-1337/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -596,7 +557,7 @@ class DocumentResourceFailuresTest {
 
 		// Act
 		final var response = webTestClient.put()
-			.uri("/documents/" + registrationNumber + "/files")
+			.uri("/2281/documents/" + registrationNumber + "/files")
 			.contentType(MULTIPART_FORM_DATA)
 			.body(fromMultipartData(multipartBodyBuilder.build()))
 			.exchange()

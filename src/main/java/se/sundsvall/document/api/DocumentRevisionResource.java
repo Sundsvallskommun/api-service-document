@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.Min;
+import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
@@ -31,7 +32,7 @@ import se.sundsvall.document.service.DocumentService;
 
 @RestController
 @Validated
-@RequestMapping("/documents/{registrationNumber}/revisions")
+@RequestMapping("/{municipalityId}/documents/{registrationNumber}/revisions")
 @Tag(name = "Document revisions", description = "Document revision operations")
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -47,11 +48,12 @@ public class DocumentRevisionResource {
 	@Operation(summary = "Read document revisions.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<PagedDocumentResponse> readRevisions(
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
 		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
 		@ParameterObject Pageable pageable) {
 
-		return ok(documentService.readAll(registrationNumber, includeConfidential, pageable));
+		return ok(documentService.readAll(registrationNumber, includeConfidential, pageable, municipalityId));
 	}
 
 	@GetMapping(path = "/{revision}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -59,11 +61,12 @@ public class DocumentRevisionResource {
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Document> readRevision(
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
 		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") int revision,
 		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential) {
 
-		return ok(documentService.read(registrationNumber, revision, includeConfidential));
+		return ok(documentService.read(registrationNumber, revision, includeConfidential, municipalityId));
 	}
 
 	@GetMapping(path = "/{revision}/files/{documentDataId}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -72,12 +75,13 @@ public class DocumentRevisionResource {
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> readFileRevision(
 		HttpServletResponse response,
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
 		@Parameter(name = "revision", description = "Document revision", example = "2") @Min(0) @PathVariable("revision") int revision,
 		@Parameter(name = "documentDataId", description = "Document data ID", example = "082ba08f-03c7-409f-b8a6-940a1397ba38") @PathVariable("documentDataId") @ValidUuid String documentDataId,
 		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential) {
 
-		documentService.readFile(registrationNumber, revision, documentDataId, includeConfidential, response);
+		documentService.readFile(registrationNumber, revision, documentDataId, includeConfidential, response, municipalityId);
 		return ok().build();
 	}
 }

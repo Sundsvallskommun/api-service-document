@@ -2,6 +2,7 @@
 	"documents": [
 		{
 			"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
+			"municipalityId":"2281",
 			"registrationNumber": "2023-2281-123",
 			"revision": 3,
 			"confidentiality": {
@@ -40,6 +41,7 @@
 		},
 		{
 			"id": "03d33a6a-bc8c-410c-95f6-2c890822967d",
+			"municipalityId":"2281",
 			"registrationNumber": "2024-2281-999",
 			"revision": 1,
 			"confidentiality": {

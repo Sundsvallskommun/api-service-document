@@ -83,45 +83,45 @@ public class DocumentService {
 	}
 
 
-	public Document create(final DocumentCreateRequest documentCreateRequest, final DocumentFiles documentFiles) {
+	public Document create(final DocumentCreateRequest documentCreateRequest, final DocumentFiles documentFiles, final String municipalityId) {
 
 		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper);
-		final var registrationNumber = registrationNumberService.generateRegistrationNumber(documentCreateRequest.getMunicipalityId());
+		final var registrationNumber = registrationNumberService.generateRegistrationNumber(municipalityId);
 
-		final var documentEntity = toDocumentEntity(documentCreateRequest)
+		final var documentEntity = toDocumentEntity(documentCreateRequest, municipalityId)
 			.withRegistrationNumber(registrationNumber)
 			.withDocumentData(documentDataEntities);
 
 		return toDocument(documentRepository.save(documentEntity));
 	}
 
-	public Document read(String registrationNumber, boolean includeConfidential) {
+	public Document read(String registrationNumber, boolean includeConfidential, String municipalityId) {
 
-		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
+		final var documentEntity = documentRepository.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(municipalityId, registrationNumber, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		return toDocument(documentEntity);
 	}
 
-	public Document read(String registrationNumber, int revision, boolean includeConfidential) {
+	public Document read(String registrationNumber, int revision, boolean includeConfidential, String municipalityId) {
 
-		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(registrationNumber, revision, toInclusionFilter(includeConfidential))
+		final var documentEntity = documentRepository.findByMunicipalityIdAndRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(municipalityId, registrationNumber, revision, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND.formatted(registrationNumber, revision)));
 
 		return toDocument(documentEntity);
 	}
 
-	public PagedDocumentResponse readAll(String registrationNumber, boolean includeConfidential, Pageable pageable) {
-		return toPagedDocumentResponse(documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, toInclusionFilter(includeConfidential), pageable));
+	public PagedDocumentResponse readAll(String registrationNumber, boolean includeConfidential, Pageable pageable, String municipalityId) {
+		return toPagedDocumentResponse(documentRepository.findByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialIn(municipalityId, registrationNumber, toInclusionFilter(includeConfidential), pageable));
 	}
 
-	public PagedDocumentResponse search(String query, boolean includeConfidential, boolean onlyLatestRevision, Pageable pageable) {
-		return toPagedDocumentResponse(documentRepository.search(query, includeConfidential, onlyLatestRevision, pageable));
+	public PagedDocumentResponse search(String query, boolean includeConfidential, boolean onlyLatestRevision, Pageable pageable, String municipalityId) {
+		return toPagedDocumentResponse(documentRepository.search(query, includeConfidential, onlyLatestRevision, pageable, municipalityId));
 	}
 
-	public void readFile(String registrationNumber, String documentDataId, boolean includeConfidential, HttpServletResponse response) {
+	public void readFile(String registrationNumber, String documentDataId, boolean includeConfidential, HttpServletResponse response, String municipalityId) {
 
-		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
+		final var documentEntity = documentRepository.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(municipalityId, registrationNumber, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		if (isEmpty(documentEntity.getDocumentData())) {
@@ -136,9 +136,9 @@ public class DocumentService {
 		addFileContentToResponse(documentDataEntity, response);
 	}
 
-	public void readFile(String registrationNumber, int revision, String documentDataId, boolean includeConfidential, HttpServletResponse response) {
+	public void readFile(String registrationNumber, int revision, String documentDataId, boolean includeConfidential, HttpServletResponse response, String municipalityId) {
 
-		final var documentEntity = documentRepository.findByRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(registrationNumber, revision, toInclusionFilter(includeConfidential))
+		final var documentEntity = documentRepository.findByMunicipalityIdAndRegistrationNumberAndRevisionAndConfidentialityConfidentialIn(municipalityId, registrationNumber, revision, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND.formatted(registrationNumber, revision)));
 
 		if (isEmpty(documentEntity.getDocumentData())) {
@@ -153,9 +153,9 @@ public class DocumentService {
 		addFileContentToResponse(documentDataEntity, response);
 	}
 
-	public Document addOrReplaceFile(String registrationNumber, DocumentDataCreateRequest documentDataCreateRequest, MultipartFile documentFile) {
+	public Document addOrReplaceFile(String registrationNumber, DocumentDataCreateRequest documentDataCreateRequest, MultipartFile documentFile, String municipalityId) {
 
-		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, CONFIDENTIAL_AND_PUBLIC.getValue())
+		final var documentEntity = documentRepository.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(municipalityId, registrationNumber, CONFIDENTIAL_AND_PUBLIC.getValue())
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		// Create documentData element to add/replace.
@@ -172,9 +172,9 @@ public class DocumentService {
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}
 
-	public void deleteFile(String registrationNumber, String documentDataId) {
+	public void deleteFile(String registrationNumber, String documentDataId, String municipalityId) {
 
-		final var documentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(true))
+		final var documentEntity = documentRepository.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(municipalityId, registrationNumber, toInclusionFilter(true))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		if (isEmpty(documentEntity.getDocumentData())) {
@@ -197,9 +197,9 @@ public class DocumentService {
 		documentRepository.save(newDocumentEntity);
 	}
 
-	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest) {
+	public Document update(String registrationNumber, boolean includeConfidential, DocumentUpdateRequest documentUpdateRequest, String municipalityId) {
 
-		final var existingDocumentEntity = documentRepository.findTopByRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(registrationNumber, toInclusionFilter(includeConfidential))
+		final var existingDocumentEntity = documentRepository.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(municipalityId, registrationNumber, toInclusionFilter(includeConfidential))
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND.formatted(registrationNumber)));
 
 		// Do not update existing entity, create a new revision instead.
@@ -208,9 +208,9 @@ public class DocumentService {
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}
 
-	public void updateConfidentiality(String registrationNumber, ConfidentialityUpdateRequest confidentialityUpdateRequest) {
+	public void updateConfidentiality(String registrationNumber, ConfidentialityUpdateRequest confidentialityUpdateRequest, String municipalityId) {
 
-		final var documentEntities = documentRepository.findByRegistrationNumberAndConfidentialityConfidentialIn(registrationNumber, CONFIDENTIAL_AND_PUBLIC.getValue());
+		final var documentEntities = documentRepository.findByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialIn(municipalityId, registrationNumber, CONFIDENTIAL_AND_PUBLIC.getValue());
 
 		final var newConfidentialitySettings = toConfidentialityEmbeddable(confidentialityUpdateRequest);
 

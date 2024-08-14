@@ -10,14 +10,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 @Schema(description = "DocumentCreateRequest model.")
 public class DocumentCreateRequest {
-
-	@ValidMunicipalityId
-	@Schema(description = "Municipality ID", example = "2281", requiredMode = REQUIRED)
-	private String municipalityId;
 
 	@NotBlank
 	@Schema(description = "Actor that created this revision (all modifications will create new revisions)", example = "username123", requiredMode = REQUIRED)
@@ -40,19 +35,6 @@ public class DocumentCreateRequest {
 
 	public static DocumentCreateRequest create() {
 		return new DocumentCreateRequest();
-	}
-
-	public String getMunicipalityId() {
-		return municipalityId;
-	}
-
-	public void setMunicipalityId(String municipalityId) {
-		this.municipalityId = municipalityId;
-	}
-
-	public DocumentCreateRequest withMunicipalityId(String municipalityId) {
-		this.municipalityId = municipalityId;
-		return this;
 	}
 
 	public String getCreatedBy() {
@@ -122,7 +104,7 @@ public class DocumentCreateRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(archive, confidentiality, createdBy, description, metadataList, municipalityId);
+		return Objects.hash(archive, confidentiality, createdBy, description, metadataList);
 	}
 
 	@Override
@@ -134,14 +116,13 @@ public class DocumentCreateRequest {
 			return false;
 		}
 		DocumentCreateRequest other = (DocumentCreateRequest) obj;
-		return archive == other.archive && Objects.equals(confidentiality, other.confidentiality) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList)
-			&& Objects.equals(municipalityId, other.municipalityId);
+		return archive == other.archive && Objects.equals(confidentiality, other.confidentiality) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("DocumentCreateRequest [municipalityId=").append(municipalityId).append(", createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append(", description=")
+		builder.append("DocumentCreateRequest [createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append(", description=")
 			.append(description).append(", metadataList=").append(metadataList).append("]");
 		return builder.toString();
 	}
