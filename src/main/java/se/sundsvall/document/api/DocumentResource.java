@@ -63,7 +63,7 @@ import se.sundsvall.document.service.DocumentService;
 
 @RestController
 @Validated
-@RequestMapping("{municipalityId}/documents")
+@RequestMapping("/{municipalityId}/documents")
 @Tag(name = "Documents", description = "Document operations")
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {Problem.class, ConstraintViolationProblem.class})))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
