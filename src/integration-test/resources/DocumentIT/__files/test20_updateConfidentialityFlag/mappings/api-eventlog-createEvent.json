@@ -2,7 +2,7 @@
 	"name": "api-eventlog-createEvent",
 	"request": {
 		"method": "POST",
-		"urlPath": "/api-eventlog/00000000-0000-0000-0000-000000000000",
+		"urlPath": "/api-eventlog/2281/00000000-0000-0000-0000-000000000000",
 		"headers": {
 			"Authorization": {
 				"equalTo": "Bearer 0000000000000000AAAAAAAAAAAAAAAA"
