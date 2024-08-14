@@ -2,6 +2,7 @@
 	"documents": [
 		{
 			"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
+			"municipalityId":"2281",
 			"registrationNumber": "2023-2281-123",
 			"revision": 3,
 			"confidentiality": {
@@ -40,6 +41,7 @@
 		},
 		{
 			"id": "8efd63a3-b525-4581-8b0b-9759f381a5a5",
+			"municipalityId":"2281",
 			"registrationNumber": "2023-2281-123",
 			"revision": 2,
 			"confidentiality": {
@@ -70,6 +72,7 @@
 		},
 		{
 			"id": "03d33a6a-bc8c-410c-95f6-2c890822967d",
+			"municipalityId":"2281",
 			"registrationNumber": "2024-2281-999",
 			"revision": 1,
 			"confidentiality": {
@@ -105,6 +108,7 @@
 		},
 		{
 			"id": "435bb041-2b02-4bb3-b3e7-3782a13f47d5",
+			"municipalityId":"2281",
 			"registrationNumber": "2024-2281-999",
 			"revision": 2,
 			"confidentiality": {

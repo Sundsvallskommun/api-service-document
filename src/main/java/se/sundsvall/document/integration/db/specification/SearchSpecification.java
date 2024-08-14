@@ -24,13 +24,14 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 
 public interface SearchSpecification {
 
-	static Specification<DocumentEntity> withSearchQuery(String query, boolean includeConfidential, boolean onlyLatestRevision) {
+	static Specification<DocumentEntity> withSearchQuery(String query, boolean includeConfidential, boolean onlyLatestRevision, String municipalityId) {
 		final var queryString = toQueryString(query);
 		
 		return onlyLatestRevisionOfDocuments(onlyLatestRevision)
+			.and(matchesMunicipalityId(municipalityId, false))
 			.and(matchesCreatedBy(queryString)
 				.or(matchesDescription(queryString))
-				.or(matchesMunicipalityId(queryString))
+				.or(matchesMunicipalityId(queryString, true))
 				.or(matchesRegistrationNumber(queryString))
 				.or(matchesFileName(queryString))
 				.or(matchesMimeType(queryString))
@@ -70,8 +71,12 @@ public interface SearchSpecification {
 		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(DESCRIPTION)), query);
 	}
 
-	private static Specification<DocumentEntity> matchesMunicipalityId(String query) {
-		return (entity, cq, cb) -> cb.like(cb.lower(entity.get(MUNICIPALITY_ID)), query);
+	private static Specification<DocumentEntity> matchesMunicipalityId(String query, boolean like) {
+		if(like) {
+			return (entity, cq, cb) -> cb.like(cb.lower(entity.get(MUNICIPALITY_ID)), query);
+		} else {
+			return (entity, cq, cb) -> cb.equal(cb.lower(entity.get(MUNICIPALITY_ID)), query);
+		}
 	}
 
 	private static Specification<DocumentEntity> matchesRegistrationNumber(String query) {

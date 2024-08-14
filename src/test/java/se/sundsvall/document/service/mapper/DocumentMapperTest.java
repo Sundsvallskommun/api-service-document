@@ -82,11 +82,10 @@ class DocumentMapperTest {
 			.withDescription(DESCRIPTION)
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey(METADATA_KEY)
-				.withValue(METADATA_VALUE)))
-			.withMunicipalityId(MUNICIPALITY_ID);
+				.withValue(METADATA_VALUE)));
 
 		// Act
-		final var result = DocumentMapper.toDocumentEntity(documentCreateRequest);
+		final var result = DocumentMapper.toDocumentEntity(documentCreateRequest, MUNICIPALITY_ID);
 
 		// Assert
 		assertThat(result)
@@ -105,7 +104,7 @@ class DocumentMapperTest {
 
 	@Test
 	void toDocumentEntityFromDocumentCreateRequestWhenInputIsNull() {
-		assertThat(DocumentMapper.toDocumentEntity((DocumentCreateRequest) null)).isNull();
+		assertThat(DocumentMapper.toDocumentEntity((DocumentCreateRequest) null, null)).isNull();
 	}
 
 	@ParameterizedTest

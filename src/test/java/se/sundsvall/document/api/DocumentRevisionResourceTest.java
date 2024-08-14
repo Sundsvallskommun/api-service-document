@@ -44,12 +44,12 @@ class DocumentRevisionResourceTest {
 		final var registrationNumber = "2023-2281-1337";
 		final var pageRequest = PageRequest.of(0, 20);
 
-		when(documentServiceMock.readAll(any(), anyBoolean(), any()))
+		when(documentServiceMock.readAll(any(), anyBoolean(), any(), any()))
 			.thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions")
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents/" + registrationNumber + "/revisions")
 				.queryParam("page", pageRequest.getPageNumber())
 				.queryParam("size", pageRequest.getPageSize())
 				.build())
@@ -63,7 +63,7 @@ class DocumentRevisionResourceTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getDocuments()).hasSize(1);
-		verify(documentServiceMock).readAll(registrationNumber, false, pageRequest);
+		verify(documentServiceMock).readAll(registrationNumber, false, pageRequest, "2281");
 	}
 
 	@Test
@@ -74,12 +74,12 @@ class DocumentRevisionResourceTest {
 		final var registrationNumber = "2023-2281-1337";
 		final var pageRequest = PageRequest.of(0, 20);
 
-		when(documentServiceMock.readAll(any(), anyBoolean(), any()))
+		when(documentServiceMock.readAll(any(), anyBoolean(), any(), any()))
 			.thenReturn(PagedDocumentResponse.create().withDocuments(List.of(Document.create())));
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions")
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents/" + registrationNumber + "/revisions")
 				.queryParam("page", pageRequest.getPageNumber())
 				.queryParam("size", pageRequest.getPageSize())
 				.queryParam("includeConfidential", includeConfidential)
@@ -94,7 +94,7 @@ class DocumentRevisionResourceTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getDocuments()).hasSize(1);
-		verify(documentServiceMock).readAll(registrationNumber, includeConfidential, pageRequest);
+		verify(documentServiceMock).readAll(registrationNumber, includeConfidential, pageRequest, "2281");
 	}
 
 	@Test
@@ -104,11 +104,11 @@ class DocumentRevisionResourceTest {
 		final var registrationNumber = "2023-2281-1337";
 		final var revision = 2;
 
-		when(documentServiceMock.read(any(), anyInt(), anyBoolean())).thenReturn(Document.create());
+		when(documentServiceMock.read(any(), anyInt(), anyBoolean(), any())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.get()
-			.uri("/documents/" + registrationNumber + "/revisions/" + revision)
+			.uri("/2281/documents/" + registrationNumber + "/revisions/" + revision)
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -118,7 +118,7 @@ class DocumentRevisionResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).read(registrationNumber, revision, false);
+		verify(documentServiceMock).read(registrationNumber, revision, false, "2281");
 	}
 
 	@Test
@@ -129,11 +129,11 @@ class DocumentRevisionResourceTest {
 		final var registrationNumber = "2023-2281-1337";
 		final var revision = 2;
 
-		when(documentServiceMock.read(any(), anyInt(), anyBoolean())).thenReturn(Document.create());
+		when(documentServiceMock.read(any(), anyInt(), anyBoolean(), any())).thenReturn(Document.create());
 
 		// Act
 		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions/" + revision)
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents/" + registrationNumber + "/revisions/" + revision)
 				.queryParam("includeConfidential", includeConfidential)
 				.build())
 			.exchange()
@@ -145,7 +145,7 @@ class DocumentRevisionResourceTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		verify(documentServiceMock).read(registrationNumber, revision, includeConfidential);
+		verify(documentServiceMock).read(registrationNumber, revision, includeConfidential, "2281");
 	}
 
 	@Test
@@ -158,14 +158,14 @@ class DocumentRevisionResourceTest {
 
 		// Act
 		webTestClient.get()
-			.uri("/documents/" + registrationNumber + "/revisions/" + revision + "/files/" + documentDataId)
+			.uri("/2281/documents/" + registrationNumber + "/revisions/" + revision + "/files/" + documentDataId)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody()
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(documentDataId), eq(false), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(documentDataId), eq(false), any(HttpServletResponse.class), eq("2281"));
 	}
 
 	@Test
@@ -179,7 +179,7 @@ class DocumentRevisionResourceTest {
 
 		// Act
 		webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path("/documents/" + registrationNumber + "/revisions/" + revision + "/files/" + documentDataId)
+			.uri(uriBuilder -> uriBuilder.path("/2281/documents/" + registrationNumber + "/revisions/" + revision + "/files/" + documentDataId)
 				.queryParam("includeConfidential", includeConfidential)
 				.build())
 			.exchange()
@@ -188,6 +188,6 @@ class DocumentRevisionResourceTest {
 			.isEmpty();
 
 		// Assert
-		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(documentDataId), eq(includeConfidential), any(HttpServletResponse.class));
+		verify(documentServiceMock).readFile(eq(registrationNumber), eq(revision), eq(documentDataId), eq(includeConfidential), any(HttpServletResponse.class), eq("2281"));
 	}
 }

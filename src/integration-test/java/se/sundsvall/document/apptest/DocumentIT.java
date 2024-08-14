@@ -37,7 +37,7 @@ import se.sundsvall.document.Application;
 })
 class DocumentIT extends AbstractAppTest {
 
-	private static final String PATH = "/documents";
+	private static final String PATH = "/2281/documents";
 	private static final String REQUEST_FILE = "request.json";
 	private static final String RESPONSE_FILE = "response.json";
 	private static final String RESPONSE_FILE_BINARY = "image.jpg";
@@ -70,7 +70,7 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test02_updateDocument() throws FileNotFoundException {
+	void test02_updateDocument() {
 		setupCall()
 			.withServicePath(PATH + "/2023-2281-123")
 			.withHttpMethod(PATCH)
@@ -121,7 +121,7 @@ class DocumentIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test07_readDocumentFileConfidentialFail() throws IOException {
+	void test07_readDocumentFileConfidentialFail() {
 		setupCall()
 			.withServicePath(PATH + "/2024-2281-999/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e")
 			.withHttpMethod(GET)

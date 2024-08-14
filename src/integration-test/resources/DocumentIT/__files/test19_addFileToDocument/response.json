@@ -1,5 +1,6 @@
 {
 	"id": "${json-unit.any-string}",
+	"municipalityId":"2281",
 	"registrationNumber": "2023-2281-123",
 	"revision": 4,
 	"confidentiality": {
