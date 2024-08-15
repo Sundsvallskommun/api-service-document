@@ -14,14 +14,15 @@ import generated.se.sundsvall.eventlog.Event;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogConfiguration;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.eventlog.url}", configuration = EventlogConfiguration.class)
-public interface EventlogClient {
+public interface EventLogClient {
 
 	/**
 	 * Create a log event under logKey.
 	 *
+	 * @param municipalityId Municipality ID of the event
 	 * @param logKey containing UUID to create event for
 	 * @param event  the event to create
 	 */
-	@PostMapping(path = "/{logKey}", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
-	ResponseEntity<Void> createEvent(@PathVariable("logKey") String logKey, @RequestBody Event event);
+	@PostMapping(path = "/{municipalityId}/{logKey}", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
+	ResponseEntity<Void> createEvent(@PathVariable("municipalityId") String municipalityId, @PathVariable("logKey") String logKey, @RequestBody Event event);
 }

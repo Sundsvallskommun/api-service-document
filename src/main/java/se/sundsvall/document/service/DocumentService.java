@@ -52,7 +52,7 @@ import se.sundsvall.document.integration.db.DatabaseHelper;
 import se.sundsvall.document.integration.db.DocumentRepository;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
-import se.sundsvall.document.integration.eventlog.EventlogClient;
+import se.sundsvall.document.integration.eventlog.EventLogClient;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
 import se.sundsvall.document.service.mapper.DocumentMapper;
 
@@ -65,14 +65,14 @@ public class DocumentService {
 	private final DatabaseHelper databaseHelper;
 	private final DocumentRepository documentRepository;
 	private final RegistrationNumberService registrationNumberService;
-	private final EventlogClient eventLogClient;
+	private final EventLogClient eventLogClient;
 	private final EventlogProperties eventLogProperties;
 
 	public DocumentService(
 		DatabaseHelper databaseHelper,
 		DocumentRepository documentRepository,
 		RegistrationNumberService registrationNumberService,
-		EventlogClient eventLogClient,
+		EventLogClient eventLogClient,
 		EventlogProperties eventLogProperties) {
 
 		this.databaseHelper = databaseHelper;
@@ -218,7 +218,7 @@ public class DocumentService {
 		documentEntities.forEach(documentEntity -> documentEntity.setConfidentiality(newConfidentialitySettings));
 
 		// Send info to Eventlog.
-		eventLogForDocument(registrationNumber, confidentialityUpdateRequest);
+		eventLogForDocument(registrationNumber, confidentialityUpdateRequest, municipalityId);
 
 		documentRepository.saveAll(documentEntities);
 	}
@@ -238,8 +238,8 @@ public class DocumentService {
 		}
 	}
 
-	private void eventLogForDocument(String registrationNumber, ConfidentialityUpdateRequest confidentialityUpdateRequest) {
-		eventLogClient.createEvent(eventLogProperties.logKeyUuid(), toEvent(
+	private void eventLogForDocument(String registrationNumber, ConfidentialityUpdateRequest confidentialityUpdateRequest, String municipalityId) {
+		eventLogClient.createEvent(municipalityId, eventLogProperties.logKeyUuid(), toEvent(
 			UPDATE,
 			registrationNumber,
 			TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_DOCUMENT
