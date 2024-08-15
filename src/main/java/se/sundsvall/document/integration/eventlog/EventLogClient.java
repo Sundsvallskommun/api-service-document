@@ -19,6 +19,7 @@ public interface EventLogClient {
 	/**
 	 * Create a log event under logKey.
 	 *
+	 * @param municipalityId Municipality ID of the event
 	 * @param logKey containing UUID to create event for
 	 * @param event  the event to create
 	 */
