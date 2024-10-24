@@ -11,6 +11,7 @@ import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
+import static se.sundsvall.document.Constants.DOCUMENTS_BASE_PATH;
 
 import java.util.List;
 import java.util.Set;
@@ -63,9 +64,9 @@ import se.sundsvall.document.service.DocumentService;
 
 @RestController
 @Validated
-@RequestMapping("/{municipalityId}/documents")
+@RequestMapping(DOCUMENTS_BASE_PATH)
 @Tag(name = "Documents", description = "Document operations")
-@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {Problem.class, ConstraintViolationProblem.class})))
+@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class DocumentResource {
 
@@ -77,7 +78,7 @@ public class DocumentResource {
 		this.objectMapper = objectMapper;
 	}
 
-	@PostMapping(consumes = {MULTIPART_FORM_DATA_VALUE}, produces = {ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@PostMapping(consumes = { MULTIPART_FORM_DATA_VALUE }, produces = { ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Create document.")
 	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<Void> create(
@@ -94,12 +95,12 @@ public class DocumentResource {
 
 		final var registrationNumber = documentService.create(documentCreateRequest, documents, municipalityId).getRegistrationNumber();
 
-		return created(fromPath("/{municipalityId}/documents/{registrationNumber}").buildAndExpand(municipalityId, registrationNumber).toUri())
+		return created(fromPath(DOCUMENTS_BASE_PATH + "/{registrationNumber}").buildAndExpand(municipalityId, registrationNumber).toUri())
 			.header(CONTENT_TYPE, ALL_VALUE)
 			.build();
 	}
 
-	@PatchMapping(path = "/{registrationNumber}", consumes = {APPLICATION_JSON_VALUE}, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@PatchMapping(path = "/{registrationNumber}", consumes = { APPLICATION_JSON_VALUE }, produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Update document.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -112,7 +113,7 @@ public class DocumentResource {
 		return ok(documentService.update(registrationNumber, includeConfidential, body, municipalityId));
 	}
 
-	@PatchMapping(path = "/{registrationNumber}/confidentiality", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@PatchMapping(path = "/{registrationNumber}/confidentiality", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Update document confidentiality (on all revisions).")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -125,7 +126,7 @@ public class DocumentResource {
 		return noContent().build();
 	}
 
-	@GetMapping(path = "/{registrationNumber}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@GetMapping(path = "/{registrationNumber}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Read document (latest revision).")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -137,7 +138,7 @@ public class DocumentResource {
 		return ok(documentService.read(registrationNumber, includeConfidential, municipalityId));
 	}
 
-	@GetMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@GetMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Read document file (latest revision).")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -152,7 +153,7 @@ public class DocumentResource {
 		return ok().build();
 	}
 
-	@PutMapping(path = "/{registrationNumber}/files", consumes = {MULTIPART_FORM_DATA_VALUE}, produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@PutMapping(path = "/{registrationNumber}/files", consumes = { MULTIPART_FORM_DATA_VALUE }, produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Add document file data (or replace existing if filename already exists on the document object)")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -171,7 +172,7 @@ public class DocumentResource {
 		return noContent().build();
 	}
 
-	@DeleteMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@DeleteMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Delete document file.")
 	@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -184,7 +185,7 @@ public class DocumentResource {
 		return noContent().build();
 	}
 
-	@GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Search documents.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	public ResponseEntity<PagedDocumentResponse> search(

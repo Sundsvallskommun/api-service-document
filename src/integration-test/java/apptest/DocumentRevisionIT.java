@@ -1,4 +1,4 @@
-package se.sundsvall.document.apptest;
+package apptest;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
