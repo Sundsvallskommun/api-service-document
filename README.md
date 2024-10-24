@@ -1,6 +1,6 @@
 # Document
 
-_The service provides support for creating, readning, updating and deleting documents and their ingående document files. It also has support for reading revisions of a document._
+_The service provides support for creating, readning, updating and deleting documents and document files attached to them. It also has support for reading revisions of a document._
 
 ## Getting Started
 
