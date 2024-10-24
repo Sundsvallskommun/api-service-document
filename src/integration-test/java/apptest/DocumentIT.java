@@ -1,4 +1,4 @@
-package se.sundsvall.document.apptest;
+package apptest;
 
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
