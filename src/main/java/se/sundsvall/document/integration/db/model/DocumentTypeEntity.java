@@ -66,12 +66,12 @@ public class DocumentTypeEntity implements Serializable {
 		return id;
 	}
 
-	public void setId(String Id) {
-		this.id = Id;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public DocumentTypeEntity withId(String Id) {
-		this.id = Id;
+	public DocumentTypeEntity withId(String id) {
+		this.id = id;
 		return this;
 	}
 
