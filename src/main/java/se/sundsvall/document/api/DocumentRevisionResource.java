@@ -3,6 +3,7 @@ package se.sundsvall.document.api;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
+import static se.sundsvall.document.Constants.DOCUMENT_REVISIONS_BASE_PATH;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ import se.sundsvall.document.service.DocumentService;
 
 @RestController
 @Validated
-@RequestMapping("/{municipalityId}/documents/{registrationNumber}/revisions")
+@RequestMapping(DOCUMENT_REVISIONS_BASE_PATH)
 @Tag(name = "Document revisions", description = "Document revision operations")
 @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
