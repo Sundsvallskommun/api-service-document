@@ -27,8 +27,8 @@ class DocumentTypeIdTest {
 	@Test
 	void testEquals() {
 		final var beanWithSameContent = new DocumentTypeId(MUNICIPALITY_ID, TYPE);
-		final var beanWithOtherContent_1 = new DocumentTypeId("other" + MUNICIPALITY_ID, TYPE);
-		final var beanWithOtherContent_2 = new DocumentTypeId(MUNICIPALITY_ID, "other" + TYPE);
+		final var beanWithOtherContent1 = new DocumentTypeId("other" + MUNICIPALITY_ID, TYPE);
+		final var beanWithOtherContent2 = new DocumentTypeId(MUNICIPALITY_ID, "other" + TYPE);
 		new DocumentTypeId("other" + MUNICIPALITY_ID, TYPE);
 
 		final var beanOfOtherClass = new Object();
@@ -36,8 +36,8 @@ class DocumentTypeIdTest {
 		assertThat(BEAN)
 			.isEqualTo(BEAN)
 			.isEqualTo(beanWithSameContent)
-			.isNotEqualTo(beanWithOtherContent_1)
-			.isNotEqualTo(beanWithOtherContent_2)
+			.isNotEqualTo(beanWithOtherContent1)
+			.isNotEqualTo(beanWithOtherContent2)
 			.isNotEqualTo(beanOfOtherClass)
 			.isNotEqualTo(null);
 	}
