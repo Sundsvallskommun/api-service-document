@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 public class DocumentType {
 
 	@NotBlank
-	@Schema(description = "Id for the document type)", example = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
+	@Schema(description = "Identifier for the document type", example = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
 	private String type;
 
 	@NotBlank

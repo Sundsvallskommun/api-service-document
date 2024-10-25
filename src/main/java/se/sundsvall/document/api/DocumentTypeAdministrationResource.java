@@ -98,7 +98,7 @@ public class DocumentTypeAdministrationResource {
 
 	@DeleteMapping(path = "/{type}", produces = { APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Delete document type", description = """
-		Deletes an existing document type in the provided municipality, but only if the type is not used by any existing document. If type is used then an exception will be returned.
+		Deletes an existing document type matching provided type and municipality, but only if the type is not used by any existing document. If type is used then an exception will be returned.
 		""")
 	@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))

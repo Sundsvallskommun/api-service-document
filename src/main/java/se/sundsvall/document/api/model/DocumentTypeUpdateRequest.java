@@ -14,7 +14,7 @@ public class DocumentTypeUpdateRequest {
 	private String displayName;
 
 	@NotBlank
-	@Schema(description = "User id for performing person", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Identifier for performing person", example = "username123", requiredMode = REQUIRED)
 	private String updatedBy;
 
 	public static DocumentTypeUpdateRequest create() {

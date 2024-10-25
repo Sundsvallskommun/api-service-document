@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 public class DocumentTypeCreateRequest {
 
 	@NotBlank
-	@Schema(description = "Id for the document type)", example = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
+	@Schema(description = "Identifier for the document type", example = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
 	private String type;
 
 	@NotBlank
@@ -18,7 +18,7 @@ public class DocumentTypeCreateRequest {
 	private String displayName;
 
 	@NotBlank
-	@Schema(description = "User id for performing person", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Identifier for performing person", example = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
 	public static DocumentTypeCreateRequest create() {
