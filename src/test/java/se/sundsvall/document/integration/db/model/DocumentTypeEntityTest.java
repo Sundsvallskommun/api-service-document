@@ -40,6 +40,7 @@ class DocumentTypeEntityTest {
 		final var created = now(systemDefault()).minusWeeks(1);
 		final var createdBy = "createdBy";
 		final var displayName = "displayName";
+		final var id = "id";
 		final var lastUpdated = now(systemDefault());
 		final var lastUpdatedBy = "lastUpdatedBy";
 		final var municipalityId = "municipalityId";
@@ -49,6 +50,7 @@ class DocumentTypeEntityTest {
 			.withCreated(created)
 			.withCreatedBy(createdBy)
 			.withDisplayName(displayName)
+			.withId(id)
 			.withLastUpdated(lastUpdated)
 			.withLastUpdatedBy(lastUpdatedBy)
 			.withMunicipalityId(municipalityId)
@@ -58,6 +60,7 @@ class DocumentTypeEntityTest {
 		assertThat(bean.getCreated()).isEqualTo(created);
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 		assertThat(bean.getDisplayName()).isEqualTo(displayName);
+		assertThat(bean.getId()).isEqualTo(id);
 		assertThat(bean.getLastUpdated()).isEqualTo(lastUpdated);
 		assertThat(bean.getLastUpdatedBy()).isEqualTo(lastUpdatedBy);
 		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);

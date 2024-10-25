@@ -7,19 +7,21 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 import org.hibernate.annotations.TimeZoneStorage;
+import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import se.sundsvall.document.integration.db.model.listener.DocumentTypeEntityListener;
 
 @Entity
-@IdClass(DocumentTypeId.class)
-@Table(name = "document_type", indexes = {
+@Table(name = "document_type", uniqueConstraints = {
+	@UniqueConstraint(name = "uq_municipality_id_and_type", columnNames = { "municipality_id", "`type`" })
+}, indexes = {
 	@Index(name = "ix_municipality_id_type", columnList = "municipality_id, `type`"),
 	@Index(name = "ix_municipality_id", columnList = "municipality_id")
 })
@@ -29,10 +31,13 @@ public class DocumentTypeEntity implements Serializable {
 	private static final long serialVersionUID = -4452832623957756766L;
 
 	@Id
+	@UuidGenerator
+	@Column(name = "id")
+	private String id;
+
 	@Column(name = "municipality_id")
 	private String municipalityId;
 
-	@Id
 	@Column(name = "`type`", nullable = false)
 	private String type;
 
@@ -55,6 +60,19 @@ public class DocumentTypeEntity implements Serializable {
 
 	public static DocumentTypeEntity create() {
 		return new DocumentTypeEntity();
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String Id) {
+		this.id = Id;
+	}
+
+	public DocumentTypeEntity withId(String Id) {
+		this.id = Id;
+		return this;
 	}
 
 	public String getMunicipalityId() {
@@ -150,7 +168,7 @@ public class DocumentTypeEntity implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(created, createdBy, displayName, lastUpdated, lastUpdatedBy, municipalityId, type);
+		return Objects.hash(created, createdBy, displayName, id, lastUpdated, lastUpdatedBy, municipalityId, type);
 	}
 
 	@Override
@@ -161,15 +179,15 @@ public class DocumentTypeEntity implements Serializable {
 		if (!(obj instanceof final DocumentTypeEntity other)) {
 			return false;
 		}
-		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(displayName, other.displayName) && Objects.equals(lastUpdated, other.lastUpdated) && Objects.equals(lastUpdatedBy,
-			other.lastUpdatedBy) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(type, other.type);
+		return Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(displayName, other.displayName) && Objects.equals(id, other.id) && Objects.equals(lastUpdated, other.lastUpdated) && Objects.equals(
+			lastUpdatedBy, other.lastUpdatedBy) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(type, other.type);
 	}
 
 	@Override
 	public String toString() {
 		final var builder = new StringBuilder();
-		builder.append("DocumentTypeEntity [municipalityId=").append(municipalityId).append(", type=").append(type).append(", displayName=").append(displayName).append(", created=").append(created).append(", createdBy=").append(createdBy).append(
-			", lastUpdated=").append(lastUpdated).append(", lastUpdatedBy=").append(lastUpdatedBy).append("]");
+		builder.append("DocumentTypeEntity [id=").append(id).append(", municipalityId=").append(municipalityId).append(", type=").append(type).append(", displayName=").append(displayName).append(", created=").append(created).append(", createdBy=")
+			.append(createdBy).append(", lastUpdated=").append(lastUpdated).append(", lastUpdatedBy=").append(lastUpdatedBy).append("]");
 		return builder.toString();
 	}
 }
