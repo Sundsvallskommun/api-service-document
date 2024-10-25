@@ -29,12 +29,9 @@ class DocumentTypeIdTest {
 		final var beanWithSameContent = new DocumentTypeId(MUNICIPALITY_ID, TYPE);
 		final var beanWithOtherContent1 = new DocumentTypeId("other" + MUNICIPALITY_ID, TYPE);
 		final var beanWithOtherContent2 = new DocumentTypeId(MUNICIPALITY_ID, "other" + TYPE);
-		new DocumentTypeId("other" + MUNICIPALITY_ID, TYPE);
-
 		final var beanOfOtherClass = new Object();
 
 		assertThat(BEAN)
-			.isEqualTo(BEAN)
 			.isEqualTo(beanWithSameContent)
 			.isNotEqualTo(beanWithOtherContent1)
 			.isNotEqualTo(beanWithOtherContent2)
@@ -45,13 +42,14 @@ class DocumentTypeIdTest {
 	@Test
 	void testHashCode() {
 		final var beanWithSameContent = new DocumentTypeId(MUNICIPALITY_ID, TYPE);
-		final var beanWithOtherContent = new DocumentTypeId("other" + MUNICIPALITY_ID, "other" + TYPE);
+		final var beanWithOtherContent1 = new DocumentTypeId("other" + MUNICIPALITY_ID, TYPE);
+		final var beanWithOtherContent2 = new DocumentTypeId(MUNICIPALITY_ID, "other" + TYPE);
 		final var beanOfOtherClass = new Object();
 
 		assertThat(BEAN)
-			.hasSameHashCodeAs(BEAN)
 			.hasSameHashCodeAs(beanWithSameContent)
-			.doesNotHaveSameHashCodeAs(beanWithOtherContent)
+			.doesNotHaveSameHashCodeAs(beanWithOtherContent1)
+			.doesNotHaveSameHashCodeAs(beanWithOtherContent2)
 			.doesNotHaveSameHashCodeAs(beanOfOtherClass);
 	}
 
