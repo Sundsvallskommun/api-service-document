@@ -1,6 +1,7 @@
 package se.sundsvall.document.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
@@ -10,6 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.Problem;
@@ -19,12 +21,16 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.DocumentTypeCreateRequest;
 import se.sundsvall.document.api.model.DocumentTypeUpdateRequest;
+import se.sundsvall.document.service.DocumentTypeService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
 class DocumentTypeAdministrationResourceFailuresTest {
 
 	private static final String BASE_PATH = "/{municipalityId}/admin/documenttypes";
+
+	@MockBean
+	private DocumentTypeService serviceMock;
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -54,8 +60,7 @@ class DocumentTypeAdministrationResourceFailuresTest {
 			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
 		});
 
-		// TODO: Verify no interactions with service mock
-		// verifyNoInteractions(serviceMock);
+		verifyNoInteractions(serviceMock);
 	}
 
 	@Test
@@ -78,8 +83,7 @@ class DocumentTypeAdministrationResourceFailuresTest {
 			Required request body is missing: org.springframework.http.ResponseEntity<java.lang.Void> \
 			se.sundsvall.document.api.DocumentTypeAdministrationResource.createDocumentType(java.lang.String,se.sundsvall.document.api.model.DocumentTypeCreateRequest)""");
 
-		// TODO: Verify no interactions with service mock
-		// verifyNoInteractions(serviceMock);
+		verifyNoInteractions(serviceMock);
 	}
 
 	@Test
@@ -110,8 +114,7 @@ class DocumentTypeAdministrationResourceFailuresTest {
 			assertThat(violation.getMessage()).isEqualTo("must not be blank");
 		});
 
-		// TODO: Verify no interactions with service mock
-		// verifyNoInteractions(serviceMock);
+		verifyNoInteractions(serviceMock);
 	}
 
 	@Test
@@ -134,8 +137,7 @@ class DocumentTypeAdministrationResourceFailuresTest {
 			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
 		});
 
-		// TODO: Verify no interactions with service mock
-		// verifyNoInteractions(serviceMock);
+		verifyNoInteractions(serviceMock);
 	}
 
 	@Test
@@ -158,8 +160,7 @@ class DocumentTypeAdministrationResourceFailuresTest {
 			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
 		});
 
-		// TODO: Verify no interactions with service mock
-		// verifyNoInteractions(serviceMock);
+		verifyNoInteractions(serviceMock);
 	}
 
 	@Test
@@ -186,8 +187,7 @@ class DocumentTypeAdministrationResourceFailuresTest {
 			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
 		});
 
-		// TODO: Verify no interactions with service mock
-		// verifyNoInteractions(serviceMock);
+		verifyNoInteractions(serviceMock);
 	}
 
 	@Test
@@ -210,12 +210,11 @@ class DocumentTypeAdministrationResourceFailuresTest {
 			Required request body is missing: org.springframework.http.ResponseEntity<java.lang.Void> \
 			se.sundsvall.document.api.DocumentTypeAdministrationResource.updateDocumentType(java.lang.String,java.lang.String,se.sundsvall.document.api.model.DocumentTypeUpdateRequest)""");
 
-		// TODO: Verify no interactions with service mock
-		// verifyNoInteractions(serviceMock);
+		verifyNoInteractions(serviceMock);
 	}
 
 	@Test
-	void updateWithEmptyBody() {
+	void updateWithMissingMandatoryData() {
 		// Act
 		final var response = webTestClient.patch()
 			.uri(uribuilder -> uribuilder.path(BASE_PATH + "/type").build(Map.of("municipalityId", "2281")))
@@ -234,13 +233,9 @@ class DocumentTypeAdministrationResourceFailuresTest {
 		assertThat(response.getViolations()).isNotEmpty().satisfiesExactlyInAnyOrder(violation -> {
 			assertThat(violation.getField()).isEqualTo("updatedBy");
 			assertThat(violation.getMessage()).isEqualTo("must not be blank");
-		}, violation -> {
-			assertThat(violation.getField()).isEqualTo("displayName");
-			assertThat(violation.getMessage()).isEqualTo("must not be blank");
 		});
 
-		// TODO: Verify no interactions with service mock
-		// verifyNoInteractions(serviceMock);
+		verifyNoInteractions(serviceMock);
 	}
 
 	@Test
@@ -263,8 +258,6 @@ class DocumentTypeAdministrationResourceFailuresTest {
 			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
 		});
 
-		// TODO: Verify no interactions with service mock
-		// verifyNoInteractions(serviceMock);
+		verifyNoInteractions(serviceMock);
 	}
-
 }

@@ -11,7 +11,6 @@ import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static se.sundsvall.document.Constants.ADMIN_DOCUMENT_TYPES_BASE_PATH;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -40,6 +39,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.document.api.model.DocumentType;
 import se.sundsvall.document.api.model.DocumentTypeCreateRequest;
 import se.sundsvall.document.api.model.DocumentTypeUpdateRequest;
+import se.sundsvall.document.service.DocumentTypeService;
 
 @RestController
 @Validated
@@ -49,7 +49,11 @@ import se.sundsvall.document.api.model.DocumentTypeUpdateRequest;
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class DocumentTypeAdministrationResource {
 
-	DocumentTypeAdministrationResource() {}
+	private final DocumentTypeService service;
+
+	DocumentTypeAdministrationResource(DocumentTypeService service) {
+		this.service = service;
+	}
 
 	@PostMapping(consumes = { APPLICATION_JSON_VALUE }, produces = { ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(summary = "Create new document type", description = "Creates a new document type in the provided municipality.")
@@ -58,9 +62,11 @@ public class DocumentTypeAdministrationResource {
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
 		@Valid @NotNull @RequestBody final DocumentTypeCreateRequest body) {
 
-		return created(fromPath(ADMIN_DOCUMENT_TYPES_BASE_PATH + "/{type}").buildAndExpand(municipalityId, body.getType()).toUri())
-			.header(CONTENT_TYPE, ALL_VALUE)
-			.build();
+		final var result = service.create(municipalityId, body);
+		return created(fromPath(ADMIN_DOCUMENT_TYPES_BASE_PATH + "/{type}").buildAndExpand(municipalityId, result.getType())
+			.toUri())
+				.header(CONTENT_TYPE, ALL_VALUE)
+				.build();
 	}
 
 	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -69,7 +75,7 @@ public class DocumentTypeAdministrationResource {
 	ResponseEntity<List<DocumentType>> readDocumentTypes(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId) {
 
-		return ok(Collections.emptyList());
+		return ok(service.read(municipalityId));
 	}
 
 	@GetMapping(path = "/{type}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -79,7 +85,7 @@ public class DocumentTypeAdministrationResource {
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "type", description = "The type to update", example = "EMPLOYMENT_CERTIFICATE") @PathVariable final String type) {
 
-		return ok(DocumentType.create());
+		return ok(service.read(municipalityId, type));
 	}
 
 	@PatchMapping(path = "/{type}", consumes = APPLICATION_JSON_VALUE, produces = { APPLICATION_PROBLEM_JSON_VALUE })
@@ -91,6 +97,7 @@ public class DocumentTypeAdministrationResource {
 		@Parameter(name = "type", description = "The type to update", example = "EMPLOYMENT_CERTIFICATE") @PathVariable final String type,
 		@Valid @NotNull @RequestBody final DocumentTypeUpdateRequest body) {
 
+		service.update(municipalityId, type, body);
 		return noContent()
 			.header(CONTENT_TYPE, ALL_VALUE)
 			.build();
@@ -106,6 +113,7 @@ public class DocumentTypeAdministrationResource {
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "type", description = "the type to delete", example = "EMPLOYMENT_CERTIFICATE") @PathVariable final String type) {
 
+		service.delete(municipalityId, type);
 		return noContent()
 			.header(CONTENT_TYPE, ALL_VALUE)
 			.build();

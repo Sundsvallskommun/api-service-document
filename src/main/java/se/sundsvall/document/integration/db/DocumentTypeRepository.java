@@ -12,5 +12,7 @@ import se.sundsvall.document.integration.db.model.DocumentTypeEntity;
 public interface DocumentTypeRepository extends JpaRepository<DocumentTypeEntity, String> {
 	List<DocumentTypeEntity> findAllByMunicipalityId(String municipalityId);
 
+	boolean existsByMunicipalityIdAndType(String municipalityId, String type);
+
 	Optional<DocumentTypeEntity> findByMunicipalityIdAndType(String municipalityId, String type);
 }
