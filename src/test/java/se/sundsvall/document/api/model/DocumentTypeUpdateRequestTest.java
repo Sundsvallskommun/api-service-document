@@ -25,15 +25,18 @@ class DocumentTypeUpdateRequestTest {
 
 	@Test
 	void testBuilderMethods() {
-		final var updatedBy = "updatedBy";
 		final var displayName = "displayName";
+		final var type = "type";
+		final var updatedBy = "updatedBy";
 
 		final var bean = DocumentTypeUpdateRequest.create()
 			.withDisplayName(displayName)
+			.withType(type)
 			.withUpdatedBy(updatedBy);
 
 		assertThat(bean).hasNoNullFieldsOrProperties();
 		assertThat(bean.getDisplayName()).isEqualTo(displayName);
+		assertThat(bean.getType()).isEqualTo(type);
 		assertThat(bean.getUpdatedBy()).isEqualTo(updatedBy);
 	}
 

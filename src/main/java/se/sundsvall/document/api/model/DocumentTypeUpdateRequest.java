@@ -9,9 +9,11 @@ import jakarta.validation.constraints.NotBlank;
 
 public class DocumentTypeUpdateRequest {
 
-	@NotBlank
-	@Schema(description = "Display name for the document type", example = "Anställningsbevis", requiredMode = REQUIRED)
+	@Schema(description = "Display name for the document type", example = "Anställningsbevis")
 	private String displayName;
+
+	@Schema(description = "Identifier for the document type", example = "EMPLOYMENT_CERTIFICATE")
+	private String type;
 
 	@NotBlank
 	@Schema(description = "Identifier for performing person", example = "username123", requiredMode = REQUIRED)
@@ -34,6 +36,19 @@ public class DocumentTypeUpdateRequest {
 		return this;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public DocumentTypeUpdateRequest withType(String type) {
+		setType(type);
+		return this;
+	}
+
 	public String getUpdatedBy() {
 		return updatedBy;
 	}
@@ -49,7 +64,7 @@ public class DocumentTypeUpdateRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(displayName, updatedBy);
+		return Objects.hash(displayName, type, updatedBy);
 	}
 
 	@Override
@@ -60,13 +75,14 @@ public class DocumentTypeUpdateRequest {
 		if (!(obj instanceof final DocumentTypeUpdateRequest other)) {
 			return false;
 		}
-		return Objects.equals(displayName, other.displayName) && Objects.equals(updatedBy, other.updatedBy);
+		return Objects.equals(displayName, other.displayName) && Objects.equals(type, other.type) && Objects.equals(updatedBy, other.updatedBy);
 	}
 
 	@Override
 	public String toString() {
 		final var builder = new StringBuilder();
-		builder.append("DocumentTypeUpdateRequest [displayName=").append(displayName).append(", updatedBy=").append(updatedBy).append("]");
+		builder.append("DocumentTypeUpdateRequest [displayName=").append(displayName).append(", type=").append(type).append(", updatedBy=").append(updatedBy).append("]");
 		return builder.toString();
 	}
+
 }

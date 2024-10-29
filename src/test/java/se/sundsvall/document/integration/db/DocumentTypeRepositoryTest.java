@@ -64,4 +64,10 @@ class DocumentTypeRepositoryTest {
 		});
 	}
 
+	@Test
+	void existsByMunicipalityIdAndType() {
+		assertThat(repository.existsByMunicipalityIdAndType(MUNICIPALITY_ID, TYPE)).isTrue();
+		assertThat(repository.existsByMunicipalityIdAndType("NOT_FOUND", TYPE)).isFalse();
+		assertThat(repository.existsByMunicipalityIdAndType(MUNICIPALITY_ID, "NOT_FOUND")).isFalse();
+	}
 }

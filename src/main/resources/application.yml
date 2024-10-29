@@ -34,6 +34,10 @@ spring:
             database:
               action: none
     show-sql: false
+  cache:
+    cache-names: documentTypeCache
+    caffeine:
+      spec: maximumSize=500, expireAfterWrite=600s
   security:
     oauth2:
       client:
