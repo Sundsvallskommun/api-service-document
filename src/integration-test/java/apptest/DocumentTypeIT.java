@@ -37,6 +37,7 @@ class DocumentTypeIT extends AbstractAppTest {
 
 	@Test
 	void test01_createDocumentType() {
+		assertThat(repository.existsByMunicipalityIdAndType("2260", "APARTMENT_AGREEMENT")).isFalse();
 
 		setupCall()
 			.withServicePath(PATH.formatted("2260"))
@@ -46,6 +47,8 @@ class DocumentTypeIT extends AbstractAppTest {
 			.withExpectedResponseHeader(LOCATION, List.of(PATH.formatted("2260") + "/APARTMENT_AGREEMENT"))
 			.withExpectedResponseBodyIsNull()
 			.sendRequestAndVerifyResponse();
+
+		assertThat(repository.existsByMunicipalityIdAndType("2260", "APARTMENT_AGREEMENT")).isTrue();
 	}
 
 	@Test
@@ -98,7 +101,5 @@ class DocumentTypeIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse();
 
 		assertThat(repository.existsByMunicipalityIdAndType("2260", "TYPE_TO_DELETE")).isFalse();
-
 	}
-
 }
