@@ -49,6 +49,14 @@ class DocumentTypeIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse();
 
 		assertThat(repository.existsByMunicipalityIdAndType("2260", "APARTMENT_AGREEMENT")).isTrue();
+
+		setupCall()
+			.withServicePath(PATH.formatted("2260") + "/APARTMENT_AGREEMENT")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+
 	}
 
 	@Test
