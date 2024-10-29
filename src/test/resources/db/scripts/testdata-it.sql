@@ -1,4 +1,10 @@
-INSERT INTO document (id, revision, created, created_by, registration_number, confidential, legal_citation, archive, description, municipality_id) VALUES
+INSERT INTO document_type (id, created, last_updated, created_by, display_name, last_updated_by, municipality_id, `type`) VALUES
+	('86b9efc9-c649-40d5-ade0-ac415ea146f1', '2024-10-25 14:00:00.000', null, 'User1', 'Anställningsbevis', null, '2281', 'EMPLOYEE_CERTIFICATE'),
+	('3fdecd8b-d295-4222-b60c-e95ba5f5075a', '2024-10-25 14:00:00.000', null, 'User2', 'Semesterväxlingsdokument', null, '2281', 'HOLIDAY_EXCHANGE'),
+	('1e5447b7-8941-43a4-afb7-cab09375efad', '2024-10-25 14:00:00.000', null, 'User2', 'Felstavat', null, '2262', 'MISSPELLED'),
+	('227a66a6-7485-48ba-b536-f7f487daa92c', '2024-10-25 14:00:00.000', null, 'User1', 'Typ att ta bort', null, '2260', 'TYPE_TO_DELETE');
+
+	INSERT INTO document (id, revision, created, created_by, registration_number, confidential, legal_citation, archive, description, municipality_id) VALUES
 	('159c10bf-1b32-471b-b2d3-c4b4b13ea152', 1, '2023-06-28 12:01:00.000', "User1", '2023-2281-123', false, null, false, 'Document 1', '2281'), -- Document-1, revision 1
 	('8efd63a3-b525-4581-8b0b-9759f381a5a5', 2, '2023-06-28 12:02:00.000', "User2", '2023-2281-123', false, null, false, 'Document 1', '2281'), -- Document-1, revision 2
 	('612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2', 3, '2023-06-28 12:03:00.000', "User3", '2023-2281-123', false, null, true, 'Document 1', '2281'), -- Document-1, revision 3

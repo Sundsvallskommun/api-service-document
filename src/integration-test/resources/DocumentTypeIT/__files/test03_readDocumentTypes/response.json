@@ -1,0 +1,10 @@
+[
+	{
+		"type": "EMPLOYEE_CERTIFICATE",
+		"displayName": "Anställningsbevis"
+	},
+	{
+		"type": "HOLIDAY_EXCHANGE",
+		"displayName": "Semesterväxlingsdokument"
+	}
+]
