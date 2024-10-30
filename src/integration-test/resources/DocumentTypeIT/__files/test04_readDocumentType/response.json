@@ -1,4 +1,4 @@
 {
-	"type": "EMPLOYEE_CERTIFICATE",
-	"displayName": "Anställningsbevis"
+	"displayName": "Anställningsbevis",
+	"type": "EMPLOYEE_CERTIFICATE"
 }

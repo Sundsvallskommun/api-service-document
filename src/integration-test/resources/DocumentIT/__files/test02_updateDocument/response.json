@@ -1,27 +1,21 @@
 {
-	"id": "${json-unit.any-string}",
-	"municipalityId":"2281",
-	"registrationNumber": "2023-2281-123",
-	"revision": 4,
-	"confidentiality": {
-		"confidential": false
-	},
-	"description": "Document 1",
-	"created": "${json-unit.any-string}",
+	"municipalityId": "2281",
 	"createdBy": "user-x",
+	"registrationNumber": "2023-2281-123",
+	"created": "${json-unit.any-string}",
+	"confidentiality": {"confidential": false},
+	"description": "Document 1",
 	"archive": false,
-	"metadataList": [
-		{
-			"key": "Updated key",
-			"value": "Updated value"
-		}
-	],
-	"documentData": [
-		{
-			"id": "${json-unit.any-string}",
-			"fileName": "file3.jpg",
-			"mimeType": "image/jpeg",
-			"fileSizeInBytes": 5068
-		}
-	]
+	"id": "${json-unit.any-string}",
+	"documentData": [{
+		"fileName": "file3.jpg",
+		"fileSizeInBytes": 5068,
+		"id": "${json-unit.any-string}",
+		"mimeType": "image/jpeg"
+	}],
+	"revision": 4,
+	"metadataList": [{
+		"value": "Updated value",
+		"key": "Updated key"
+	}]
 }

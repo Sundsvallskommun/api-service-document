@@ -82,7 +82,6 @@ public class DocumentService {
 		this.eventLogProperties = eventLogProperties;
 	}
 
-
 	public Document create(final DocumentCreateRequest documentCreateRequest, final DocumentFiles documentFiles, final String municipalityId) {
 
 		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper);

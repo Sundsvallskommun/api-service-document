@@ -108,7 +108,9 @@ class DocumentMapperTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
+	@ValueSource(booleans = {
+		true, false
+	})
 	@NullSource
 	void toDocumentEntityFromDocumentUpdateRequest(Boolean archive) throws IOException {
 

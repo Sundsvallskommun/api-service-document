@@ -20,7 +20,6 @@ _The service provides support for creating, readning, updating and deleting docu
    git clone https://github.com/Sundsvallskommun/api-service-document.git
    cd api-service-document
    ```
-
 2. **Configure the application:**
 
    Before running the application, you need to set up configuration settings.
@@ -39,7 +38,6 @@ _The service provides support for creating, readning, updating and deleting docu
      ```bash
      mvn spring-boot:run
      ```
-
    - Using Gradle:
 
      ```bash
@@ -51,7 +49,6 @@ _The service provides support for creating, readning, updating and deleting docu
 This microservice depends on the following services:
 
 - **Eventlog**
-
   - **Purpose:** Used for logging the events happening on a document.
   - **Repository:** [https://github.com/Sundsvallskommun/api-service-eventlog](https://github.com/Sundsvallskommun/api-service-eventlog)
   - **Setup Instructions:** See documentation in repository above for installation and configuration steps.
@@ -90,7 +87,6 @@ Configuration is crucial for the application to run successfully. Ensure all nec
   server:
     port: 8080
   ```
-
 - **Database Settings:**
 
   ```yaml
@@ -100,7 +96,6 @@ Configuration is crucial for the application to run successfully. Ensure all nec
       username: your_db_username
       password: your_db_password
   ```
-
 - **External Service URLs:**
 
   ```yaml
@@ -147,6 +142,7 @@ Contributions are welcome! Please see [CONTRIBUTING.md](https://github.com/Sunds
 This project is licensed under the [MIT License](LICENSE).
 
 ## Status
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-document&metric=alert_status)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-document)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-document&metric=reliability_rating)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-document)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-document&metric=security_rating)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-document)
@@ -155,4 +151,5 @@ This project is licensed under the [MIT License](LICENSE).
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-document&metric=bugs)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-document)
 
 ## 
+
 Copyright (c) 2023 Sundsvalls kommun

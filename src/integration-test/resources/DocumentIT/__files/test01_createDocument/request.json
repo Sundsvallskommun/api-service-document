@@ -3,10 +3,8 @@
 	"createdBy": "username123",
 	"description": "This is a document",
 	"archive": true,
-	"metadataList": [
-		{
-			"key": "Some key",
-			"value": "Some value"
-		}
-	]
+	"metadataList": [{
+		"value": "Some value",
+		"key": "Some key"
+	}]
 }

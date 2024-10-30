@@ -79,8 +79,10 @@ public class DocumentData {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		DocumentData that = (DocumentData) o;
 		return fileSizeInBytes == that.fileSizeInBytes && Objects.equals(id, that.id) && Objects.equals(fileName, that.fileName) && Objects.equals(mimeType, that.mimeType);
 	}

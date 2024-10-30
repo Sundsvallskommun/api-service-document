@@ -26,7 +26,7 @@ public interface SearchSpecification {
 
 	static Specification<DocumentEntity> withSearchQuery(String query, boolean includeConfidential, boolean onlyLatestRevision, String municipalityId) {
 		final var queryString = toQueryString(query);
-		
+
 		return onlyLatestRevisionOfDocuments(onlyLatestRevision)
 			.and(matchesMunicipalityId(municipalityId, false))
 			.and(matchesCreatedBy(queryString)
@@ -72,7 +72,7 @@ public interface SearchSpecification {
 	}
 
 	private static Specification<DocumentEntity> matchesMunicipalityId(String query, boolean like) {
-		if(like) {
+		if (like) {
 			return (entity, cq, cb) -> cb.like(cb.lower(entity.get(MUNICIPALITY_ID)), query);
 		} else {
 			return (entity, cq, cb) -> cb.equal(cb.lower(entity.get(MUNICIPALITY_ID)), query);
