@@ -51,6 +51,7 @@ class DocumentTest {
 		final var municipalityId = "municipalityId";
 		final var registrationNumber = "12345";
 		final var revision = 5;
+		final var type = "type";
 
 		final var bean = Document.create()
 			.withArchive(archive)
@@ -63,7 +64,8 @@ class DocumentTest {
 			.withMetadataList(metadataList)
 			.withMunicipalityId(municipalityId)
 			.withRegistrationNumber(registrationNumber)
-			.withRevision(revision);
+			.withRevision(revision)
+			.withType(type);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.isArchive()).isEqualTo(archive);
@@ -77,6 +79,7 @@ class DocumentTest {
 		assertThat(bean.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(bean.getRegistrationNumber()).isEqualTo(registrationNumber);
 		assertThat(bean.getRevision()).isEqualTo(revision);
+		assertThat(bean.getType()).isEqualTo(type);
 	}
 
 	@Test

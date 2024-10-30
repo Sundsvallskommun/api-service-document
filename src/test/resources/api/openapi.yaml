@@ -54,14 +54,6 @@ paths:
                   type: string
                   format: binary
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "200":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -70,6 +62,14 @@ paths:
                 oneOf:
                 - $ref: "#/components/schemas/Problem"
                 - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "200":
+          description: Successful operation
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -139,6 +139,14 @@ paths:
           items:
             type: string
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -148,14 +156,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/PagedDocumentResponse"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -192,13 +192,6 @@ paths:
                     type: string
                     format: binary
       responses:
-        "201":
-          description: Successful operation
-          headers:
-            Location:
-              style: simple
-              schema:
-                type: string
         "400":
           description: Bad request
           content:
@@ -207,6 +200,13 @@ paths:
                 oneOf:
                 - $ref: "#/components/schemas/Problem"
                 - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "201":
+          description: Successful operation
+          headers:
+            Location:
+              style: simple
+              schema:
+                type: string
         "500":
           description: Internal Server error
           content:
@@ -229,6 +229,14 @@ paths:
           type: string
         example: 2281
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -242,14 +250,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/DocumentType"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -277,13 +277,6 @@ paths:
               $ref: "#/components/schemas/DocumentTypeCreateRequest"
         required: true
       responses:
-        "201":
-          description: Successful operation
-          headers:
-            Location:
-              style: simple
-              schema:
-                type: string
         "400":
           description: Bad request
           content:
@@ -292,6 +285,13 @@ paths:
                 oneOf:
                 - $ref: "#/components/schemas/Problem"
                 - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "201":
+          description: Successful operation
+          headers:
+            Location:
+              style: simple
+              schema:
+                type: string
         "500":
           description: Internal Server error
           content:
@@ -328,12 +328,14 @@ paths:
           default: false
         example: true
       responses:
-        "404":
-          description: Not found
+        "400":
+          description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -343,14 +345,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Document"
-        "400":
-          description: Bad request
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -392,12 +392,14 @@ paths:
               $ref: "#/components/schemas/DocumentUpdateRequest"
         required: true
       responses:
-        "404":
-          description: Not found
+        "400":
+          description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -407,14 +409,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Document"
-        "400":
-          description: Bad request
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -449,14 +449,6 @@ paths:
               $ref: "#/components/schemas/ConfidentialityUpdateRequest"
         required: true
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "200":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -465,6 +457,14 @@ paths:
                 oneOf:
                 - $ref: "#/components/schemas/Problem"
                 - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "200":
+          description: Successful operation
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -494,6 +494,14 @@ paths:
           type: string
         example: EMPLOYMENT_CERTIFICATE
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -503,14 +511,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/DocumentType"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -540,8 +540,6 @@ paths:
           type: string
         example: EMPLOYMENT_CERTIFICATE
       responses:
-        "204":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -556,6 +554,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "204":
+          description: Successful operation
         "404":
           description: Not Found
           content:
@@ -590,8 +590,6 @@ paths:
               $ref: "#/components/schemas/DocumentTypeUpdateRequest"
         required: true
       responses:
-        "204":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -606,6 +604,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "204":
+          description: Successful operation
         "404":
           description: Not Found
           content:
@@ -667,6 +667,14 @@ paths:
           items:
             type: string
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -676,14 +684,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/PagedDocumentResponse"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -729,12 +729,14 @@ paths:
           default: false
         example: true
       responses:
-        "404":
-          description: Not found
+        "400":
+          description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -744,14 +746,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Document"
-        "400":
-          description: Bad request
+        "404":
+          description: Not found
           content:
             application/problem+json:
               schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -804,14 +804,6 @@ paths:
           default: false
         example: true
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "200":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -820,6 +812,14 @@ paths:
                 oneOf:
                 - $ref: "#/components/schemas/Problem"
                 - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "200":
+          description: Successful operation
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -863,14 +863,6 @@ paths:
           default: false
         example: true
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "200":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -879,6 +871,14 @@ paths:
                 oneOf:
                 - $ref: "#/components/schemas/Problem"
                 - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "200":
+          description: Successful operation
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -913,14 +913,6 @@ paths:
           type: string
         example: 082ba08f-03c7-409f-b8a6-940a1397ba38
       responses:
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "204":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -929,12 +921,20 @@ paths:
                 oneOf:
                 - $ref: "#/components/schemas/Problem"
                 - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "204":
+          description: Successful operation
   /api-docs:
     get:
       tags:
@@ -978,9 +978,9 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        detail:
-          type: string
         title:
+          type: string
+        detail:
           type: string
     StatusType:
       type: object
@@ -1113,9 +1113,9 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        detail:
-          type: string
         title:
+          type: string
+        detail:
           type: string
         suppressed:
           type: array
@@ -1176,6 +1176,7 @@ components:
       - createdBy
       - description
       - metadataList
+      - type
       type: object
       properties:
         createdBy:
@@ -1200,6 +1201,11 @@ components:
           description: List of DocumentMetadata objects.
           items:
             $ref: "#/components/schemas/DocumentMetadata"
+        type:
+          type: string
+          description: The type of document (validated against a defined list of document
+            types).
+          example: EMPLOYMENT_CERTIFICATE
       description: Document
     DocumentMetadata:
       required:
@@ -1260,6 +1266,11 @@ components:
           description: List of DocumentMetadata objects.
           items:
             $ref: "#/components/schemas/DocumentMetadata"
+        type:
+          type: string
+          description: The type of document (validated against a defined list of document
+            types).
+          example: EMPLOYMENT_CERTIFICATE
       description: DocumentUpdateRequest model.
     Document:
       type: object
@@ -1310,6 +1321,10 @@ components:
           description: Document data
           items:
             $ref: "#/components/schemas/DocumentData"
+        type:
+          type: string
+          description: Document type
+          example: Type for the document.
       description: Document model.
       readOnly: true
     DocumentData:

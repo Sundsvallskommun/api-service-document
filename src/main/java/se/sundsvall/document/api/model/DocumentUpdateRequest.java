@@ -27,6 +27,9 @@ public class DocumentUpdateRequest {
 	@Schema(description = "List of DocumentMetadata objects.")
 	private List<@Valid DocumentMetadata> metadataList;
 
+	@Schema(description = "The type of document (validated against a defined list of document types).", example = "EMPLOYMENT_CERTIFICATE")
+	private String type;
+
 	public static DocumentUpdateRequest create() {
 		return new DocumentUpdateRequest();
 	}
@@ -83,9 +86,22 @@ public class DocumentUpdateRequest {
 		return this;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public DocumentUpdateRequest withType(String type) {
+		this.type = type;
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(archive, createdBy, description, metadataList);
+		return Objects.hash(archive, createdBy, description, metadataList, type);
 	}
 
 	@Override
@@ -93,17 +109,17 @@ public class DocumentUpdateRequest {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof DocumentUpdateRequest)) {
+		if (!(obj instanceof final DocumentUpdateRequest other)) {
 			return false;
 		}
-		DocumentUpdateRequest other = (DocumentUpdateRequest) obj;
-		return Objects.equals(archive, other.archive) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
+		return Objects.equals(archive, other.archive) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList) && Objects.equals(type, other.type);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", description=").append(description).append(", archive=").append(archive).append(", metadataList=").append(metadataList).append("]");
+		final var builder = new StringBuilder();
+		builder.append("DocumentUpdateRequest [createdBy=").append(createdBy).append(", description=").append(description).append(", archive=").append(archive).append(", metadataList=").append(metadataList).append(", type=").append(type).append("]");
 		return builder.toString();
 	}
+
 }

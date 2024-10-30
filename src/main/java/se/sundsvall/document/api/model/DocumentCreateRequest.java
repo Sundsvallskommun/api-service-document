@@ -33,6 +33,10 @@ public class DocumentCreateRequest {
 	@Schema(description = "List of DocumentMetadata objects.", requiredMode = REQUIRED)
 	private List<@Valid DocumentMetadata> metadataList;
 
+	@NotBlank
+	@Schema(description = "The type of document (validated against a defined list of document types).", example = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
+	private String type;
+
 	public static DocumentCreateRequest create() {
 		return new DocumentCreateRequest();
 	}
@@ -102,9 +106,22 @@ public class DocumentCreateRequest {
 		return this;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public DocumentCreateRequest withType(String type) {
+		this.type = type;
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(archive, confidentiality, createdBy, description, metadataList);
+		return Objects.hash(archive, confidentiality, createdBy, description, metadataList, type);
 	}
 
 	@Override
@@ -112,19 +129,18 @@ public class DocumentCreateRequest {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof DocumentCreateRequest)) {
+		if (!(obj instanceof final DocumentCreateRequest other)) {
 			return false;
 		}
-		DocumentCreateRequest other = (DocumentCreateRequest) obj;
-		return archive == other.archive && Objects.equals(confidentiality, other.confidentiality) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList);
+		return archive == other.archive && Objects.equals(confidentiality, other.confidentiality) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects.equals(metadataList, other.metadataList)
+			&& Objects.equals(type, other.type);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("DocumentCreateRequest [createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append(", description=")
-			.append(description).append(", metadataList=").append(metadataList).append("]");
+		final var builder = new StringBuilder();
+		builder.append("DocumentCreateRequest [createdBy=").append(createdBy).append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append(", description=").append(description).append(", metadataList=").append(
+			metadataList).append(", type=").append(type).append("]");
 		return builder.toString();
 	}
-
 }

@@ -60,6 +60,7 @@ import se.sundsvall.document.api.model.DocumentDataCreateRequest;
 import se.sundsvall.document.api.model.DocumentFiles;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
+import se.sundsvall.document.api.validation.DocumentTypeValidator;
 import se.sundsvall.document.service.DocumentService;
 
 @RestController
@@ -71,11 +72,13 @@ import se.sundsvall.document.service.DocumentService;
 public class DocumentResource {
 
 	private final DocumentService documentService;
+	private final DocumentTypeValidator documentTypeValidator;
 	private final ObjectMapper objectMapper;
 
-	public DocumentResource(DocumentService documentService, ObjectMapper objectMapper) {
+	public DocumentResource(DocumentService documentService, ObjectMapper objectMapper, DocumentTypeValidator documentTypeValidator) {
 		this.documentService = documentService;
 		this.objectMapper = objectMapper;
+		this.documentTypeValidator = documentTypeValidator;
 	}
 
 	@PostMapping(consumes = { MULTIPART_FORM_DATA_VALUE }, produces = { ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -87,13 +90,14 @@ public class DocumentResource {
 		@RequestPart(value = "documentFiles") List<MultipartFile> documentFiles) throws JsonProcessingException {
 
 		// If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
-		final var documentCreateRequest = objectMapper.readValue(documentString, DocumentCreateRequest.class);
-		validate(documentCreateRequest);
+		final var body = objectMapper.readValue(documentString, DocumentCreateRequest.class);
+		validate(body);
+		documentTypeValidator.validate(municipalityId, body.getType());
 
 		final var documents = DocumentFiles.create().withFiles(documentFiles);
 		validate(documents);
 
-		final var registrationNumber = documentService.create(documentCreateRequest, documents, municipalityId).getRegistrationNumber();
+		final var registrationNumber = documentService.create(body, documents, municipalityId).getRegistrationNumber();
 
 		return created(fromPath(DOCUMENTS_BASE_PATH + "/{registrationNumber}").buildAndExpand(municipalityId, registrationNumber).toUri())
 			.header(CONTENT_TYPE, ALL_VALUE)
@@ -109,6 +113,8 @@ public class DocumentResource {
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
 		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
 		@NotNull @Valid @RequestBody DocumentUpdateRequest body) {
+
+		documentTypeValidator.validate(municipalityId, body.getType());
 
 		return ok(documentService.update(registrationNumber, includeConfidential, body, municipalityId));
 	}

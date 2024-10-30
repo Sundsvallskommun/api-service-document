@@ -33,13 +33,15 @@ class DocumentCreateRequestTest {
 		final var createdBy = "user";
 		final var description = "description";
 		final var metadataList = List.of(DocumentMetadata.create());
+		final var type = "type";
 
 		final var bean = DocumentCreateRequest.create()
 			.withArchive(archive)
 			.withConfidentiality(confidentiality)
 			.withCreatedBy(createdBy)
 			.withDescription(description)
-			.withMetadataList(metadataList);
+			.withMetadataList(metadataList)
+			.withType(type);
 
 		assertThat(bean).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(bean.isArchive()).isEqualTo(archive);
@@ -47,6 +49,7 @@ class DocumentCreateRequestTest {
 		assertThat(bean.getCreatedBy()).isEqualTo(createdBy);
 		assertThat(bean.getDescription()).isEqualTo(description);
 		assertThat(bean.getMetadataList()).isEqualTo(metadataList);
+		assertThat(bean.getType()).isEqualTo(type);
 	}
 
 	@Test
