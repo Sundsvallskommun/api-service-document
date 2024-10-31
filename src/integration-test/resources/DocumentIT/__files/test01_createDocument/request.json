@@ -8,5 +8,6 @@
 			"key": "Some key",
 			"value": "Some value"
 		}
-	]
+	],
+	"type": "HOLIDAY_EXCHANGE"
 }

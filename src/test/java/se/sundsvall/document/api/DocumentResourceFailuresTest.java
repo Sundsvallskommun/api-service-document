@@ -3,14 +3,18 @@ package se.sundsvall.document.api;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.groups.Tuple.tuple;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.web.reactive.function.BodyInserters.fromMultipartData;
+import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.util.List;
 
@@ -26,11 +30,14 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import org.zalando.problem.violations.Violation;
 
 import se.sundsvall.document.Application;
+import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
+import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
 import se.sundsvall.document.api.model.DocumentDataCreateRequest;
 import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
+import se.sundsvall.document.api.validation.DocumentTypeValidator;
 import se.sundsvall.document.service.DocumentService;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
@@ -39,6 +46,9 @@ class DocumentResourceFailuresTest {
 
 	@MockBean
 	private DocumentService documentServiceMock;
+
+	@MockBean
+	private DocumentTypeValidator validationUtilityMock;
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -70,6 +80,44 @@ class DocumentResourceFailuresTest {
 	}
 
 	@Test
+	void createWithDuplicateFileNames() {
+		final var documentCreateRequest = DocumentCreateRequest.create()
+			.withConfidentiality(Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation"))
+			.withCreatedBy("user")
+			.withDescription("description")
+			.withType("type")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value")));
+
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("duplicateName.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("duplicateName.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", documentCreateRequest);
+
+		when(documentServiceMock.create(any(), any(), any())).thenReturn(Document.create());
+
+		final var response = webTestClient.post()
+			.uri("/2281/documents")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).satisfies(problem -> {
+			assertThat(problem.getTitle()).isEqualTo("Constraint Violation");
+			assertThat(problem.getStatus()).isEqualTo(BAD_REQUEST);
+			assertThat(problem.getViolations()).extracting("field", "message")
+				.containsExactlyInAnyOrder(tuple("files", "no duplicate file names allowed in the list of files"));
+		});
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
 	void createWithMissingDocument() {
 
 		// Arrange
@@ -96,7 +144,7 @@ class DocumentResourceFailuresTest {
 	}
 
 	@Test
-	void createWithMissingDescription() {
+	void createWithMissingDescriptionAndType() {
 
 		// Arrange
 		final var multipartBodyBuilder = new MultipartBodyBuilder();
@@ -123,7 +171,9 @@ class DocumentResourceFailuresTest {
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("description", "must not be blank"));
+			.containsExactlyInAnyOrder(
+				tuple("description", "must not be blank"),
+				tuple("type", "must not be blank"));
 
 		verifyNoInteractions(documentServiceMock);
 	}
@@ -137,6 +187,7 @@ class DocumentResourceFailuresTest {
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withDescription(repeat("x", 8193)) // 8192 is max length on description.
 			.withCreatedBy("user")
+			.withType("type")
 			.withMetadataList(List.of(DocumentMetadata.create()
 				.withKey("key")
 				.withValue("value"))));
@@ -171,6 +222,7 @@ class DocumentResourceFailuresTest {
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withCreatedBy("user")
 			.withDescription("description")
+			.withType("type")
 			.withMetadataList(emptyList()));
 
 		// Act
@@ -202,6 +254,7 @@ class DocumentResourceFailuresTest {
 		multipartBodyBuilder.part("documentFiles", "file-content").filename("test.txt").contentType(TEXT_PLAIN);
 		multipartBodyBuilder.part("document", DocumentCreateRequest.create()
 			.withDescription("description")
+			.withType("type")
 			.withCreatedBy("user"));
 
 		// Act
@@ -221,6 +274,43 @@ class DocumentResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("metadataList", "must not be empty"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void createWithInvalidType() {
+		doThrow(new ConstraintViolationProblem(BAD_REQUEST, List.of(new Violation("type", "error")))).when(validationUtilityMock).validate(any(), any());
+		final var documentCreateRequest = DocumentCreateRequest.create()
+			.withConfidentiality(Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation"))
+			.withCreatedBy("user")
+			.withDescription("description")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value")))
+			.withType("type");
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("test1.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("tesst2.txt").contentType(TEXT_PLAIN);
+		multipartBodyBuilder.part("document", documentCreateRequest);
+
+		// Act
+		final var response = webTestClient.post()
+			.uri("/2281/documents")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("type", "error"));
 
 		verifyNoInteractions(documentServiceMock);
 	}
@@ -386,6 +476,37 @@ class DocumentResourceFailuresTest {
 		assertThat(response.getViolations())
 			.extracting(Violation::getField, Violation::getMessage)
 			.containsExactlyInAnyOrder(tuple("description", "size must be between 0 and 8192"));
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void updateWithInvalidType() {
+		doThrow(new ConstraintViolationProblem(BAD_REQUEST, List.of(new Violation("type", "error")))).when(validationUtilityMock).validate(any(), any());
+		final var requestBody = DocumentUpdateRequest.create()
+			.withCreatedBy("user")
+			.withType("type")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value")));
+
+		// Act
+		final var response = webTestClient.patch()
+			.uri("/2281/documents/2023-1337")
+			.contentType(APPLICATION_JSON)
+			.bodyValue(requestBody)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("type", "error"));
 
 		verifyNoInteractions(documentServiceMock);
 	}
