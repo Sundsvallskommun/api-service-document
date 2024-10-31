@@ -1,27 +1,21 @@
 {
-	"id": "${json-unit.any-string}",
 	"municipalityId": "2281",
-	"registrationNumber": "${json-unit.any-string}",
-	"revision": 0,
-	"confidentiality": {
-		"confidential": false
-	},
-	"description": "This is a document",
-	"created": "${json-unit.any-string}",
 	"createdBy": "username123",
+	"registrationNumber": "${json-unit.any-string}",
+	"created": "${json-unit.any-string}",
+	"confidentiality": {"confidential": false},
+	"description": "This is a document",
 	"archive": true,
-	"metadataList": [
-		{
-			"key": "Some key",
-			"value": "Some value"
-		}
-	],
-	"documentData": [
-		{
-			"id": "${json-unit.any-string}",
-			"fileName": "image.png",
-			"mimeType": "image/png",
-			"fileSizeInBytes": 227546
-		}
-	]
+	"id": "${json-unit.any-string}",
+	"documentData": [{
+		"fileName": "image.png",
+		"fileSizeInBytes": 227546,
+		"id": "${json-unit.any-string}",
+		"mimeType": "image/png"
+	}],
+	"revision": 0,
+	"metadataList": [{
+		"value": "Some value",
+		"key": "Some key"
+	}]
 }

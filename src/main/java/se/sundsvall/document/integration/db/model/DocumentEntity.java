@@ -31,7 +31,9 @@ import se.sundsvall.document.integration.db.model.listener.DocumentEntityListene
 @Table(
 	name = "document",
 	uniqueConstraints = {
-		@UniqueConstraint(name = "uq_revision_and_registration_number", columnNames = { "revision", "registration_number" })
+		@UniqueConstraint(name = "uq_revision_and_registration_number", columnNames = {
+			"revision", "registration_number"
+		})
 	},
 	indexes = {
 		@Index(name = "ix_registration_number", columnList = "registration_number"),

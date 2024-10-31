@@ -534,7 +534,9 @@ class DocumentServiceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
+	@ValueSource(booleans = {
+		true, false
+	})
 	void searchConfidential(boolean includeConfidential) {
 
 		// Arrange
@@ -560,7 +562,9 @@ class DocumentServiceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
+	@ValueSource(booleans = {
+		true, false
+	})
 	void searchLatestRevision(boolean onlyLatestRevision) {
 
 		// Arrange

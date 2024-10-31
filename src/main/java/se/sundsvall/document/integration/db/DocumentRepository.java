@@ -19,7 +19,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	/**
 	 * Find latest document by registrationNumber.
 	 *
-	 * @param  municipalityId of the DocumentEntity.
+	 * @param  municipalityId     of the DocumentEntity.
 	 * @param  registrationNumber of the DocumentEntity.
 	 * @param  confidentialValues values of confidentiality for the documents that should be included in the result where
 	 *                            true equals confidential document, false equals public document.
@@ -30,7 +30,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	/**
 	 * Find all revisions of a document by registrationNumber.
 	 *
-	 * @param  municipalityId of the DocumentEntity.
+	 * @param  municipalityId     of the DocumentEntity.
 	 * @param  registrationNumber of the DocumentEntity.
 	 * @param  confidentialValues values of confidentiality for the documents that should be included in the result where
 	 *                            true equals confidential document, false equals public document.
@@ -42,7 +42,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	/**
 	 * Find all revisions of a document by registrationNumber.
 	 *
-	 * @param  municipalityId of the DocumentEntity.
+	 * @param  municipalityId     of the DocumentEntity.
 	 * @param  registrationNumber of the DocumentEntity.
 	 * @param  confidentialValues values of confidentiality for the documents that should be included in the result where
 	 *                            true equals confidential document, false equals public document.
@@ -53,7 +53,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	/**
 	 * Find document by registrationNumber and revision.
 	 *
-	 * @param  municipalityId of the DocumentEntity.
+	 * @param  municipalityId     of the DocumentEntity.
 	 * @param  registrationNumber of the DocumentEntity.
 	 * @param  revision           Document revision number.
 	 * @param  confidentialValues values of confidentiality for the documents that should be included in the result where
@@ -65,12 +65,12 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	/**
 	 * Performs a search in DocumentEntities.
 	 *
-	 * @param municipalityId of the DocumentEntity.
-	 * @param query               the string to search for.
-	 * @param includeConfidential option if confidential documents should be included or not.
-	 * @param onlyLatestRevision  option if only latest revision should be included or not.
-	 * @param pageable            the pageable object.
-	 * @return a Page of DocumentEntity objects that matches the search string.
+	 * @param  municipalityId      of the DocumentEntity.
+	 * @param  query               the string to search for.
+	 * @param  includeConfidential option if confidential documents should be included or not.
+	 * @param  onlyLatestRevision  option if only latest revision should be included or not.
+	 * @param  pageable            the pageable object.
+	 * @return                     a Page of DocumentEntity objects that matches the search string.
 	 */
 	default Page<DocumentEntity> search(String query, boolean includeConfidential, boolean onlyLatestRevision, Pageable pageable, String municipalityId) {
 		return this.findAll(withSearchQuery(query, includeConfidential, onlyLatestRevision, municipalityId), pageable);

@@ -1,82 +1,76 @@
 {
 	"documents": [
 		{
-			"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
-			"municipalityId":"2281",
-			"registrationNumber": "2023-2281-123",
-			"revision": 3,
-			"confidentiality": {
-				"confidential": false
-			},
-			"description": "Document 1",
-			"created": "2023-06-28T12:03:00+02:00",
+			"municipalityId": "2281",
 			"createdBy": "User3",
+			"registrationNumber": "2023-2281-123",
+			"created": "2023-06-28T12:03:00+02:00",
+			"confidentiality": {"confidential": false},
+			"description": "Document 1",
 			"archive": true,
+			"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
+			"documentData": [{
+				"fileName": "file3.jpg",
+				"fileSizeInBytes": 5068,
+				"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
+				"mimeType": "image/jpeg"
+			}],
+			"revision": 3,
 			"metadataList": [
 				{
-					"key": "document1-key1",
-					"value": "value-1"
+					"value": "value-1",
+					"key": "document1-key1"
 				},
 				{
-					"key": "document1-key2",
-					"value": "value-2"
+					"value": "value-2",
+					"key": "document1-key2"
 				},
 				{
-					"key": "document1-key3",
-					"value": "value-3"
+					"value": "value-3",
+					"key": "document1-key3"
 				},
 				{
-					"key": "document1-key4",
-					"value": "value-4"
-				}
-			],
-			"documentData": [
-				{
-					"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
-					"fileName": "file3.jpg",
-					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"value": "value-4",
+					"key": "document1-key4"
 				}
 			]
 		},
 		{
-			"id": "435bb041-2b02-4bb3-b3e7-3782a13f47d5",
-			"municipalityId":"2281",
+			"municipalityId": "2281",
+			"createdBy": "User5",
 			"registrationNumber": "2024-2281-999",
-			"revision": 2,
+			"created": "2023-06-28T12:01:00+02:00",
 			"confidentiality": {
-				"confidential": true,
-				"legalCitation": "Law §7.2"
+				"legalCitation": "Law §7.2",
+				"confidential": true
 			},
 			"description": "Document 2",
-			"created": "2023-06-28T12:01:00+02:00",
-			"createdBy": "User5",
 			"archive": true,
+			"id": "435bb041-2b02-4bb3-b3e7-3782a13f47d5",
+			"documentData": [{
+				"fileName": "file5.jpg",
+				"fileSizeInBytes": 5068,
+				"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
+				"mimeType": "image/jpeg"
+			}],
+			"revision": 2,
 			"metadataList": [
 				{
-					"key": "document2-key1",
-					"value": "value-1"
+					"value": "value-1",
+					"key": "document2-key1"
 				},
 				{
-					"key": "document2-key2",
-					"value": "value-2"
-				}
-			],
-			"documentData": [
-				{
-					"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
-					"fileName": "file5.jpg",
-					"mimeType": "image/jpeg",
-					"fileSizeInBytes": 5068
+					"value": "value-2",
+					"key": "document2-key2"
 				}
 			]
 		}
 	],
 	"_meta": {
-		"page": 0,
+		"totalRecords": 2,
 		"limit": 20,
 		"count": 2,
-		"totalRecords": 2,
-		"totalPages": 1
+		"totalPages": 1,
+		"page": 0
 	}
 }

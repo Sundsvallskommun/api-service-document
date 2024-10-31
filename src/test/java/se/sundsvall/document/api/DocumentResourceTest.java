@@ -215,7 +215,9 @@ class DocumentResourceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
+	@ValueSource(booleans = {
+		true, false
+	})
 	void searchWithIncludeConfidential(boolean includeConfidential) {
 
 		// Arrange
@@ -248,7 +250,9 @@ class DocumentResourceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
+	@ValueSource(booleans = {
+		true, false
+	})
 	void searchWithOnlyLatestRevision(boolean onlyLatestRevision) {
 
 		// Arrange

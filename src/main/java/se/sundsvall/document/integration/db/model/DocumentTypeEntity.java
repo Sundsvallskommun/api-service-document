@@ -20,7 +20,9 @@ import se.sundsvall.document.integration.db.model.listener.DocumentTypeEntityLis
 
 @Entity
 @Table(name = "document_type", uniqueConstraints = {
-	@UniqueConstraint(name = "uq_municipality_id_and_type", columnNames = { "municipality_id", "`type`" })
+	@UniqueConstraint(name = "uq_municipality_id_and_type", columnNames = {
+		"municipality_id", "`type`"
+	})
 }, indexes = {
 	@Index(name = "ix_municipality_id_type", columnList = "municipality_id, `type`"),
 	@Index(name = "ix_municipality_id", columnList = "municipality_id")

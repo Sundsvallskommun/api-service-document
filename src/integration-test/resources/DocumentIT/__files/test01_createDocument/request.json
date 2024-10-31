@@ -3,11 +3,9 @@
 	"createdBy": "username123",
 	"description": "This is a document",
 	"archive": true,
-	"metadataList": [
-		{
-			"key": "Some key",
-			"value": "Some value"
-		}
-	],
-	"type": "HOLIDAY_EXCHANGE"
+	"type": "HOLIDAY_EXCHANGE",
+	"metadataList": [{
+		"value": "Some value",
+		"key": "Some key"
+	}]
 }

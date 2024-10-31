@@ -22,7 +22,9 @@ import jakarta.persistence.UniqueConstraint;
 @Table(
 	name = "document_data",
 	uniqueConstraints = {
-		@UniqueConstraint(name = "uq_document_data_binary_id", columnNames = { "document_data_binary_id" })
+		@UniqueConstraint(name = "uq_document_data_binary_id", columnNames = {
+			"document_data_binary_id"
+		})
 	})
 public class DocumentDataEntity implements Serializable {
 

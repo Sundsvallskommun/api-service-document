@@ -45,7 +45,9 @@ import se.sundsvall.document.service.DocumentTypeService;
 @Validated
 @RequestMapping(ADMIN_DOCUMENT_TYPES_BASE_PATH)
 @Tag(name = "Administration", description = "Administration of document types")
-@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
+	Problem.class, ConstraintViolationProblem.class
+})))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class DocumentTypeAdministrationResource {
 
@@ -55,7 +57,11 @@ public class DocumentTypeAdministrationResource {
 		this.service = service;
 	}
 
-	@PostMapping(consumes = { APPLICATION_JSON_VALUE }, produces = { ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@PostMapping(consumes = {
+		APPLICATION_JSON_VALUE
+	}, produces = {
+		ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(summary = "Create new document type", description = "Creates a new document type in the provided municipality.")
 	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
 	ResponseEntity<Void> createDocumentType(
@@ -65,11 +71,13 @@ public class DocumentTypeAdministrationResource {
 		final var result = service.create(municipalityId, body);
 		return created(fromPath(ADMIN_DOCUMENT_TYPES_BASE_PATH + "/{type}").buildAndExpand(municipalityId, result.getType())
 			.toUri())
-				.header(CONTENT_TYPE, ALL_VALUE)
-				.build();
+			.header(CONTENT_TYPE, ALL_VALUE)
+			.build();
 	}
 
-	@GetMapping(produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@GetMapping(produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(summary = "Get document types", description = "Get all existing document types defined in provided municipality.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	ResponseEntity<List<DocumentType>> readDocumentTypes(
@@ -78,7 +86,9 @@ public class DocumentTypeAdministrationResource {
 		return ok(service.read(municipalityId));
 	}
 
-	@GetMapping(path = "/{type}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@GetMapping(path = "/{type}", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(summary = "Get document type", description = "Get document type matching provided type and municipality.")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	ResponseEntity<DocumentType> readDocumentType(
@@ -88,7 +98,9 @@ public class DocumentTypeAdministrationResource {
 		return ok(service.read(municipalityId, type));
 	}
 
-	@PatchMapping(path = "/{type}", consumes = APPLICATION_JSON_VALUE, produces = { APPLICATION_PROBLEM_JSON_VALUE })
+	@PatchMapping(path = "/{type}", consumes = APPLICATION_JSON_VALUE, produces = {
+		APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(summary = "Update document type", description = "Updates an existing document type in the provided municipality.")
 	@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
@@ -103,7 +115,9 @@ public class DocumentTypeAdministrationResource {
 			.build();
 	}
 
-	@DeleteMapping(path = "/{type}", produces = { APPLICATION_PROBLEM_JSON_VALUE })
+	@DeleteMapping(path = "/{type}", produces = {
+		APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(summary = "Delete document type", description = """
 		Deletes an existing document type matching provided type and municipality, but only if the type is not used by any existing document. If type is used then an exception will be returned.
 		""")

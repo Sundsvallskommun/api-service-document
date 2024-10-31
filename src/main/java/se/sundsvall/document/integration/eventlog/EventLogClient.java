@@ -20,8 +20,8 @@ public interface EventLogClient {
 	 * Create a log event under logKey.
 	 *
 	 * @param municipalityId Municipality ID of the event
-	 * @param logKey containing UUID to create event for
-	 * @param event  the event to create
+	 * @param logKey         containing UUID to create event for
+	 * @param event          the event to create
 	 */
 	@PostMapping(path = "/{municipalityId}/{logKey}", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
 	ResponseEntity<Void> createEvent(@PathVariable("municipalityId") String municipalityId, @PathVariable("logKey") String logKey, @RequestBody Event event);

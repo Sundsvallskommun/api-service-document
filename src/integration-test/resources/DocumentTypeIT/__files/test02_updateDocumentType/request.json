@@ -1,5 +1,5 @@
 {
-	"type": "CONFIDENTIALITY_AGREEMENT",
+	"updatedBy": "abc123",
 	"displayName": "Sekretessavtal",
-	"updatedBy": "abc123"
+	"type": "CONFIDENTIALITY_AGREEMENT"
 }

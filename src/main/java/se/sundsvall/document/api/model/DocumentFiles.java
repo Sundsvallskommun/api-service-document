@@ -35,8 +35,10 @@ public class DocumentFiles {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		DocumentFiles that = (DocumentFiles) o;
 		return Objects.equals(files, that.files);
 	}
