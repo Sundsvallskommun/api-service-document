@@ -21,6 +21,7 @@
 			"mimeType": "image/png"
 		}
 	],
+	"type": "EMPLOYEE_CERTIFICATE",
 	"revision": 4,
 	"metadataList": [
 		{

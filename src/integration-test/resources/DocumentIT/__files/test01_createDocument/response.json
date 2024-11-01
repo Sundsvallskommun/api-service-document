@@ -13,6 +13,7 @@
 		"id": "${json-unit.any-string}",
 		"mimeType": "image/png"
 	}],
+	"type": "HOLIDAY_EXCHANGE",
 	"revision": 0,
 	"metadataList": [{
 		"value": "Some value",

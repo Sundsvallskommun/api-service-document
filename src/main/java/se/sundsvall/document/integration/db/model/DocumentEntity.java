@@ -22,25 +22,23 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import se.sundsvall.document.integration.db.model.listener.DocumentEntityListener;
 
 @Entity
-@Table(
-	name = "document",
-	uniqueConstraints = {
-		@UniqueConstraint(name = "uq_revision_and_registration_number", columnNames = {
-			"revision", "registration_number"
-		})
-	},
-	indexes = {
-		@Index(name = "ix_registration_number", columnList = "registration_number"),
-		@Index(name = "ix_created_by", columnList = "created_by"),
-		@Index(name = "ix_municipality_id", columnList = "municipality_id"),
-		@Index(name = "ix_confidential", columnList = "confidential")
+@Table(name = "document", uniqueConstraints = {
+	@UniqueConstraint(name = "uq_revision_and_registration_number", columnNames = {
+		"revision", "registration_number"
 	})
+}, indexes = {
+	@Index(name = "ix_registration_number", columnList = "registration_number"),
+	@Index(name = "ix_created_by", columnList = "created_by"),
+	@Index(name = "ix_municipality_id", columnList = "municipality_id"),
+	@Index(name = "ix_confidential", columnList = "confidential"),
+})
 @EntityListeners(DocumentEntityListener.class)
 public class DocumentEntity implements Serializable {
 
@@ -59,6 +57,10 @@ public class DocumentEntity implements Serializable {
 
 	@Column(name = "registration_number", nullable = false, updatable = false)
 	private String registrationNumber;
+
+	@ManyToOne(cascade = ALL, optional = false, fetch = EAGER)
+	@JoinColumn(name = "document_type_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_document_document_type"), nullable = false)
+	private DocumentTypeEntity type;
 
 	@Column(name = "description", nullable = false, columnDefinition = "varchar(8192)")
 	private String description;
@@ -81,14 +83,9 @@ public class DocumentEntity implements Serializable {
 	private List<DocumentDataEntity> documentData;
 
 	@ElementCollection(fetch = EAGER)
-	@CollectionTable(name = "document_metadata",
-		indexes = {
-			@Index(name = "ix_key", columnList = "key")
-		},
-		joinColumns = @JoinColumn(
-			name = "document_id",
-			referencedColumnName = "id",
-			foreignKey = @ForeignKey(name = "fk_document_metadata_document")))
+	@CollectionTable(name = "document_metadata", indexes = {
+		@Index(name = "ix_key", columnList = "key")
+	}, joinColumns = @JoinColumn(name = "document_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_document_metadata_document")))
 	private List<DocumentMetadataEmbeddable> metadata;
 
 	public static DocumentEntity create() {
@@ -144,6 +141,19 @@ public class DocumentEntity implements Serializable {
 
 	public DocumentEntity withRegistrationNumber(String registrationNumber) {
 		this.registrationNumber = registrationNumber;
+		return this;
+	}
+
+	public DocumentTypeEntity getType() {
+		return type;
+	}
+
+	public void setType(DocumentTypeEntity type) {
+		this.type = type;
+	}
+
+	public DocumentEntity withType(DocumentTypeEntity type) {
+		this.type = type;
 		return this;
 	}
 
@@ -240,7 +250,7 @@ public class DocumentEntity implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(archive, confidentiality, created, createdBy, description, documentData, id, metadata, municipalityId, registrationNumber, revision);
+		return Objects.hash(archive, confidentiality, created, createdBy, description, documentData, id, metadata, municipalityId, registrationNumber, revision, type);
 	}
 
 	@Override
@@ -248,22 +258,20 @@ public class DocumentEntity implements Serializable {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof DocumentEntity)) {
+		if (!(obj instanceof final DocumentEntity other)) {
 			return false;
 		}
-		DocumentEntity other = (DocumentEntity) obj;
 		return archive == other.archive && Objects.equals(confidentiality, other.confidentiality) && Objects.equals(created, other.created) && Objects.equals(createdBy, other.createdBy) && Objects.equals(description, other.description) && Objects
 			.equals(documentData, other.documentData) && Objects.equals(id, other.id) && Objects.equals(metadata, other.metadata) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(registrationNumber, other.registrationNumber)
-			&& revision == other.revision;
+			&& revision == other.revision && Objects.equals(type, other.type);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", description=").append(description)
-			.append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentData=").append(documentData).append(", metadata=")
-			.append(metadata).append("]");
+		final var builder = new StringBuilder();
+		builder.append("DocumentEntity [id=").append(id).append(", revision=").append(revision).append(", municipalityId=").append(municipalityId).append(", registrationNumber=").append(registrationNumber).append(", type=").append(type).append(
+			", description=").append(description).append(", confidentiality=").append(confidentiality).append(", archive=").append(archive).append(", createdBy=").append(createdBy).append(", created=").append(created).append(", documentData=")
+			.append(documentData).append(", metadata=").append(metadata).append("]");
 		return builder.toString();
 	}
-
 }

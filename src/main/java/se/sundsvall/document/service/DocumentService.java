@@ -1,6 +1,7 @@
 package se.sundsvall.document.service;
 
 import static generated.se.sundsvall.eventlog.EventType.UPDATE;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -50,6 +51,7 @@ import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.integration.db.DatabaseHelper;
 import se.sundsvall.document.integration.db.DocumentRepository;
+import se.sundsvall.document.integration.db.DocumentTypeRepository;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.eventlog.EventLogClient;
@@ -60,10 +62,12 @@ import se.sundsvall.document.service.mapper.DocumentMapper;
 @Transactional
 public class DocumentService {
 
+	private static final String ERROR_DOCUMENT_TYPE_NOT_FOUND = "Document type with identifier %s was not found within municipality with id %s";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentService.class);
 
 	private final DatabaseHelper databaseHelper;
 	private final DocumentRepository documentRepository;
+	private final DocumentTypeRepository documentTypeRepository;
 	private final RegistrationNumberService registrationNumberService;
 	private final EventLogClient eventLogClient;
 	private final EventlogProperties eventLogProperties;
@@ -71,12 +75,14 @@ public class DocumentService {
 	public DocumentService(
 		DatabaseHelper databaseHelper,
 		DocumentRepository documentRepository,
+		DocumentTypeRepository documentTypeRepository,
 		RegistrationNumberService registrationNumberService,
 		EventLogClient eventLogClient,
 		EventlogProperties eventLogProperties) {
 
 		this.databaseHelper = databaseHelper;
 		this.documentRepository = documentRepository;
+		this.documentTypeRepository = documentTypeRepository;
 		this.registrationNumberService = registrationNumberService;
 		this.eventLogClient = eventLogClient;
 		this.eventLogProperties = eventLogProperties;
@@ -86,10 +92,13 @@ public class DocumentService {
 
 		final var documentDataEntities = toDocumentDataEntities(documentFiles, databaseHelper);
 		final var registrationNumber = registrationNumberService.generateRegistrationNumber(municipalityId);
+		final var documentTypeEntity = documentTypeRepository.findByMunicipalityIdAndType(municipalityId, documentCreateRequest.getType())
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_TYPE_NOT_FOUND.formatted(documentCreateRequest.getType(), municipalityId)));
 
 		final var documentEntity = toDocumentEntity(documentCreateRequest, municipalityId)
 			.withRegistrationNumber(registrationNumber)
-			.withDocumentData(documentDataEntities);
+			.withDocumentData(documentDataEntities)
+			.withType(documentTypeEntity);
 
 		return toDocument(documentRepository.save(documentEntity));
 	}
@@ -203,6 +212,12 @@ public class DocumentService {
 
 		// Do not update existing entity, create a new revision instead.
 		final var newDocumentEntity = toDocumentEntity(documentUpdateRequest, existingDocumentEntity);
+		if (nonNull(documentUpdateRequest.getType())) {
+			final var documentTypeEntity = documentTypeRepository.findByMunicipalityIdAndType(municipalityId, documentUpdateRequest.getType())
+				.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_TYPE_NOT_FOUND.formatted(documentUpdateRequest.getType(), municipalityId)));
+
+			newDocumentEntity.setType(documentTypeEntity);
+		}
 
 		return toDocument(documentRepository.save(newDocumentEntity));
 	}

@@ -66,11 +66,13 @@ import se.sundsvall.document.api.model.DocumentMetadata;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.integration.db.DatabaseHelper;
 import se.sundsvall.document.integration.db.DocumentRepository;
+import se.sundsvall.document.integration.db.DocumentTypeRepository;
 import se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable;
 import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
+import se.sundsvall.document.integration.db.model.DocumentTypeEntity;
 import se.sundsvall.document.integration.eventlog.EventLogClient;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
 
@@ -90,6 +92,8 @@ class DocumentServiceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String REGISTRATION_NUMBER = "2023-2281-4";
 	private static final String DOCUMENT_DATA_ID = randomUUID().toString();
+	private static final String DOCUMENT_TYPE = "documentType";
+	private static final String DOCUMENT_TYPE_DISPLAYNAME = "documentTypeDisplayname";
 	private static final int REVISION = 1;
 
 	@Mock
@@ -100,6 +104,9 @@ class DocumentServiceTest {
 
 	@Mock
 	private DocumentRepository documentRepositoryMock;
+
+	@Mock
+	private DocumentTypeRepository documentTypeRepositoryMock;
 
 	@Mock
 	private RegistrationNumberService registrationNumberServiceMock;
@@ -134,14 +141,16 @@ class DocumentServiceTest {
 		// Arrange
 		final var documentCreateRequest = DocumentCreateRequest.create()
 			.withCreatedBy(CREATED_BY)
-			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
+			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+			.withType(DOCUMENT_TYPE);
 
 		final var file = new File("src/test/resources/files/image.png");
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "text/plain", toByteArray(new FileInputStream(file)));
 		final var documentFiles = DocumentFiles.create().withFiles(List.of(multipartFile));
 
+		when(documentTypeRepositoryMock.findByMunicipalityIdAndType(MUNICIPALITY_ID, DOCUMENT_TYPE)).thenReturn(Optional.of(DocumentTypeEntity.create().withType(DOCUMENT_TYPE)));
 		when(registrationNumberServiceMock.generateRegistrationNumber(MUNICIPALITY_ID)).thenReturn(REGISTRATION_NUMBER);
-		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
+		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 		// Act
 		final var result = documentService.create(documentCreateRequest, documentFiles, MUNICIPALITY_ID);
@@ -149,6 +158,7 @@ class DocumentServiceTest {
 		// Assert
 		assertThat(result).isNotNull();
 
+		verify(documentTypeRepositoryMock).findByMunicipalityIdAndType(MUNICIPALITY_ID, DOCUMENT_TYPE);
 		verify(registrationNumberServiceMock).generateRegistrationNumber(MUNICIPALITY_ID);
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
@@ -160,6 +170,9 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(MUNICIPALITY_ID);
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(REGISTRATION_NUMBER);
+		assertThat(capturedDocumentEntity.getType()).isNotNull().satisfies(type -> {
+			assertThat(type.getType()).isEqualTo(DOCUMENT_TYPE);
+		});
 	}
 
 	@Test
@@ -168,7 +181,8 @@ class DocumentServiceTest {
 		// Arrange
 		final var documentCreateRequest = DocumentCreateRequest.create()
 			.withCreatedBy(CREATED_BY)
-			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
+			.withMetadataList(List.of(DocumentMetadata.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
+			.withType(DOCUMENT_TYPE);
 
 		final var file1 = new File("src/test/resources/files/image.png");
 		final var file2 = new File("src/test/resources/files/readme.txt");
@@ -176,8 +190,9 @@ class DocumentServiceTest {
 		final var multipartFile2 = (MultipartFile) new MockMultipartFile("file2", file2.getName(), "text/plain", toByteArray(new FileInputStream(file2)));
 		final var documentFiles = DocumentFiles.create().withFiles(List.of(multipartFile1, multipartFile2));
 
+		when(documentTypeRepositoryMock.findByMunicipalityIdAndType(MUNICIPALITY_ID, DOCUMENT_TYPE)).thenReturn(Optional.of(DocumentTypeEntity.create().withType(DOCUMENT_TYPE)));
 		when(registrationNumberServiceMock.generateRegistrationNumber(MUNICIPALITY_ID)).thenReturn(REGISTRATION_NUMBER);
-		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
+		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 		// Act
 		final var result = documentService.create(documentCreateRequest, documentFiles, MUNICIPALITY_ID);
@@ -185,6 +200,7 @@ class DocumentServiceTest {
 		// Assert
 		assertThat(result).isNotNull();
 
+		verify(documentTypeRepositoryMock).findByMunicipalityIdAndType(MUNICIPALITY_ID, DOCUMENT_TYPE);
 		verify(registrationNumberServiceMock).generateRegistrationNumber(MUNICIPALITY_ID);
 		verify(databaseHelperMock).convertToBlob(multipartFile1);
 		verify(databaseHelperMock).convertToBlob(multipartFile2);
@@ -203,6 +219,9 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)));
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(MUNICIPALITY_ID);
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(REGISTRATION_NUMBER);
+		assertThat(capturedDocumentEntity.getType()).isNotNull().satisfies(type -> {
+			assertThat(type.getType()).isEqualTo(DOCUMENT_TYPE);
+		});
 	}
 
 	@Test
@@ -598,10 +617,12 @@ class DocumentServiceTest {
 		final var documentUpdateRequest = DocumentUpdateRequest.create()
 			.withCreatedBy("changedUser")
 			.withDescription("changedDescription")
+			.withType("changedDocumentType")
 			.withMetadataList(List.of(DocumentMetadata.create().withKey("changedKey").withValue("changedValue")));
 
+		when(documentTypeRepositoryMock.findByMunicipalityIdAndType(MUNICIPALITY_ID, "changedDocumentType")).thenReturn(Optional.of(DocumentTypeEntity.create().withType("changedDocumentType")));
 		when(documentRepositoryMock.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(MUNICIPALITY_ID, REGISTRATION_NUMBER, PUBLIC.getValue())).thenReturn(Optional.of(existingEntity));
-		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
+		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 		// Act
 		final var result = documentService.update(REGISTRATION_NUMBER, includeConfidential, documentUpdateRequest, MUNICIPALITY_ID);
@@ -609,6 +630,7 @@ class DocumentServiceTest {
 		// Assert
 		assertThat(result).isNotNull();
 
+		verify(documentTypeRepositoryMock).findByMunicipalityIdAndType(MUNICIPALITY_ID, "changedDocumentType");
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
 		verifyNoInteractions(registrationNumberServiceMock, eventLogClientMock);
 
@@ -622,6 +644,9 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(List.of(DocumentMetadataEmbeddable.create().withKey("changedKey").withValue("changedValue")));
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
+		assertThat(capturedDocumentEntity.getType()).isNotNull().satisfies(type -> {
+			assertThat(type.getType()).isEqualTo("changedDocumentType");
+		});
 	}
 
 	@Test
@@ -670,7 +695,7 @@ class DocumentServiceTest {
 		verify(documentRepositoryMock).findByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialIn(MUNICIPALITY_ID, REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verify(documentRepositoryMock).saveAll(documentEntitiesCaptor.capture());
 		verify(eventLogClientMock).createEvent(eq(MUNICIPALITY_ID), eq(eventLogKey), eventCaptor.capture());
-		verifyNoInteractions(registrationNumberServiceMock);
+		verifyNoInteractions(registrationNumberServiceMock, documentTypeRepositoryMock);
 
 		// Assert captured DocumentEntity-objects.
 		final var capturedDocumentEntities = documentEntitiesCaptor.getValue();
@@ -707,7 +732,7 @@ class DocumentServiceTest {
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", file.getName(), "image/png", toByteArray(new FileInputStream(file)));
 
 		when(documentRepositoryMock.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(MUNICIPALITY_ID, REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(Optional.of(existingEntity));
-		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
+		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 		// Act
 		final var result = documentService.addOrReplaceFile(REGISTRATION_NUMBER, documentDataCreateRequest, multipartFile, MUNICIPALITY_ID);
@@ -717,7 +742,7 @@ class DocumentServiceTest {
 
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
-		verifyNoInteractions(registrationNumberServiceMock, eventLogClientMock);
+		verifyNoInteractions(registrationNumberServiceMock, eventLogClientMock, documentTypeRepositoryMock);
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
@@ -733,6 +758,9 @@ class DocumentServiceTest {
 		assertThat(capturedDocumentEntity.getMetadata()).isEqualTo(existingEntity.getMetadata());
 		assertThat(capturedDocumentEntity.getMunicipalityId()).isEqualTo(existingEntity.getMunicipalityId());
 		assertThat(capturedDocumentEntity.getRegistrationNumber()).isEqualTo(existingEntity.getRegistrationNumber());
+		assertThat(capturedDocumentEntity.getType()).isNotNull().satisfies(type -> {
+			assertThat(type.getType()).isEqualTo(DOCUMENT_TYPE);
+		});
 	}
 
 	@Test
@@ -746,7 +774,7 @@ class DocumentServiceTest {
 		final var multipartFile = (MultipartFile) new MockMultipartFile("file", FILE_NAME, "image/png", toByteArray(new FileInputStream(file))); // Same name as in "existingEntity"
 
 		when(documentRepositoryMock.findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(MUNICIPALITY_ID, REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue())).thenReturn(Optional.of(existingEntity));
-		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenReturn(DocumentEntity.create());
+		when(documentRepositoryMock.save(any(DocumentEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 		// Act
 		final var result = documentService.addOrReplaceFile(REGISTRATION_NUMBER, documentDataCreateRequest, multipartFile, MUNICIPALITY_ID);
@@ -756,7 +784,7 @@ class DocumentServiceTest {
 
 		verify(databaseHelperMock).convertToBlob(multipartFile);
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
-		verifyNoInteractions(registrationNumberServiceMock, eventLogClientMock);
+		verifyNoInteractions(registrationNumberServiceMock, eventLogClientMock, documentTypeRepositoryMock);
 
 		final var capturedDocumentEntity = documentEntityCaptor.getValue();
 		assertThat(capturedDocumentEntity).isNotNull();
@@ -810,7 +838,7 @@ class DocumentServiceTest {
 		// Assert
 		verify(documentRepositoryMock).findTopByMunicipalityIdAndRegistrationNumberAndConfidentialityConfidentialInOrderByRevisionDesc(MUNICIPALITY_ID, REGISTRATION_NUMBER, CONFIDENTIAL_AND_PUBLIC.getValue());
 		verify(documentRepositoryMock).save(documentEntityCaptor.capture());
-		verifyNoInteractions(eventLogClientMock);
+		verifyNoInteractions(eventLogClientMock, documentTypeRepositoryMock);
 
 		final var capturedEntity = documentEntityCaptor.getValue();
 		assertThat(capturedEntity).isNotNull();
@@ -897,11 +925,19 @@ class DocumentServiceTest {
 				.withMetadata(List.of(DocumentMetadataEmbeddable.create().withKey(METADATA_KEY).withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)
 				.withRegistrationNumber(REGISTRATION_NUMBER)
-				.withRevision(REVISION);
+				.withRevision(REVISION)
+				.withType(createDocumentTypeEntity());
 		} catch (final Exception e) {
 			fail("Entity could not be created!");
 		}
 		return null;
+	}
+
+	private DocumentTypeEntity createDocumentTypeEntity() {
+		return DocumentTypeEntity.create()
+			.withMunicipalityId(MUNICIPALITY_ID)
+			.withType(DOCUMENT_TYPE)
+			.withDisplayName(DOCUMENT_TYPE_DISPLAYNAME);
 	}
 
 	private DocumentDataEntity createDocumentDataEntity() {

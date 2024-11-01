@@ -37,7 +37,8 @@ import se.sundsvall.document.Application;
 })
 class DocumentIT extends AbstractAppTest {
 
-	private static final String PATH = "/2281/documents";
+	private static final String PATH_SUNDSVALL = "/2281/documents";
+	private static final String PATH_ANGE = "/2282/documents";
 	private static final String REQUEST_FILE = "request.json";
 	private static final String RESPONSE_FILE = "response.json";
 	private static final String RESPONSE_FILE_BINARY = "image.jpg";
@@ -51,7 +52,7 @@ class DocumentIT extends AbstractAppTest {
 		multipartBodyBuilder.part("document", fromTestFile(REQUEST_FILE));
 
 		final var location = setupCall()
-			.withServicePath(PATH)
+			.withServicePath(PATH_SUNDSVALL)
 			.withHttpMethod(POST)
 			.withContentType(MULTIPART_FORM_DATA)
 			.withRequest(multipartBodyBuilder.build())
@@ -60,7 +61,7 @@ class DocumentIT extends AbstractAppTest {
 			.getResponseHeaders().get("Location").getFirst();
 
 		setupCall()
-			.withServicePath(location.substring(location.indexOf(PATH)))
+			.withServicePath(location.substring(location.indexOf(PATH_SUNDSVALL)))
 			.withHttpMethod(GET)
 			.withHeader(ACCEPT, APPLICATION_JSON_VALUE)
 			.withExpectedResponseStatus(OK)
@@ -72,7 +73,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test02_updateDocument() {
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123")
+			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123")
 			.withHttpMethod(PATCH)
 			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
@@ -83,7 +84,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test03_readDocument() {
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123")
+			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -93,7 +94,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test04_readDocumentConfidentialFail() {
 		setupCall()
-			.withServicePath(PATH + "/2024-2281-999")
+			.withServicePath(PATH_SUNDSVALL + "/2024-2281-999")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(NOT_FOUND)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -103,7 +104,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test05_readDocumentConfidentialSuccess() {
 		setupCall()
-			.withServicePath(PATH + "/2024-2281-999?includeConfidential=true")
+			.withServicePath(PATH_SUNDSVALL + "/2024-2281-999?includeConfidential=true")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -113,7 +114,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test06_readDocumentFile() throws IOException {
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123/files/4f0a04af-942d-4ad2-b2d9-151887fc995c")
+			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123/files/4f0a04af-942d-4ad2-b2d9-151887fc995c")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedBinaryResponse(RESPONSE_FILE_BINARY)
@@ -123,7 +124,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test07_readDocumentFileConfidentialFail() {
 		setupCall()
-			.withServicePath(PATH + "/2024-2281-999/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e")
+			.withServicePath(PATH_SUNDSVALL + "/2024-2281-999/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(NOT_FOUND)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -133,7 +134,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test08_readDocumentFileConfidentialSuccess() throws IOException {
 		setupCall()
-			.withServicePath(PATH + "/2024-2281-999/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e?includeConfidential=true")
+			.withServicePath(PATH_SUNDSVALL + "/2024-2281-999/files/bd239ee1-27b8-43e7-bb0d-e4ba09b7220e?includeConfidential=true")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedBinaryResponse(RESPONSE_FILE_BINARY)
@@ -143,7 +144,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test09_search() {
 		setupCall()
-			.withServicePath(PATH + "?query=value-3")
+			.withServicePath(PATH_SUNDSVALL + "?query=value-3")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -153,7 +154,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test10_searchConfidential() {
 		setupCall()
-			.withServicePath(PATH + "?query=value-3&includeConfidential=true")
+			.withServicePath(PATH_SUNDSVALL + "?query=value-3&includeConfidential=true")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -163,7 +164,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test11_searchWithWildCardAndText() {
 		setupCall()
-			.withServicePath(PATH + "?query=*key2")
+			.withServicePath(PATH_SUNDSVALL + "?query=*key2")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -173,7 +174,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test12_searchWithWildCardAndTextConfidential() {
 		setupCall()
-			.withServicePath(PATH + "?query=*key2&includeConfidential=true")
+			.withServicePath(PATH_SUNDSVALL + "?query=*key2&includeConfidential=true")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -183,7 +184,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test13_searchWithWildCardOnly() {
 		setupCall()
-			.withServicePath(PATH + "?query=*&sort=revision,desc")
+			.withServicePath(PATH_SUNDSVALL + "?query=*&sort=revision,desc")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -193,7 +194,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test14_searchInLatestRevisionWithWildCardOnly() {
 		setupCall()
-			.withServicePath(PATH + "?query=*&onlyLatestRevision=true")
+			.withServicePath(PATH_SUNDSVALL + "?query=*&onlyLatestRevision=true")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -203,7 +204,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test15_searchWithWildCardOnlyConfidential() {
 		setupCall()
-			.withServicePath(PATH + "?query=*&includeConfidential=true")
+			.withServicePath(PATH_SUNDSVALL + "?query=*&includeConfidential=true")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -213,7 +214,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test16_searchInLatestRevisionWithWildCardOnlyConfidential() {
 		setupCall()
-			.withServicePath(PATH + "?query=*&includeConfidential=true&onlyLatestRevision=true")
+			.withServicePath(PATH_SUNDSVALL + "?query=*&includeConfidential=true&onlyLatestRevision=true")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -223,7 +224,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test17_deleteFile() {
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123/files/4f0a04af-942d-4ad2-b2d9-151887fc995c")
+			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123/files/4f0a04af-942d-4ad2-b2d9-151887fc995c")
 			.withHttpMethod(DELETE)
 			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse();
@@ -232,7 +233,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test18_deleteFileNotFound() {
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123/files/6619a286-a6cc-4001-9f55-945734805e7d") // ID doesn't exist
+			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123/files/6619a286-a6cc-4001-9f55-945734805e7d") // ID doesn't exist
 			.withHttpMethod(DELETE)
 			.withExpectedResponseStatus(NOT_FOUND)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -247,7 +248,7 @@ class DocumentIT extends AbstractAppTest {
 		multipartBodyBuilder.part("document", fromTestFile(REQUEST_FILE));
 
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123/files")
+			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123/files")
 			.withHttpMethod(PUT)
 			.withContentType(MULTIPART_FORM_DATA)
 			.withRequest(multipartBodyBuilder.build())
@@ -255,7 +256,7 @@ class DocumentIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse();
 
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123")
+			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -265,11 +266,22 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test20_updateConfidentialityFlag() {
 		setupCall()
-			.withServicePath(PATH + "/2023-2281-123/confidentiality")
+			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123/confidentiality")
 			.withHttpMethod(PATCH)
 			.withContentType(APPLICATION_JSON)
 			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(NO_CONTENT)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test21_updateDocumentType() {
+		setupCall()
+			.withServicePath(PATH_ANGE + "/2024-2282-666?includeConfidential=true")
+			.withHttpMethod(PATCH)
+			.withRequest(REQUEST_FILE)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}
 }
