@@ -44,6 +44,7 @@ import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
+import se.sundsvall.document.integration.db.model.DocumentTypeEntity;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentMapperTest {
@@ -66,6 +67,13 @@ class DocumentMapperTest {
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String REGISTRATION_NUMBER = "reistrationNumber";
 	private static final int REVISION = 666;
+	private static final String DOCUMENT_TYPE = "documentType";
+	private static final OffsetDateTime DOCUMENT_TYPE_CREATED = now(systemDefault()).minusDays(7);
+	private static final String DOCUMENT_TYPE_CREATED_BY = "documentTypeCreatedBy";
+	private static final String DOCUMENT_TYPE_DISPLAY_NAME = "documentTypeDisplayName";
+	private static final String DOCUMENT_TYPE_ID = "documentTypeId";
+	private static final OffsetDateTime DOCUMENT_TYPE_UPDATED = now(systemDefault()).minusDays(6);
+	private static final String DOCUMENT_TYPE_UPDATED_BY = "documentTypeUpdatedBy";
 
 	@Mock
 	private DatabaseHelper databaseHelperMock;
@@ -161,7 +169,16 @@ class DocumentMapperTest {
 				.withValue(METADATA_VALUE)))
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withRegistrationNumber(REGISTRATION_NUMBER)
-			.withRevision(REVISION);
+			.withRevision(REVISION)
+			.withType(DocumentTypeEntity.create()
+				.withCreated(DOCUMENT_TYPE_CREATED)
+				.withCreatedBy(DOCUMENT_TYPE_CREATED_BY)
+				.withDisplayName(DOCUMENT_TYPE_DISPLAY_NAME)
+				.withId(DOCUMENT_TYPE_ID)
+				.withLastUpdated(DOCUMENT_TYPE_UPDATED)
+				.withLastUpdatedBy(DOCUMENT_TYPE_UPDATED_BY)
+				.withMunicipalityId(MUNICIPALITY_ID)
+				.withType(DOCUMENT_TYPE));
 
 		// Act
 		final var result = DocumentMapper.toDocumentEntity(documentUpdateRequest, existingDocumentEntity);
@@ -194,7 +211,16 @@ class DocumentMapperTest {
 					.withValue("Updated-value")))
 				.withMunicipalityId(MUNICIPALITY_ID)
 				.withRegistrationNumber(REGISTRATION_NUMBER)
-				.withRevision(REVISION + 1));
+				.withRevision(REVISION + 1)
+				.withType(DocumentTypeEntity.create()
+					.withCreated(DOCUMENT_TYPE_CREATED)
+					.withCreatedBy(DOCUMENT_TYPE_CREATED_BY)
+					.withDisplayName(DOCUMENT_TYPE_DISPLAY_NAME)
+					.withId(DOCUMENT_TYPE_ID)
+					.withLastUpdated(DOCUMENT_TYPE_UPDATED)
+					.withLastUpdatedBy(DOCUMENT_TYPE_UPDATED_BY)
+					.withMunicipalityId(MUNICIPALITY_ID)
+					.withType(DOCUMENT_TYPE)));
 	}
 
 	@Test
@@ -328,7 +354,9 @@ class DocumentMapperTest {
 				.withValue(METADATA_VALUE)))
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withRegistrationNumber(REGISTRATION_NUMBER)
-			.withRevision(REVISION);
+			.withRevision(REVISION)
+			.withType(DocumentTypeEntity.create()
+				.withType(DOCUMENT_TYPE));
 
 		// Act
 		final var result = DocumentMapper.toDocumentList(List.of(documentEntity));
@@ -361,7 +389,8 @@ class DocumentMapperTest {
 					.withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)
 				.withRegistrationNumber(REGISTRATION_NUMBER)
-				.withRevision(REVISION));
+				.withRevision(REVISION)
+				.withType(DOCUMENT_TYPE));
 	}
 
 	@Test
@@ -398,7 +427,9 @@ class DocumentMapperTest {
 				.withValue(METADATA_VALUE)))
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withRegistrationNumber(REGISTRATION_NUMBER)
-			.withRevision(REVISION);
+			.withRevision(REVISION)
+			.withType(DocumentTypeEntity.create()
+				.withType(DOCUMENT_TYPE));
 
 		// Act
 		final var result = DocumentMapper.toDocument(documentEntity);
@@ -431,7 +462,8 @@ class DocumentMapperTest {
 					.withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)
 				.withRegistrationNumber(REGISTRATION_NUMBER)
-				.withRevision(REVISION));
+				.withRevision(REVISION)
+				.withType(DOCUMENT_TYPE));
 	}
 
 	@Test
@@ -512,7 +544,16 @@ class DocumentMapperTest {
 				.withValue(METADATA_VALUE)))
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withRegistrationNumber(REGISTRATION_NUMBER)
-			.withRevision(REVISION);
+			.withRevision(REVISION)
+			.withType(DocumentTypeEntity.create()
+				.withCreated(DOCUMENT_TYPE_CREATED)
+				.withCreatedBy(DOCUMENT_TYPE_CREATED_BY)
+				.withDisplayName(DOCUMENT_TYPE_DISPLAY_NAME)
+				.withId(DOCUMENT_TYPE_ID)
+				.withLastUpdated(DOCUMENT_TYPE_UPDATED)
+				.withLastUpdatedBy(DOCUMENT_TYPE_UPDATED_BY)
+				.withMunicipalityId(MUNICIPALITY_ID)
+				.withType(DOCUMENT_TYPE));
 
 		// Act
 		final var result = DocumentMapper.copyDocumentEntity(documentEntity);
@@ -542,7 +583,16 @@ class DocumentMapperTest {
 					.withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)
 				.withRegistrationNumber(REGISTRATION_NUMBER)
-				.withRevision(REVISION));
+				.withRevision(REVISION)
+				.withType(DocumentTypeEntity.create()
+					.withCreated(DOCUMENT_TYPE_CREATED)
+					.withCreatedBy(DOCUMENT_TYPE_CREATED_BY)
+					.withDisplayName(DOCUMENT_TYPE_DISPLAY_NAME)
+					.withId(DOCUMENT_TYPE_ID)
+					.withLastUpdated(DOCUMENT_TYPE_UPDATED)
+					.withLastUpdatedBy(DOCUMENT_TYPE_UPDATED_BY)
+					.withMunicipalityId(MUNICIPALITY_ID)
+					.withType(DOCUMENT_TYPE)));
 	}
 
 	@Test
@@ -577,7 +627,16 @@ class DocumentMapperTest {
 				.withValue(METADATA_VALUE)))
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withRegistrationNumber(REGISTRATION_NUMBER)
-			.withRevision(REVISION);
+			.withRevision(REVISION)
+			.withType(DocumentTypeEntity.create()
+				.withCreated(DOCUMENT_TYPE_CREATED)
+				.withCreatedBy(DOCUMENT_TYPE_CREATED_BY)
+				.withDisplayName(DOCUMENT_TYPE_DISPLAY_NAME)
+				.withId(DOCUMENT_TYPE_ID)
+				.withLastUpdated(DOCUMENT_TYPE_UPDATED)
+				.withLastUpdatedBy(DOCUMENT_TYPE_UPDATED_BY)
+				.withMunicipalityId(MUNICIPALITY_ID)
+				.withType(DOCUMENT_TYPE));
 
 		when(pageMock.getPageable()).thenReturn(pageable);
 		when(pageMock.getNumberOfElements()).thenReturn(11);
@@ -608,7 +667,8 @@ class DocumentMapperTest {
 					.withValue(METADATA_VALUE)))
 				.withMunicipalityId(MUNICIPALITY_ID)
 				.withRegistrationNumber(REGISTRATION_NUMBER)
-				.withRevision(REVISION));
+				.withRevision(REVISION)
+				.withType(DOCUMENT_TYPE));
 	}
 
 	@Test

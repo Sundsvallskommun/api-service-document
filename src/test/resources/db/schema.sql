@@ -6,6 +6,7 @@
         created datetime(6),
         created_by varchar(255),
         description varchar(8192) not null,
+        document_type_id varchar(255) not null,
         id varchar(255) not null,
         legal_citation varchar(255),
         municipality_id varchar(255),
@@ -91,6 +92,11 @@
 
     alter table if exists registration_number_sequence 
        add constraint uq_municipality_id unique (municipality_id);
+
+    alter table if exists document 
+       add constraint fk_document_document_type
+       foreign key (document_type_id) 
+       references document_type (id);
 
     alter table if exists document_data 
        add constraint fk_document_data_document_data_binary 

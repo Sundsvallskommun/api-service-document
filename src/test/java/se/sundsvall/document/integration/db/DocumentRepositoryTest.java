@@ -29,6 +29,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
 
 import se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable;
 import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
@@ -54,13 +56,16 @@ class DocumentRepositoryTest {
 
 	private static final String CREATED_BY = "User123";
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String DOCUMENT_TYPE = "HOLIDAY_EXCHANGE";
 
 	@Autowired
 	private DocumentRepository documentRepository;
 
+	@Autowired
+	private DocumentTypeRepository documentTypeRepository;
+
 	@Test
 	void create() {
-
 		// Arrange
 		final var registrationNumber = "2023-1337";
 		final var entity = createDocumentEntity(registrationNumber);
@@ -74,6 +79,9 @@ class DocumentRepositoryTest {
 		assertThat(result.getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(result.getRegistrationNumber()).isEqualTo(registrationNumber);
 		assertThat(result.getCreatedBy()).isEqualTo(CREATED_BY);
+		assertThat(result.getType()).isNotNull().satisfies(documentType -> {
+			assertThat(documentType.getType()).isEqualTo(DOCUMENT_TYPE);
+		});
 		assertThat(result.getMetadata())
 			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
 			.containsExactly(
@@ -99,6 +107,9 @@ class DocumentRepositoryTest {
 		assertThat(result.getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(result.getRegistrationNumber()).isEqualTo(registrationNumber);
 		assertThat(result.getCreatedBy()).isEqualTo(CREATED_BY);
+		assertThat(result.getType()).isNotNull().satisfies(documentType -> {
+			assertThat(documentType.getType()).isEqualTo(DOCUMENT_TYPE);
+		});
 		assertThat(result.getMetadata())
 			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
 			.containsExactly(
@@ -117,6 +128,9 @@ class DocumentRepositoryTest {
 		assertThat(entity.getCreated()).isEqualTo(OffsetDateTime.parse("2023-06-28T12:01:00.000+02:00"));
 		assertThat(entity.getRegistrationNumber()).isEqualTo("2023-2281-123");
 		assertThat(entity.getCreatedBy()).isEqualTo("User1");
+		assertThat(entity.getType()).isNotNull().satisfies(documentType -> {
+			assertThat(documentType.getType()).isEqualTo(DOCUMENT_TYPE);
+		});
 		assertThat(entity.getMetadata())
 			.extracting(DocumentMetadataEmbeddable::getKey, DocumentMetadataEmbeddable::getValue)
 			.containsExactly(tuple("document1-key1", "value-1"));
@@ -414,7 +428,11 @@ class DocumentRepositoryTest {
 		assertThat(result.getContent()).isEmpty();
 	}
 
-	private static DocumentEntity createDocumentEntity(String registrationNumber) {
+	private DocumentEntity createDocumentEntity(String registrationNumber) {
+
+		final var documentType = documentTypeRepository.findByMunicipalityIdAndType(MUNICIPALITY_ID, DOCUMENT_TYPE)
+			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Document type '%s' not found within municipality %s".formatted(DOCUMENT_TYPE, MUNICIPALITY_ID)));
+
 		return DocumentEntity.create()
 			.withCreatedBy(CREATED_BY)
 			.withConfidentiality(ConfidentialityEmbeddable.create())
@@ -423,7 +441,8 @@ class DocumentRepositoryTest {
 				DocumentMetadataEmbeddable.create().withKey("key1").withValue("value1"),
 				DocumentMetadataEmbeddable.create().withKey("key2").withValue("value2")))
 			.withRegistrationNumber(registrationNumber)
-			.withRevision(0);
+			.withRevision(0)
+			.withType(documentType);
 	}
 
 	private static DocumentDataEntity createDocumentDataEntity(String filename) {

@@ -91,7 +91,8 @@ public class DocumentMapper {
 			.withMetadata(Optional.ofNullable(documentUpdateRequest.getMetadataList())
 				.map(DocumentMapper::toDocumentMetadataEmbeddableList)
 				.orElse(copyDocumentMetadataEmbeddableList(existingDocumentEntity.getMetadata())))
-			.withDocumentData(copyDocumentDataEntities(existingDocumentEntity.getDocumentData()));
+			.withDocumentData(copyDocumentDataEntities(existingDocumentEntity.getDocumentData()))
+			.withType(existingDocumentEntity.getType());
 	}
 
 	public static ConfidentialityEmbeddable toConfidentialityEmbeddable(Confidentiality confidentiality) {
@@ -146,7 +147,8 @@ public class DocumentMapper {
 				.withMetadataList(toDocumentMetadataList(docEntity.getMetadata()))
 				.withMunicipalityId(docEntity.getMunicipalityId())
 				.withRegistrationNumber(docEntity.getRegistrationNumber())
-				.withRevision(docEntity.getRevision()))
+				.withRevision(docEntity.getRevision())
+				.withType(docEntity.getType().getType()))
 			.orElse(null);
 	}
 
@@ -173,7 +175,8 @@ public class DocumentMapper {
 				.withMetadata(copyDocumentMetadataEmbeddableList(docEntity.getMetadata()))
 				.withMunicipalityId(docEntity.getMunicipalityId())
 				.withRegistrationNumber(docEntity.getRegistrationNumber())
-				.withRevision(docEntity.getRevision()))
+				.withRevision(docEntity.getRevision())
+				.withType(docEntity.getType()))
 			.orElse(null);
 	}
 
