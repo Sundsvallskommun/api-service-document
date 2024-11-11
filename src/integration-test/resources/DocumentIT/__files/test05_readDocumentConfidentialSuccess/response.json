@@ -26,6 +26,14 @@
 		{
 			"value": "value-2",
 			"key": "document2-key2"
+		},
+		{
+			"value": "Startup Y",
+			"key": "EMPLOYEE_UNIT"
+		},
+		{
+			"value": "Developer",
+			"key": "EMPLOYEE_TYPE"
 		}
 	]
 }

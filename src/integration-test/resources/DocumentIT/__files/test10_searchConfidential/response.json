@@ -68,6 +68,14 @@
 				{
 					"value": "value-3",
 					"key": "document2-key3"
+				},
+				{
+					"value": "Organization X",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Analyst",
+					"key": "EMPLOYEE_TYPE"
 				}
 			]
 		}

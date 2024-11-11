@@ -1,5 +1,17 @@
 package apptest;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.test.context.jdbc.Sql;
+import se.sundsvall.dept44.test.AbstractAppTest;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.document.Application;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.DELETE;
@@ -16,19 +28,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.util.ResourceUtils.getFile;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.test.context.jdbc.Sql;
-
-import se.sundsvall.dept44.test.AbstractAppTest;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.document.Application;
 
 @WireMockAppTestSuite(files = "classpath:/DocumentIT/", classes = Application.class)
 @Sql({
@@ -184,7 +183,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test13_searchWithWildCardOnly() {
 		setupCall()
-			.withServicePath(PATH_SUNDSVALL + "?query=*&sort=revision,desc")
+			.withServicePath(PATH_SUNDSVALL + "?query=*&sort=id,desc")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -248,7 +247,7 @@ class DocumentIT extends AbstractAppTest {
 		multipartBodyBuilder.part("document", fromTestFile(REQUEST_FILE));
 
 		setupCall()
-			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123/files")
+			.withServicePath(PATH_SUNDSVALL + "/2024-2281-991/files")
 			.withHttpMethod(PUT)
 			.withContentType(MULTIPART_FORM_DATA)
 			.withRequest(multipartBodyBuilder.build())
@@ -256,7 +255,7 @@ class DocumentIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse();
 
 		setupCall()
-			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123")
+			.withServicePath(PATH_SUNDSVALL + "/2024-2281-991")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -284,4 +283,5 @@ class DocumentIT extends AbstractAppTest {
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}
+
 }

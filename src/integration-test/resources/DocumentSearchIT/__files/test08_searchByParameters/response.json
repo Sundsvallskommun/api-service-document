@@ -1,0 +1,60 @@
+{
+	"documents": [
+		{
+			"municipalityId": "2281",
+			"createdBy": "User5",
+			"registrationNumber": "2024-2281-417",
+			"created": "2024-06-23T08:31:00+02:00",
+			"confidentiality": {
+				"legalCitation": "Law §7.1",
+				"confidential": false
+			},
+			"description": "Generated Document 1",
+			"archive": false,
+			"id": "676eaf7a-d609-4885-9743-2dbcdffe6628",
+			"documentData": [],
+			"type": "MISSPELLED",
+			"revision": 1,
+			"metadataList": [
+				{
+					"value": "Company C",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Manager",
+					"key": "EMPLOYEE_TYPE"
+				}
+			]
+		},
+		{
+			"municipalityId": "2281",
+			"createdBy": "User2",
+			"registrationNumber": "2024-2281-403",
+			"created": "2024-02-22T08:31:00+01:00",
+			"confidentiality": {"confidential": true},
+			"description": "Generated Document 2",
+			"archive": false,
+			"id": "34095a16-68c5-48f8-ac1e-9d6b7dd08562",
+			"documentData": [],
+			"type": "EMPLOYEE_CERTIFICATE",
+			"revision": 1,
+			"metadataList": [
+				{
+					"value": "Company B",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Developer",
+					"key": "EMPLOYEE_TYPE"
+				}
+			]
+		}
+	],
+	"_meta": {
+		"totalRecords": 2,
+		"limit": 3,
+		"count": 2,
+		"totalPages": 1,
+		"page": 0
+	}
+}

@@ -1,21 +1,5 @@
 package se.sundsvall.document.integration.db;
 
-import static java.time.OffsetDateTime.now;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.assertj.core.api.Assertions.within;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
-import static org.springframework.data.domain.Sort.Direction.ASC;
-import static org.springframework.data.domain.Sort.Direction.DESC;
-import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
-
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,13 +15,29 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
-
+import se.sundsvall.document.api.model.DocumentParameters;
 import se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable;
 import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 import se.sundsvall.document.service.InclusionFilter;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.within;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
 
 /**
  * DocumentRepository tests.
@@ -407,9 +407,14 @@ class DocumentRepositoryTest {
 		assertThat(result.getContent())
 			.extracting(DocumentEntity::getId, DocumentEntity::getRevision, DocumentEntity::getRegistrationNumber, DocumentEntity::getCreatedBy)
 			.containsExactly(
+
 				tuple("159c10bf-1b32-471b-b2d3-c4b4b13ea152", 1, "2023-2281-123", "User1"),
 				tuple("8efd63a3-b525-4581-8b0b-9759f381a5a5", 2, "2023-2281-123", "User2"),
 				tuple("612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2", 3, "2023-2281-123", "User3"),
+				tuple("1901694b-8e3a-46b7-83ea-cd351ccc0f52", 1, "2024-2281-601", "User5"),
+				tuple("2901694b-8e3a-46b7-83ea-cd351ccc0f52", 1, "2024-2281-602", "User5"),
+				tuple("3901694b-8e3a-46b7-83ea-cd351ccc0f52", 1, "2024-2281-603", "User5"),
+				tuple("8901694b-8e3a-46b7-83ea-cd351ccc0f52", 1, "2024-2281-666", "User5"),
 				tuple("03d33a6a-bc8c-410c-95f6-2c890822967d", 1, "2024-2281-999", "User4"));
 	}
 
@@ -426,6 +431,48 @@ class DocumentRepositoryTest {
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(result.getContent()).isEmpty();
+	}
+
+	private static Stream<Arguments> searchByParametersArgumentsProvider() {
+		return Stream.of(
+			Arguments.of("2281", true, true, List.of("EMPLOYEE_CERTIFICATE"), List.of(new DocumentParameters.MetaData().withKey("EMPLOYEE_TYPE").withMatchesAny(List.of("Vikarie"))), 2),
+			Arguments.of("2281", true, true, List.of("EMPLOYEE_CERTIFICATE"), List.of(new DocumentParameters.MetaData().withKey("EMPLOYEE_TYPE").withMatchesAny(List.of("Vaktmästare"))), 1),
+			Arguments.of("2281", true, true, List.of("EMPLOYEE_CERTIFICATE"), List.of(new DocumentParameters.MetaData().withKey("EMPLOYEE_TYPE")), 3),
+			Arguments.of("2281", true, true, List.of("EMPLOYEE_CERTIFICATE"), null, 5),
+			Arguments.of("2281", true, true, null, null, 6),
+			Arguments.of("2281", true, false, List.of("HOLIDAY_EXCHANGE"), null, 3),
+			Arguments.of("2281", true, true, null, List.of(new DocumentParameters.MetaData().withMatchesAny(List.of("Vikarie"))), 2),
+			Arguments.of("2281", false, true, List.of("EMPLOYEE_CERTIFICATE"), List.of(new DocumentParameters.MetaData().withKey("EMPLOYEE_TYPE").withMatchesAll(List.of("Vikarie", "Lärare"))), 0),
+			Arguments.of("2281", false, false, List.of("HOLIDAY_EXCHANGE"), List.of(new DocumentParameters.MetaData().withKey("document1-key1").withMatchesAll(List.of("value-1"))), 3),
+			Arguments.of("2281", true, true, null, List.of(new DocumentParameters.MetaData().withMatchesAny(List.of("Vaktmästare", "Vikarie"))), 3),
+			Arguments.of("2281", true, false, List.of("EMPLOYEE_CERTIFICATE"), List.of(new DocumentParameters.MetaData().withMatchesAll(List.of("Sidsjö skola", "Vikarie"))), 1),
+			Arguments.of("2281", true, true, List.of("EMPLOYEE_CERTIFICATE"), List.of(new DocumentParameters.MetaData().withKey("EMPLOYEE_TYPE")), 3),
+			Arguments.of("2281", true, true, List.of("EMPLOYEE_CERTIFICATE"), List.of(
+				new DocumentParameters.MetaData().withKey("EMPLOYEE_TYPE").withMatchesAny(List.of("Vaktmästare")),
+				new DocumentParameters.MetaData().withKey("EMPLOYEE_UNIT").withMatchesAll(List.of("Sidsjö skola"))), 1),
+			Arguments.of("2281", false, false, List.of("HOLIDAY_EXCHANGE"), null, 3),
+			Arguments.of(null, true, true, List.of("EMPLOYEE_CERTIFICATE"), List.of(new DocumentParameters.MetaData().withKey("EMPLOYEE_TYPE").withMatchesAny(List.of("Vikarie"))), 0),
+			Arguments.of("2281", true, true, List.of("EMPLOYEE_CERTIFICATE"), List.of(), 5),
+			Arguments.of("2281", true, true, null, List.of(new DocumentParameters.MetaData().withKey("document1-key1").withMatchesAny(List.of("value-1"))), 1));
+	}
+
+	@ParameterizedTest
+	@MethodSource("searchByParametersArgumentsProvider")
+	void searchByParameters(String municipalityId, boolean includeConfidential, boolean onlyLatestRevision, List<String> documentTypes, List<DocumentParameters.MetaData> metaData, int expectedSize) {
+		var parameters = new DocumentParameters()
+			.withMunicipalityId(municipalityId)
+			.withIncludeConfidential(includeConfidential)
+			.withOnlyLatestRevision(onlyLatestRevision)
+			.withDocumentTypes(documentTypes)
+			.withMetaData(metaData);
+		var pageable = PageRequest.of(parameters.getPage() - 1, parameters.getLimit(), parameters.sort());
+
+		var result = documentRepository.searchByParameters(parameters, pageable);
+
+		assertThat(result).isNotNull();
+		assertThat(result.getContent()).hasSize(expectedSize);
+		assertThat(result.getSize()).isEqualTo(parameters.getLimit());
+		assertThat(result.getTotalElements()).isEqualTo(expectedSize);
 	}
 
 	private DocumentEntity createDocumentEntity(String registrationNumber) {

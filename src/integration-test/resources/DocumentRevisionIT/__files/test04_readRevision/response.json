@@ -23,6 +23,14 @@
 		{
 			"value": "value-2",
 			"key": "document1-key2"
+		},
+		{
+			"value": "Company C",
+			"key": "EMPLOYEE_UNIT"
+		},
+		{
+			"value": "Developer",
+			"key": "EMPLOYEE_TYPE"
 		}
 	]
 }

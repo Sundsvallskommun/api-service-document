@@ -1,51 +1,51 @@
 openapi: 3.0.1
 info:
   title: api-document
-  contact: {}
+  contact: { }
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   version: "3.0"
 servers:
-- url: http://localhost:8080
-  description: Generated server url
+  - url: http://localhost:63347
+    description: Generated server url
 tags:
-- name: Document revisions
-  description: Document revision operations
-- name: Administration
-  description: Administration of document types
-- name: Documents
-  description: Document operations
+  - name: Document revisions
+    description: Document revision operations
+  - name: Administration
+    description: Administration of document types
+  - name: Documents
+    description: Document operations
 paths:
   /{municipalityId}/documents/{registrationNumber}/files:
     put:
       tags:
-      - Documents
+        - Documents
       summary: Add document file data (or replace existing if filename already exists
         on the document object)
       operationId: addOrReplaceFile
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: registrationNumber
-        in: path
-        description: Document registration number
-        required: true
-        schema:
-          type: string
-        example: 2023-2281-1337
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: registrationNumber
+          in: path
+          description: Document registration number
+          required: true
+          schema:
+            type: string
+          example: 2023-2281-1337
       requestBody:
         content:
           multipart/form-data:
             schema:
               required:
-              - document
-              - documentFile
+                - document
+                - documentFile
               type: object
               properties:
                 document:
@@ -54,14 +54,6 @@ paths:
                   type: string
                   format: binary
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
         "404":
@@ -76,77 +68,77 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  /{municipalityId}/documents:
-    get:
-      tags:
-      - Documents
-      summary: Search documents.
-      operationId: search
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: query
-        in: query
-        description: "Search query. Use asterisk-character [*] as wildcard."
-        required: true
-        schema:
-          type: string
-        example: hello*
-      - name: includeConfidential
-        in: query
-        description: Include confidential records
-        required: false
-        schema:
-          type: boolean
-          default: false
-        example: true
-      - name: onlyLatestRevision
-        in: query
-        description: Only perform search against the latest document revision
-        required: false
-        schema:
-          type: boolean
-          default: false
-        example: true
-      - name: page
-        in: query
-        description: Zero-based page index (0..N)
-        required: false
-        schema:
-          minimum: 0
-          type: integer
-          default: 0
-      - name: size
-        in: query
-        description: The size of the page to be returned
-        required: false
-        schema:
-          minimum: 1
-          type: integer
-          default: 20
-      - name: sort
-        in: query
-        description: "Sorting criteria in the format: property,(asc|desc). Default\
-          \ sort order is ascending. Multiple sort criteria are supported."
-        required: false
-        schema:
-          type: array
-          items:
-            type: string
-      responses:
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/documents:
+    get:
+      tags:
+        - Documents
+      summary: Search documents.
+      operationId: search
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: query
+          in: query
+          description: "Search query. Use asterisk-character [*] as wildcard."
+          required: true
+          schema:
+            type: string
+          example: hello*
+        - name: includeConfidential
+          in: query
+          description: Include confidential records
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
+        - name: onlyLatestRevision
+          in: query
+          description: Only perform search against the latest document revision
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
+        - name: page
+          in: query
+          description: Zero-based page index (0..N)
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: The size of the page to be returned
+          required: false
+          schema:
+            minimum: 1
+            type: integer
+            default: 20
+        - name: sort
+          in: query
+          description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
         "200":
           description: Successful operation
           content:
@@ -162,26 +154,34 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
     post:
       tags:
-      - Documents
+        - Documents
       summary: Create document.
       operationId: create
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
       requestBody:
         content:
           multipart/form-data:
             schema:
               required:
-              - document
-              - documentFiles
+                - document
+                - documentFiles
               type: object
               properties:
                 document:
@@ -192,14 +192,20 @@ paths:
                     type: string
                     format: binary
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "201":
           description: Successful operation
           headers:
@@ -207,36 +213,22 @@ paths:
               style: simple
               schema:
                 type: string
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
   /{municipalityId}/admin/documenttypes:
     get:
       tags:
-      - Administration
+        - Administration
       summary: Get document types
       description: Get all existing document types defined in provided municipality.
       operationId: readDocumentTypes
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality id
-        required: true
-        schema:
-          type: string
-        example: 2281
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -256,20 +248,28 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
     post:
       tags:
-      - Administration
+        - Administration
       summary: Create new document type
       description: Creates a new document type in the provided municipality.
       operationId: createDocumentType
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
       requestBody:
         content:
           application/json:
@@ -277,14 +277,20 @@ paths:
               $ref: "#/components/schemas/DocumentTypeCreateRequest"
         required: true
       responses:
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "201":
           description: Successful operation
           headers:
@@ -292,50 +298,36 @@ paths:
               style: simple
               schema:
                 type: string
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
   /{municipalityId}/documents/{registrationNumber}:
     get:
       tags:
-      - Documents
+        - Documents
       summary: Read document (latest revision).
       operationId: read
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: registrationNumber
-        in: path
-        description: Document registration number
-        required: true
-        schema:
-          type: string
-        example: 2023-2281-1337
-      - name: includeConfidential
-        in: query
-        description: Include confidential records
-        required: false
-        schema:
-          type: boolean
-          default: false
-        example: true
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: registrationNumber
+          in: path
+          description: Document registration number
+          required: true
+          schema:
+            type: string
+          example: 2023-2281-1337
+        - name: includeConfidential
+          in: query
+          description: Include confidential records
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -357,34 +349,42 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
     patch:
       tags:
-      - Documents
+        - Documents
       summary: Update document.
       operationId: update
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: registrationNumber
-        in: path
-        description: Document registration number
-        required: true
-        schema:
-          type: string
-        example: 2023-2281-1337
-      - name: includeConfidential
-        in: query
-        description: Include confidential records
-        required: false
-        schema:
-          type: boolean
-          default: false
-        example: true
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: registrationNumber
+          in: path
+          description: Document registration number
+          required: true
+          schema:
+            type: string
+          example: 2023-2281-1337
+        - name: includeConfidential
+          in: query
+          description: Include confidential records
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
       requestBody:
         content:
           application/json:
@@ -392,14 +392,6 @@ paths:
               $ref: "#/components/schemas/DocumentUpdateRequest"
         required: true
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -421,27 +413,35 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/documents/{registrationNumber}/confidentiality:
     patch:
       tags:
-      - Documents
+        - Documents
       summary: Update document confidentiality (on all revisions).
       operationId: updateConfidentiality
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: registrationNumber
-        in: path
-        description: Document registration number
-        required: true
-        schema:
-          type: string
-        example: 2023-2281-1337
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: registrationNumber
+          in: path
+          description: Document registration number
+          required: true
+          schema:
+            type: string
+          example: 2023-2281-1337
       requestBody:
         content:
           application/json:
@@ -449,14 +449,6 @@ paths:
               $ref: "#/components/schemas/ConfidentialityUpdateRequest"
         required: true
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
         "404":
@@ -471,37 +463,37 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  /{municipalityId}/admin/documenttypes/{type}:
-    get:
-      tags:
-      - Administration
-      summary: Get document type
-      description: Get document type matching provided type and municipality.
-      operationId: readDocumentType
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality id
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: type
-        in: path
-        description: The type to update
-        required: true
-        schema:
-          type: string
-        example: EMPLOYMENT_CERTIFICATE
-      responses:
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/admin/documenttypes/{type}:
+    get:
+      tags:
+        - Administration
+      summary: Get document type
+      description: Get document type matching provided type and municipality.
+      operationId: readDocumentType
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: type
+          in: path
+          description: The type to update
+          required: true
+          schema:
+            type: string
+          example: EMPLOYMENT_CERTIFICATE
+      responses:
         "200":
           description: Successful operation
           content:
@@ -517,37 +509,37 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-    delete:
-      tags:
-      - Administration
-      summary: Delete document type
-      description: |
-        Deletes an existing document type matching provided type and municipality, but only if the type is not used by any existing document. If type is used then an exception will be returned.
-      operationId: deleteDocumentType
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality id
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: type
-        in: path
-        description: the type to delete
-        required: true
-        schema:
-          type: string
-        example: EMPLOYMENT_CERTIFICATE
-      responses:
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+    delete:
+      tags:
+        - Administration
+      summary: Delete document type
+      description: |
+        Deletes an existing document type matching provided type and municipality, but only if the type is not used by any existing document. If type is used then an exception will be returned.
+      operationId: deleteDocumentType
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: type
+          in: path
+          description: the type to delete
+          required: true
+          schema:
+            type: string
+          example: EMPLOYMENT_CERTIFICATE
+      responses:
         "500":
           description: Internal Server error
           content:
@@ -562,27 +554,35 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
     patch:
       tags:
-      - Administration
+        - Administration
       summary: Update document type
       description: Updates an existing document type in the provided municipality.
       operationId: updateDocumentType
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality id
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: type
-        in: path
-        description: The type to update
-        required: true
-        schema:
-          type: string
-        example: EMPLOYMENT_CERTIFICATE
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: type
+          in: path
+          description: The type to update
+          required: true
+          schema:
+            type: string
+          example: EMPLOYMENT_CERTIFICATE
       requestBody:
         content:
           application/json:
@@ -590,14 +590,6 @@ paths:
               $ref: "#/components/schemas/DocumentTypeUpdateRequest"
         required: true
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -612,69 +604,69 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/documents/{registrationNumber}/revisions:
     get:
       tags:
-      - Document revisions
+        - Document revisions
       summary: Read document revisions.
       operationId: readRevisions
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: registrationNumber
-        in: path
-        description: Document registration number
-        required: true
-        schema:
-          type: string
-        example: 2023-2281-1337
-      - name: includeConfidential
-        in: query
-        description: Include confidential records
-        required: false
-        schema:
-          type: boolean
-          default: false
-        example: true
-      - name: page
-        in: query
-        description: Zero-based page index (0..N)
-        required: false
-        schema:
-          minimum: 0
-          type: integer
-          default: 0
-      - name: size
-        in: query
-        description: The size of the page to be returned
-        required: false
-        schema:
-          minimum: 1
-          type: integer
-          default: 20
-      - name: sort
-        in: query
-        description: "Sorting criteria in the format: property,(asc|desc). Default\
-          \ sort order is ascending. Multiple sort criteria are supported."
-        required: false
-        schema:
-          type: array
-          items:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
             type: string
+          example: 2281
+        - name: registrationNumber
+          in: path
+          description: Document registration number
+          required: true
+          schema:
+            type: string
+          example: 2023-2281-1337
+        - name: includeConfidential
+          in: query
+          description: Include confidential records
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
+        - name: page
+          in: query
+          description: Zero-based page index (0..N)
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: The size of the page to be returned
+          required: false
+          schema:
+            minimum: 1
+            type: integer
+            default: 20
+        - name: sort
+          in: query
+          description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -690,53 +682,53 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/documents/{registrationNumber}/revisions/{revision}:
     get:
       tags:
-      - Document revisions
+        - Document revisions
       summary: Read document revision.
       operationId: readRevision
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: registrationNumber
-        in: path
-        description: Document registration number
-        required: true
-        schema:
-          type: string
-        example: 2023-2281-1337
-      - name: revision
-        in: path
-        description: Document revision
-        required: true
-        schema:
-          minimum: 0
-          type: integer
-          format: int32
-        example: 2
-      - name: includeConfidential
-        in: query
-        description: Include confidential records
-        required: false
-        schema:
-          type: boolean
-          default: false
-        example: true
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: registrationNumber
+          in: path
+          description: Document registration number
+          required: true
+          schema:
+            type: string
+          example: 2023-2281-1337
+        - name: revision
+          in: path
+          description: Document revision
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+          example: 2
+        - name: includeConfidential
+          in: query
+          description: Include confidential records
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -758,60 +750,60 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/documents/{registrationNumber}/revisions/{revision}/files/{documentDataId}:
     get:
       tags:
-      - Document revisions
+        - Document revisions
       summary: Read document file revision.
       operationId: readFileRevision
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: registrationNumber
-        in: path
-        description: Document registration number
-        required: true
-        schema:
-          type: string
-        example: 2023-2281-1337
-      - name: revision
-        in: path
-        description: Document revision
-        required: true
-        schema:
-          minimum: 0
-          type: integer
-          format: int32
-        example: 2
-      - name: documentDataId
-        in: path
-        description: Document data ID
-        required: true
-        schema:
-          type: string
-        example: 082ba08f-03c7-409f-b8a6-940a1397ba38
-      - name: includeConfidential
-        in: query
-        description: Include confidential records
-        required: false
-        schema:
-          type: boolean
-          default: false
-        example: true
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: registrationNumber
+          in: path
+          description: Document registration number
+          required: true
+          schema:
+            type: string
+          example: 2023-2281-1337
+        - name: revision
+          in: path
+          description: Document revision
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+          example: 2
+        - name: documentDataId
+          in: path
+          description: Document data ID
+          required: true
+          schema:
+            type: string
+          example: 082ba08f-03c7-409f-b8a6-940a1397ba38
+        - name: includeConfidential
+          in: query
+          description: Include confidential records
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
         "404":
@@ -826,51 +818,51 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/documents/{registrationNumber}/files/{documentDataId}:
     get:
       tags:
-      - Documents
+        - Documents
       summary: Read document file (latest revision).
       operationId: readFile
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: registrationNumber
-        in: path
-        description: Document registration number
-        required: true
-        schema:
-          type: string
-        example: 2023-2281-1337
-      - name: documentDataId
-        in: path
-        description: Document data ID
-        required: true
-        schema:
-          type: string
-        example: 082ba08f-03c7-409f-b8a6-940a1397ba38
-      - name: includeConfidential
-        in: query
-        description: Include confidential records
-        required: false
-        schema:
-          type: boolean
-          default: false
-        example: true
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: registrationNumber
+          in: path
+          description: Document registration number
+          required: true
+          schema:
+            type: string
+          example: 2023-2281-1337
+        - name: documentDataId
+          in: path
+          description: Document data ID
+          required: true
+          schema:
+            type: string
+          example: 082ba08f-03c7-409f-b8a6-940a1397ba38
+        - name: includeConfidential
+          in: query
+          description: Include confidential records
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
         "404":
@@ -885,42 +877,42 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-    delete:
-      tags:
-      - Documents
-      summary: Delete document file.
-      operationId: deleteFile
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: registrationNumber
-        in: path
-        description: Document registration number
-        required: true
-        schema:
-          type: string
-        example: 2023-2281-1337
-      - name: documentDataId
-        in: path
-        description: Document data ID
-        required: true
-        schema:
-          type: string
-        example: 082ba08f-03c7-409f-b8a6-940a1397ba38
-      responses:
         "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+    delete:
+      tags:
+        - Documents
+      summary: Delete document file.
+      operationId: deleteFile
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: registrationNumber
+          in: path
+          description: Document registration number
+          required: true
+          schema:
+            type: string
+          example: 2023-2281-1337
+        - name: documentDataId
+          in: path
+          description: Document data ID
+          required: true
+          schema:
+            type: string
+          example: 082ba08f-03c7-409f-b8a6-940a1397ba38
+      responses:
         "404":
           description: Not found
           content:
@@ -935,10 +927,59 @@ paths:
                 $ref: "#/components/schemas/Problem"
         "204":
           description: Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/documents/filter:
+    get:
+      tags:
+        - Documents
+      summary: Search documents by parameters
+      operationId: searchByParameters
+      parameters:
+        - name: municipalityId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: documentParameters
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/DocumentParameters"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedDocumentResponse"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/PagedDocumentResponse"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /api-docs:
     get:
       tags:
-      - API
+        - API
       summary: OpenAPI
       operationId: getApiDocs
       responses:
@@ -955,7 +996,7 @@ components:
   schemas:
     DocumentDataCreateRequest:
       required:
-      - createdBy
+        - createdBy
       type: object
       properties:
         createdBy:
@@ -978,9 +1019,9 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
     StatusType:
       type: object
@@ -1113,9 +1154,9 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
         suppressed:
           type: array
@@ -1173,10 +1214,10 @@ components:
       description: Confidentiality model.
     DocumentCreateRequest:
       required:
-      - createdBy
-      - description
-      - metadataList
-      - type
+        - createdBy
+        - description
+        - metadataList
+        - type
       type: object
       properties:
         createdBy:
@@ -1209,8 +1250,8 @@ components:
       description: Document
     DocumentMetadata:
       required:
-      - key
-      - value
+        - key
+        - value
       type: object
       properties:
         key:
@@ -1224,9 +1265,9 @@ components:
       description: DocumentMetadata model
     DocumentTypeCreateRequest:
       required:
-      - createdBy
-      - displayName
-      - type
+        - createdBy
+        - displayName
+        - type
       type: object
       properties:
         type:
@@ -1243,7 +1284,7 @@ components:
           example: username123
     DocumentUpdateRequest:
       required:
-      - createdBy
+        - createdBy
       type: object
       properties:
         createdBy:
@@ -1351,8 +1392,8 @@ components:
       readOnly: true
     ConfidentialityUpdateRequest:
       required:
-      - changedBy
-      - confidential
+        - changedBy
+        - confidential
       type: object
       properties:
         confidential:
@@ -1373,7 +1414,7 @@ components:
       description: ConfidentialityUpdateRequest model.
     DocumentTypeUpdateRequest:
       required:
-      - updatedBy
+        - updatedBy
       type: object
       properties:
         displayName:
@@ -1433,10 +1474,83 @@ components:
           readOnly: true
           example: 23
       description: PagingMetaData model
+    Direction:
+      type: string
+      description: The sort order direction
+      example: ASC
+      enum:
+        - ASC
+        - DESC
+    DocumentParameters:
+      type: object
+      properties:
+        page:
+          minimum: 1
+          type: integer
+          description: Page number
+          format: int32
+          example: 1
+          default: 1
+        limit:
+          minimum: 1
+          type: integer
+          description: Result size per page. Maximum allowed value is dynamically
+            configured
+          format: int32
+          example: 15
+        sortBy:
+          type: array
+          items:
+            type: string
+            description: The properties to sort on
+            example: propertyName
+        sortDirection:
+          $ref: "#/components/schemas/Direction"
+        municipalityId:
+          type: string
+          description: Municipality identifier
+          readOnly: true
+          example: "1234"
+        includeConfidential:
+          type: boolean
+          description: Should the search include confidential documents?
+          example: true
+          default: false
+        onlyLatestRevision:
+          type: boolean
+          description: Should the search include only the latest revision of the documents?
+          example: true
+          default: false
+        documentTypes:
+          type: array
+          description: List of document types
+          items:
+            type: string
+            description: List of document types
+        metaData:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetaData"
+    MetaData:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Metadata key
+          example: Some key
+        matchesAny:
+          type: array
+          items:
+            type: string
+        matchesAll:
+          type: array
+          items:
+            type: string
+      description: List of metadata
     DocumentType:
       required:
-      - displayName
-      - type
+        - displayName
+        - type
       type: object
       properties:
         type:
@@ -1448,4 +1562,4 @@ components:
           description: Display name for the document type
           example: Anställningsbevis
       description: DocumentType model.
-  securitySchemes: {}
+  securitySchemes: { }
