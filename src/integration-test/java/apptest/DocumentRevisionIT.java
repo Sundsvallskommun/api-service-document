@@ -1,6 +1,7 @@
 package apptest;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -17,6 +18,7 @@ import static org.springframework.http.HttpStatus.OK;
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
+@DirtiesContext
 class DocumentRevisionIT extends AbstractAppTest {
 
 	private static final String PATH = "/2281/documents";
