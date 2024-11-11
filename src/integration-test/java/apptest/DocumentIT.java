@@ -3,7 +3,6 @@ package apptest;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -35,7 +34,6 @@ import static org.springframework.util.ResourceUtils.getFile;
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
-@DirtiesContext
 class DocumentIT extends AbstractAppTest {
 
 	private static final String PATH_SUNDSVALL = "/2281/documents";
