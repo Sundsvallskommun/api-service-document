@@ -61,6 +61,14 @@
 				{
 					"value": "value-2",
 					"key": "document1-key2"
+				},
+				{
+					"value": "Company C",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Developer",
+					"key": "EMPLOYEE_TYPE"
 				}
 			]
 		},
@@ -96,6 +104,14 @@
 				{
 					"value": "value-3",
 					"key": "document2-key3"
+				},
+				{
+					"value": "Organization X",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Analyst",
+					"key": "EMPLOYEE_TYPE"
 				}
 			]
 		},
@@ -127,6 +143,14 @@
 				{
 					"value": "value-2",
 					"key": "document2-key2"
+				},
+				{
+					"value": "Startup Y",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Developer",
+					"key": "EMPLOYEE_TYPE"
 				}
 			]
 		}

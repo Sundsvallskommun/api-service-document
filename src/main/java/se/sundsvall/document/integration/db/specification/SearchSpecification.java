@@ -1,5 +1,17 @@
 package se.sundsvall.document.integration.db.specification;
 
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+import se.sundsvall.document.api.model.DocumentParameters;
+import se.sundsvall.document.integration.db.model.DocumentEntity;
+import se.sundsvall.document.integration.db.model.DocumentEntity_;
+import se.sundsvall.document.integration.db.model.DocumentTypeEntity_;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import static jakarta.persistence.criteria.JoinType.LEFT;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable_.CONFIDENTIAL;
@@ -16,13 +28,116 @@ import static se.sundsvall.document.integration.db.model.DocumentEntity_.REVISIO
 import static se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable_.KEY;
 import static se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable_.VALUE;
 
-import java.util.Optional;
-
-import org.springframework.data.jpa.domain.Specification;
-
-import se.sundsvall.document.integration.db.model.DocumentEntity;
-
 public interface SearchSpecification {
+
+	static Specification<DocumentEntity> withSearchParameters(final DocumentParameters parameters) {
+		return onlyLatestRevisionOfDocuments(parameters.isOnlyLatestRevision())
+			.and(matchesMunicipalityId(parameters.getMunicipalityId(), false))
+			.and(includeConfidentialDocuments(parameters.isIncludeConfidential()))
+			.and(matchesType(parameters.getDocumentTypes()))
+			.and(matchesMetaData(parameters.getMetaData()));
+	}
+
+	static Specification<DocumentEntity> matchesMetaData(final List<DocumentParameters.MetaData> metaData) {
+		if (metaData == null || metaData.isEmpty()) {
+			return (root, query, cb) -> cb.and();
+		}
+
+		Specification<DocumentEntity> metaDataSpec = (root, query, cb) -> cb.and();
+
+		for (var data : metaData) {
+			var singleMetaDataSpec = Specification.where(hasKeyAndMatchesAll(data))
+				.and(hasKeyAndMatchesAny(data))
+				.and(hasOnlyKey(data))
+				.and(hasOnlyMatchesAny(data))
+				.and(hasOnlyMatchesAll(data));
+
+			metaDataSpec = metaDataSpec.and(singleMetaDataSpec);
+		}
+
+		return metaDataSpec;
+	}
+
+	static Specification<DocumentEntity> hasKeyAndMatchesAll(DocumentParameters.MetaData metaData) {
+		return (root, query, cb) -> {
+			if (metaData.getKey() == null || metaData.getMatchesAll() == null || metaData.getMatchesAll().isEmpty()) {
+				return cb.and();
+			}
+			var allValuePredicates = metaData.getMatchesAll().stream()
+				.map(value -> cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(VALUE)), value.toLowerCase()))
+				.toList();
+
+			return cb.and(
+				cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(KEY)), metaData.getKey().toLowerCase()),
+				cb.and(allValuePredicates.toArray(new Predicate[0])));
+		};
+	}
+
+	static Specification<DocumentEntity> hasKeyAndMatchesAny(DocumentParameters.MetaData metaData) {
+		return (root, query, cb) -> {
+			if (metaData.getKey() == null || metaData.getMatchesAny() == null || metaData.getMatchesAny().isEmpty()) {
+				return cb.and();
+			}
+			var anyValuePredicates = metaData.getMatchesAny().stream()
+				.map(value -> cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(VALUE)), value.toLowerCase()))
+				.toList();
+
+			return cb.and(
+				cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(KEY)), metaData.getKey().toLowerCase()),
+				cb.or(anyValuePredicates.toArray(new Predicate[0])));
+		};
+	}
+
+	static Specification<DocumentEntity> hasOnlyKey(DocumentParameters.MetaData metaData) {
+		return (root, query, cb) -> {
+			if (metaData.getKey() == null || (metaData.getMatchesAny() != null && !metaData.getMatchesAny().isEmpty()) ||
+				(metaData.getMatchesAll() != null && !metaData.getMatchesAll().isEmpty())) {
+				return cb.and();
+			}
+			return cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(KEY)), metaData.getKey().toLowerCase());
+		};
+	}
+
+	static Specification<DocumentEntity> hasOnlyMatchesAny(DocumentParameters.MetaData metaData) {
+		return (root, query, cb) -> {
+			if (metaData.getMatchesAny() == null || metaData.getMatchesAny().isEmpty() || metaData.getKey() != null) {
+				return cb.and();
+			}
+
+			var anyValuePredicates = metaData.getMatchesAny().stream()
+				.map(value -> cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(VALUE)), value.toLowerCase()))
+				.toList();
+
+			return cb.or(anyValuePredicates.toArray(new Predicate[0]));
+		};
+	}
+
+	static Specification<DocumentEntity> hasOnlyMatchesAll(DocumentParameters.MetaData metaData) {
+		return (root, query, cb) -> {
+			if (metaData.getMatchesAll() == null || metaData.getMatchesAll().isEmpty() || metaData.getKey() != null) {
+				return cb.and();
+			}
+
+			var allValuePredicates = metaData.getMatchesAll().stream()
+				.map(value -> cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(VALUE)), value.toLowerCase()))
+				.toList();
+
+			return cb.and(allValuePredicates.toArray(new Predicate[0]));
+		};
+	}
+
+	private static Specification<DocumentEntity> matchesType(final List<String> type) {
+		return (root, query, cb) -> {
+			if (type == null || type.isEmpty()) {
+				return cb.and();
+			}
+			var lowerCaseValues = type.stream()
+				.filter(Objects::nonNull)
+				.map(String::toLowerCase)
+				.toList();
+			return cb.lower(root.join(DocumentEntity_.TYPE, JoinType.INNER).get(DocumentTypeEntity_.TYPE)).in(lowerCaseValues);
+		};
+	}
 
 	static Specification<DocumentEntity> withSearchQuery(String query, boolean includeConfidential, boolean onlyLatestRevision, String municipalityId) {
 		final var queryString = toQueryString(query);

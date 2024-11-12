@@ -1,17 +1,18 @@
 package se.sundsvall.document.integration.db;
 
-import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchQuery;
-
-import java.util.List;
-import java.util.Optional;
-
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import se.sundsvall.document.api.model.DocumentParameters;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
+
+import java.util.List;
+import java.util.Optional;
+
+import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchParameters;
+import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchQuery;
 
 @CircuitBreaker(name = "documentRepository")
 public interface DocumentRepository extends JpaRepository<DocumentEntity, String>, JpaSpecificationExecutor<DocumentEntity> {
@@ -75,4 +76,9 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity, String
 	default Page<DocumentEntity> search(String query, boolean includeConfidential, boolean onlyLatestRevision, Pageable pageable, String municipalityId) {
 		return this.findAll(withSearchQuery(query, includeConfidential, onlyLatestRevision, municipalityId), pageable);
 	}
+
+	default Page<DocumentEntity> searchByParameters(final DocumentParameters documentParameters, final Pageable pageable) {
+		return this.findAll(withSearchParameters(documentParameters), pageable);
+	}
+
 }

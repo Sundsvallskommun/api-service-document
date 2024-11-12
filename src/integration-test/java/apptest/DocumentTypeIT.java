@@ -1,5 +1,16 @@
 package apptest;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
+import se.sundsvall.dept44.test.AbstractAppTest;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.document.Application;
+import se.sundsvall.document.integration.db.DocumentTypeRepository;
+
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpMethod.DELETE;
@@ -10,22 +21,12 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
-
-import se.sundsvall.dept44.test.AbstractAppTest;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.document.Application;
-import se.sundsvall.document.integration.db.DocumentTypeRepository;
-
 @WireMockAppTestSuite(files = "classpath:/DocumentTypeIT/", classes = Application.class)
 @Sql({
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
+@DirtiesContext
 class DocumentTypeIT extends AbstractAppTest {
 
 	private static final String PATH = "/%s/admin/documenttypes";

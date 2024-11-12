@@ -2,32 +2,23 @@
 	"documents": [
 		{
 			"municipalityId": "2281",
-			"createdBy": "User1",
-			"registrationNumber": "2023-2281-123",
-			"created": "2023-06-28T12:01:00+02:00",
-			"confidentiality": {"confidential": false},
-			"description": "Document 1",
+			"createdBy": "User2",
+			"registrationNumber": "2024-2281-403",
+			"created": "2024-02-22T08:31:00+01:00",
+			"confidentiality": {"confidential": true},
+			"description": "Generated Document 2",
 			"archive": false,
-			"id": "159c10bf-1b32-471b-b2d3-c4b4b13ea152",
-			"documentData": [{
-				"fileName": "file1.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "faa3547e-f775-4799-9ac0-e07fab1df362",
-				"mimeType": "image/jpeg"
-			}],
+			"id": "34095a16-68c5-48f8-ac1e-9d6b7dd08562",
+			"documentData": [],
 			"type": "EMPLOYEE_CERTIFICATE",
 			"revision": 1,
 			"metadataList": [
-				{
-					"value": "value-1",
-					"key": "document1-key1"
-				},
 				{
 					"value": "Company B",
 					"key": "EMPLOYEE_UNIT"
 				},
 				{
-					"value": "Manager",
+					"value": "Developer",
 					"key": "EMPLOYEE_TYPE"
 				}
 			]
@@ -70,46 +61,36 @@
 		},
 		{
 			"municipalityId": "2281",
-			"createdBy": "User2",
-			"registrationNumber": "2023-2281-123",
-			"created": "2023-06-28T12:02:00+02:00",
-			"confidentiality": {"confidential": false},
-			"description": "Document 1",
-			"archive": false,
-			"id": "8efd63a3-b525-4581-8b0b-9759f381a5a5",
-			"documentData": [{
-				"fileName": "file2.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
-				"mimeType": "image/jpeg"
-			}],
+			"createdBy": "User1",
+			"registrationNumber": "2024-2281-200",
+			"created": "2024-08-23T08:31:00+02:00",
+			"confidentiality": {
+				"legalCitation": "Law §7.2",
+				"confidential": false
+			},
+			"description": "Generated Document 5",
+			"archive": true,
+			"id": "e4c860ad-fce3-431e-965f-0229e5610fb7",
+			"documentData": [],
 			"type": "EMPLOYEE_CERTIFICATE",
-			"revision": 2,
+			"revision": 1,
 			"metadataList": [
 				{
-					"value": "value-1",
-					"key": "document1-key1"
-				},
-				{
-					"value": "value-2",
-					"key": "document1-key2"
-				},
-				{
-					"value": "Company C",
+					"value": "Startup Y",
 					"key": "EMPLOYEE_UNIT"
 				},
 				{
-					"value": "Developer",
+					"value": "Analyst",
 					"key": "EMPLOYEE_TYPE"
 				}
 			]
 		}
 	],
 	"_meta": {
-		"totalRecords": 3,
-		"limit": 20,
+		"totalRecords": 7,
+		"limit": 3,
 		"count": 3,
-		"totalPages": 1,
+		"totalPages": 3,
 		"page": 0
 	}
 }
