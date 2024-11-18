@@ -31,11 +31,11 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.util.ResourceUtils.getFile;
 
 @WireMockAppTestSuite(files = "classpath:/DocumentIT/", classes = Application.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Sql({
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
-@DirtiesContext
 class DocumentIT extends AbstractAppTest {
 
 	private static final String PATH_SUNDSVALL = "/2281/documents";
@@ -225,7 +225,7 @@ class DocumentIT extends AbstractAppTest {
 	@Test
 	void test17_deleteFile() {
 		setupCall()
-			.withServicePath(PATH_SUNDSVALL + "/2023-2281-123/files/4f0a04af-942d-4ad2-b2d9-151887fc995c")
+			.withServicePath(PATH_SUNDSVALL + "/2024-2281-139/files/abc078aa-9335-4b21-b04c-630e27ade51e")
 			.withHttpMethod(DELETE)
 			.withExpectedResponseStatus(NO_CONTENT)
 			.sendRequestAndVerifyResponse();
