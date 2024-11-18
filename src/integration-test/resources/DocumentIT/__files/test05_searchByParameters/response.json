@@ -3,6 +3,32 @@
 		{
 			"municipalityId": "2281",
 			"createdBy": "User2",
+			"registrationNumber": "2024-2281-283",
+			"created": "2024-01-23T08:31:00+01:00",
+			"confidentiality": {
+				"legalCitation": "Law §7.2",
+				"confidential": false
+			},
+			"description": "Generated Document 4",
+			"archive": false,
+			"id": "1cc8599b-8726-4cf7-869d-36737044400c",
+			"documentData": [],
+			"type": "EMPLOYEE_CERTIFICATE",
+			"revision": 1,
+			"metadataList": [
+				{
+					"value": "Organization X",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Manager",
+					"key": "EMPLOYEE_TYPE"
+				}
+			]
+		},
+		{
+			"municipalityId": "2281",
+			"createdBy": "User2",
 			"registrationNumber": "2024-2281-403",
 			"created": "2024-02-22T08:31:00+01:00",
 			"confidentiality": {"confidential": true},
@@ -25,58 +51,19 @@
 		},
 		{
 			"municipalityId": "2281",
-			"createdBy": "User3",
-			"registrationNumber": "2023-2281-123",
-			"created": "2023-06-28T12:03:00+02:00",
-			"confidentiality": {"confidential": false},
-			"description": "Document 1",
-			"archive": true,
-			"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
-			"documentData": [{
-				"fileName": "file3.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
-				"mimeType": "image/jpeg"
-			}],
-			"type": "EMPLOYEE_CERTIFICATE",
-			"revision": 3,
-			"metadataList": [
-				{
-					"value": "value-1",
-					"key": "document1-key1"
-				},
-				{
-					"value": "value-2",
-					"key": "document1-key2"
-				},
-				{
-					"value": "value-3",
-					"key": "document1-key3"
-				},
-				{
-					"value": "value-4",
-					"key": "document1-key4"
-				}
-			]
-		},
-		{
-			"municipalityId": "2281",
-			"createdBy": "User1",
-			"registrationNumber": "2024-2281-200",
-			"created": "2024-08-23T08:31:00+02:00",
-			"confidentiality": {
-				"legalCitation": "Law §7.2",
-				"confidential": false
-			},
-			"description": "Generated Document 5",
-			"archive": true,
-			"id": "e4c860ad-fce3-431e-965f-0229e5610fb7",
+			"createdBy": "User4",
+			"registrationNumber": "2024-2281-465",
+			"created": "2024-08-03T08:33:07+02:00",
+			"confidentiality": {"confidential": true},
+			"description": "Generated Document 19",
+			"archive": false,
+			"id": "5a728f56-2fb1-460e-9158-7a4d5775e80f",
 			"documentData": [],
 			"type": "EMPLOYEE_CERTIFICATE",
 			"revision": 1,
 			"metadataList": [
 				{
-					"value": "Startup Y",
+					"value": "Company B",
 					"key": "EMPLOYEE_UNIT"
 				},
 				{
