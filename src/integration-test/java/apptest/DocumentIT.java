@@ -55,7 +55,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(1)
 	void test01_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?limit=3")
+			.withServicePath(FILTER_PATH + "?limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -71,7 +71,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(2)
 	void test02_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -87,7 +87,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(3)
 	void test03_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?onlyLatestRevision=true&limit=3")
+			.withServicePath(FILTER_PATH + "?onlyLatestRevision=true&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -103,7 +103,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(4)
 	void test04_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -120,7 +120,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(5)
 	void test05_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&documentTypes=EMPLOYEE_CERTIFICATE&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&documentTypes=EMPLOYEE_CERTIFICATE&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -137,7 +137,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(6)
 	void test06_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&documentTypes=EMPLOYEE_CERTIFICATE,HOLIDAY_EXCHANGE&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&documentTypes=EMPLOYEE_CERTIFICATE,HOLIDAY_EXCHANGE&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -154,7 +154,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(7)
 	void test07_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].matchesAny=Company B&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].matchesAny=Company B&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -171,7 +171,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(8)
 	void test08_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].matchesAny=Company B,Company C&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].matchesAny=Company B,Company C&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -188,7 +188,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(9)
 	void test09_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].matchesAll=Startup Y,Analyst&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].matchesAll=Startup Y,Analyst&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -205,7 +205,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(10)
 	void test10_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -223,7 +223,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(11)
 	void test11_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&metaData[1].key=EMPLOYEE_TYPE&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&metaData[1].key=EMPLOYEE_TYPE&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -240,7 +240,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(12)
 	void test12_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&metaData[0].matchesAny=Company B&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&metaData[0].matchesAny=Company B&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
@@ -258,7 +258,7 @@ class DocumentIT extends AbstractAppTest {
 	@Order(13)
 	void test13_searchByParameters() {
 		setupCall()
-			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&metaData[0].matchesAny=Company B&metaData[1].key=EMPLOYEE_TYPE&metaData[2].matchesAny=Developer&limit=3")
+			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&metaData[0].matchesAny=Company B&metaData[1].key=EMPLOYEE_TYPE&metaData[2].matchesAny=Developer&limit=3&sortBy=id")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
