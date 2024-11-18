@@ -14,11 +14,11 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @WireMockAppTestSuite(files = "classpath:/DocumentRevisionIT/", classes = Application.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @Sql({
 	"/db/scripts/truncate.sql",
 	"/db/scripts/testdata-it.sql"
 })
-@DirtiesContext
 class DocumentRevisionIT extends AbstractAppTest {
 
 	private static final String PATH = "/2281/documents";

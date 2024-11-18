@@ -38,6 +38,67 @@
 		},
 		{
 			"municipalityId": "2281",
+			"createdBy": "User6",
+			"registrationNumber": "2024-2281-139",
+			"created": "2024-04-06T08:33:07+02:00",
+			"confidentiality": {
+				"legalCitation": "Law §7.2",
+				"confidential": false
+			},
+			"description": "Generated Document 20",
+			"archive": false,
+			"id": "8ad5ecbf-15e5-4572-9b80-96bbfc2145b6",
+			"documentData": [{
+				"fileName": "to-be-removed.jpg",
+				"fileSizeInBytes": 5068,
+				"id": "abc078aa-9335-4b21-b04c-630e27ade51e",
+				"mimeType": "image/jpeg"
+			}],
+			"type": "CONFIDENTIALITY_AGREEMENT",
+			"revision": 2,
+			"metadataList": []
+		},
+		{
+			"municipalityId": "2281",
+			"createdBy": "User5",
+			"registrationNumber": "2024-2281-999",
+			"created": "2023-06-28T12:01:00+02:00",
+			"confidentiality": {
+				"legalCitation": "Law §7.2",
+				"confidential": true
+			},
+			"description": "Document 2",
+			"archive": true,
+			"id": "435bb041-2b02-4bb3-b3e7-3782a13f47d5",
+			"documentData": [{
+				"fileName": "file5.jpg",
+				"fileSizeInBytes": 5068,
+				"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
+				"mimeType": "image/jpeg"
+			}],
+			"type": "HOLIDAY_EXCHANGE",
+			"revision": 2,
+			"metadataList": [
+				{
+					"value": "value-1",
+					"key": "document2-key1"
+				},
+				{
+					"value": "value-2",
+					"key": "document2-key2"
+				},
+				{
+					"value": "Startup Y",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Developer",
+					"key": "EMPLOYEE_TYPE"
+				}
+			]
+		},
+		{
+			"municipalityId": "2281",
 			"createdBy": "User4",
 			"registrationNumber": "2024-2281-991",
 			"created": "2024-02-05T08:31:00+01:00",
@@ -133,6 +194,29 @@
 		},
 		{
 			"municipalityId": "2281",
+			"createdBy": "User2",
+			"registrationNumber": "2024-2281-403",
+			"created": "2024-02-22T08:31:00+01:00",
+			"confidentiality": {"confidential": true},
+			"description": "Generated Document 2",
+			"archive": false,
+			"id": "34095a16-68c5-48f8-ac1e-9d6b7dd08562",
+			"documentData": [],
+			"type": "EMPLOYEE_CERTIFICATE",
+			"revision": 1,
+			"metadataList": [
+				{
+					"value": "Company B",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Developer",
+					"key": "EMPLOYEE_TYPE"
+				}
+			]
+		},
+		{
+			"municipalityId": "2281",
 			"createdBy": "User1",
 			"registrationNumber": "2024-2281-646",
 			"created": "2024-06-28T08:33:07+02:00",
@@ -153,6 +237,55 @@
 				},
 				{
 					"value": "Consultant",
+					"key": "EMPLOYEE_TYPE"
+				}
+			]
+		},
+		{
+			"municipalityId": "2281",
+			"createdBy": "User1",
+			"registrationNumber": "2024-2281-491",
+			"created": "2023-11-17T08:31:00+01:00",
+			"confidentiality": {
+				"legalCitation": "Law §7.1",
+				"confidential": true
+			},
+			"description": "Generated Document 10",
+			"archive": false,
+			"id": "488c4523-4ae1-41ea-8a3a-cf991999b12f",
+			"documentData": [],
+			"type": "CONFIDENTIALITY_AGREEMENT",
+			"revision": 1,
+			"metadataList": [
+				{
+					"value": "Startup Y",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Developer",
+					"key": "EMPLOYEE_TYPE"
+				}
+			]
+		},
+		{
+			"municipalityId": "2281",
+			"createdBy": "User4",
+			"registrationNumber": "2024-2281-465",
+			"created": "2024-08-03T08:33:07+02:00",
+			"confidentiality": {"confidential": true},
+			"description": "Generated Document 19",
+			"archive": false,
+			"id": "5a728f56-2fb1-460e-9158-7a4d5775e80f",
+			"documentData": [],
+			"type": "EMPLOYEE_CERTIFICATE",
+			"revision": 1,
+			"metadataList": [
+				{
+					"value": "Company B",
+					"key": "EMPLOYEE_UNIT"
+				},
+				{
+					"value": "Analyst",
 					"key": "EMPLOYEE_TYPE"
 				}
 			]
@@ -251,23 +384,6 @@
 		},
 		{
 			"municipalityId": "2281",
-			"createdBy": "User6",
-			"registrationNumber": "2024-2281-139",
-			"created": "2024-04-06T08:33:07+02:00",
-			"confidentiality": {
-				"legalCitation": "Law §7.2",
-				"confidential": false
-			},
-			"description": "Generated Document 20",
-			"archive": false,
-			"id": "8ad5ecbf-15e5-4572-9b80-96bbfc2145b6",
-			"documentData": [],
-			"type": "CONFIDENTIALITY_AGREEMENT",
-			"revision": 2,
-			"metadataList": []
-		},
-		{
-			"municipalityId": "2281",
 			"createdBy": "User3",
 			"registrationNumber": "2024-2281-370",
 			"created": "2024-09-10T08:31:00+02:00",
@@ -360,53 +476,33 @@
 		},
 		{
 			"municipalityId": "2281",
-			"createdBy": "User2",
-			"registrationNumber": "2024-2281-632",
-			"created": "2024-01-28T08:33:07+01:00",
-			"confidentiality": {
-				"legalCitation": "Law §7.2",
-				"confidential": false
-			},
-			"description": "Generated Document 12",
+			"createdBy": "User1",
+			"registrationNumber": "2024-2281-266",
+			"created": "2023-12-29T08:33:07+01:00",
+			"confidentiality": {"confidential": true},
+			"description": "Generated Document 18",
 			"archive": false,
-			"id": "f182fd95-7a17-4cb7-843b-abf1f8ce8ce7",
+			"id": "ef87f332-50b1-4943-bf0d-c1fa798734a9",
 			"documentData": [],
-			"type": "CONFIDENTIALITY_AGREEMENT",
+			"type": "MISSPELLED",
 			"revision": 1,
 			"metadataList": [
 				{
-					"value": "Company B",
+					"value": "Organization X",
 					"key": "EMPLOYEE_UNIT"
 				},
 				{
-					"value": "Developer",
+					"value": "Manager",
 					"key": "EMPLOYEE_TYPE"
 				}
 			]
-		},
-		{
-			"municipalityId": "2281",
-			"createdBy": "User5",
-			"registrationNumber": "2024-2281-755",
-			"created": "2024-04-06T08:33:07+02:00",
-			"confidentiality": {
-				"legalCitation": "Law §7.2",
-				"confidential": false
-			},
-			"description": "Generated Document 20",
-			"archive": false,
-			"id": "fe6a0099-e407-4350-aaf2-f47edb20a770",
-			"documentData": [],
-			"type": "CONFIDENTIALITY_AGREEMENT",
-			"revision": 2,
-			"metadataList": []
 		}
 	],
 	"_meta": {
-		"totalRecords": 17,
+		"totalRecords": 22,
 		"limit": 20,
-		"count": 17,
-		"totalPages": 1,
+		"count": 20,
+		"totalPages": 2,
 		"page": 0
 	}
 }

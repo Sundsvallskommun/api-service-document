@@ -258,7 +258,12 @@
 			"description": "Generated Document 20",
 			"archive": false,
 			"id": "8ad5ecbf-15e5-4572-9b80-96bbfc2145b6",
-			"documentData": [],
+			"documentData": [{
+				"fileName": "to-be-removed.jpg",
+				"fileSizeInBytes": 5068,
+				"id": "abc078aa-9335-4b21-b04c-630e27ade51e",
+				"mimeType": "image/jpeg"
+			}],
 			"type": "CONFIDENTIALITY_AGREEMENT",
 			"revision": 2,
 			"metadataList": []
