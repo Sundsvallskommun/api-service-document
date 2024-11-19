@@ -1,6 +1,5 @@
 package se.sundsvall.document.api.model;
 
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import se.sundsvall.dept44.models.api.paging.AbstractParameterPagingAndSortingBase;
 
@@ -21,7 +20,7 @@ public class DocumentParameters extends AbstractParameterPagingAndSortingBase {
 	@Schema(description = "List of document types")
 	private List<String> documentTypes;
 
-	@ArraySchema(schema = @Schema(description = "List of metadata", implementation = MetaData.class))
+	@Schema(description = "Metadata filter")
 	private List<MetaData> metaData;
 
 	public static class MetaData {
@@ -29,10 +28,10 @@ public class DocumentParameters extends AbstractParameterPagingAndSortingBase {
 		@Schema(description = "Metadata key", example = "Some key")
 		private String key;
 
-		@ArraySchema(schema = @Schema(description = "List of metadata values", implementation = String.class))
+		@Schema(description = "Comma separated list of values that are used for 'matchesAny' filtering", example = "value1,value2")
 		private List<String> matchesAny;
 
-		@ArraySchema(schema = @Schema(description = "List of metadata values", implementation = String.class))
+		@Schema(description = "Comma separated list of values that are used for 'matchesAll' filtering", example = "value1,value2")
 		private List<String> matchesAll;
 
 		public static DocumentParameters.MetaData create() {
