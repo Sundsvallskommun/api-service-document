@@ -79,9 +79,7 @@ public interface SearchSpecification {
 				subMetadataJoin.get(VALUE).in(
 					metaData.getMatchesAll().stream()
 						.map(String::toLowerCase)
-						.toList()
-				)
-			);
+						.toList()));
 
 			return cb.equal(subquery, (long) metaData.getMatchesAll().size());
 		};
