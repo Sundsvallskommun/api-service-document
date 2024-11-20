@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "3.0"
 servers:
-  - url: http://localhost:63347
+  - url: http://localhost:52675
     description: Generated server url
 tags:
   - name: Document revisions
@@ -56,6 +56,14 @@ paths:
       responses:
         "200":
           description: Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -68,14 +76,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/documents:
     get:
       tags:
@@ -148,12 +148,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/PagedDocumentResponse"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -162,6 +156,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
     post:
       tags:
         - Documents
@@ -192,12 +192,13 @@ paths:
                     type: string
                     format: binary
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
+        "201":
+          description: Successful operation
+          headers:
+            Location:
+              style: simple
               schema:
-                $ref: "#/components/schemas/Problem"
+                type: string
         "400":
           description: Bad request
           content:
@@ -206,13 +207,54 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "201":
-          description: Successful operation
-          headers:
-            Location:
-              style: simple
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
               schema:
-                type: string
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/documents/filter:
+    post:
+      tags:
+        - Documents
+      summary: Search documents by parameters
+      operationId: searchByParameters
+      parameters:
+        - name: municipalityId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentParameters"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedDocumentResponse"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/PagedDocumentResponse"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/admin/documenttypes:
     get:
       tags:
@@ -242,12 +284,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/DocumentType"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -256,6 +292,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
     post:
       tags:
         - Administration
@@ -277,12 +319,13 @@ paths:
               $ref: "#/components/schemas/DocumentTypeCreateRequest"
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
+        "201":
+          description: Successful operation
+          headers:
+            Location:
+              style: simple
               schema:
-                $ref: "#/components/schemas/Problem"
+                type: string
         "400":
           description: Bad request
           content:
@@ -291,13 +334,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "201":
-          description: Successful operation
-          headers:
-            Location:
-              style: simple
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
               schema:
-                type: string
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/documents/{registrationNumber}:
     get:
       tags:
@@ -337,6 +379,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Document"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -349,14 +399,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
     patch:
       tags:
         - Documents
@@ -401,6 +443,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Document"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -413,14 +463,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/documents/{registrationNumber}/confidentiality:
     patch:
       tags:
@@ -451,6 +493,14 @@ paths:
       responses:
         "200":
           description: Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -463,14 +513,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/admin/documenttypes/{type}:
     get:
       tags:
@@ -503,12 +545,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/DocumentType"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -517,6 +553,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
     delete:
       tags:
         - Administration
@@ -540,14 +582,6 @@ paths:
             type: string
           example: EMPLOYMENT_CERTIFICATE
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "204":
-          description: Successful operation
         "404":
           description: Not Found
           content:
@@ -562,6 +596,14 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "204":
+          description: Successful operation
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
     patch:
       tags:
         - Administration
@@ -590,14 +632,6 @@ paths:
               $ref: "#/components/schemas/DocumentTypeUpdateRequest"
         required: true
       responses:
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "204":
-          description: Successful operation
         "404":
           description: Not Found
           content:
@@ -612,6 +646,14 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "204":
+          description: Successful operation
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/documents/{registrationNumber}/revisions:
     get:
       tags:
@@ -676,12 +718,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/PagedDocumentResponse"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -690,6 +726,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/documents/{registrationNumber}/revisions/{revision}:
     get:
       tags:
@@ -738,6 +780,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Document"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -750,14 +800,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/documents/{registrationNumber}/revisions/{revision}/files/{documentDataId}:
     get:
       tags:
@@ -806,6 +848,14 @@ paths:
       responses:
         "200":
           description: Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -818,14 +868,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/documents/{registrationNumber}/files/{documentDataId}:
     get:
       tags:
@@ -865,6 +907,14 @@ paths:
       responses:
         "200":
           description: Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -877,14 +927,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
     delete:
       tags:
         - Documents
@@ -913,6 +955,16 @@ paths:
             type: string
           example: 082ba08f-03c7-409f-b8a6-940a1397ba38
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "204":
+          description: Successful operation
         "404":
           description: Not found
           content:
@@ -925,57 +977,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "204":
-          description: Successful operation
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
-  /{municipalityId}/documents/filter:
-    get:
-      tags:
-        - Documents
-      summary: Search documents by parameters
-      operationId: searchByParameters
-      parameters:
-        - name: municipalityId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: documentParameters
-          in: query
-          required: true
-          schema:
-            $ref: "#/components/schemas/DocumentParameters"
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PagedDocumentResponse"
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/PagedDocumentResponse"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /api-docs:
     get:
       tags:
@@ -1017,12 +1018,12 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
         detail:
           type: string
         title:
           type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
     StatusType:
       type: object
       properties:
@@ -1152,12 +1153,12 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
         detail:
           type: string
         title:
           type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
         suppressed:
           type: array
           items:
@@ -1263,56 +1264,79 @@ components:
           description: Metadata value
           example: Some value
       description: DocumentMetadata model
-    DocumentTypeCreateRequest:
-      required:
-        - createdBy
-        - displayName
-        - type
+    Direction:
+      type: string
+      description: The sort order direction
+      example: ASC
+      enum:
+        - ASC
+        - DESC
+    DocumentParameters:
       type: object
       properties:
-        type:
-          type: string
-          description: Identifier for the document type
-          example: EMPLOYMENT_CERTIFICATE
-        displayName:
-          type: string
-          description: Display name for the document type
-          example: Anställningsbevis
-        createdBy:
-          type: string
-          description: Identifier for performing person
-          example: username123
-    DocumentUpdateRequest:
-      required:
-        - createdBy
-      type: object
-      properties:
-        createdBy:
-          type: string
-          description: Actor that created this revision (all modifications will create
-            new revisions).
-          example: username123
-        description:
-          maxLength: 8192
-          minLength: 0
-          type: string
-          description: Document description
-          example: A brief description of this object. Maximum 8192 characters.
-        archive:
-          type: boolean
-          description: Tells if the document is eligible for archiving
-          example: false
-        metadataList:
+        page:
+          minimum: 1
+          type: integer
+          description: Page number
+          format: int32
+          example: 1
+          default: 1
+        limit:
+          minimum: 1
+          type: integer
+          description: Result size per page. Maximum allowed value is dynamically
+            configured
+          format: int32
+          example: 15
+        sortBy:
           type: array
-          description: List of DocumentMetadata objects.
           items:
-            $ref: "#/components/schemas/DocumentMetadata"
-        type:
+            type: string
+            description: The properties to sort on
+            example: propertyName
+        sortDirection:
+          $ref: "#/components/schemas/Direction"
+        municipalityId:
           type: string
-          description: The type of document (validated against a defined list of document
-            types).
-          example: EMPLOYMENT_CERTIFICATE
-      description: DocumentUpdateRequest model.
+          description: Municipality identifier
+          readOnly: true
+          example: "1234"
+        includeConfidential:
+          type: boolean
+          description: Should the search include confidential documents?
+          example: true
+          default: false
+        onlyLatestRevision:
+          type: boolean
+          description: Should the search include only the latest revision of the documents?
+          example: true
+          default: false
+        documentTypes:
+          type: array
+          description: List of document types
+          items:
+            type: string
+            description: List of document types
+        metaData:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetaData"
+    MetaData:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Metadata key
+          example: Some key
+        matchesAny:
+          type: array
+          items:
+            type: string
+        matchesAll:
+          type: array
+          items:
+            type: string
+      description: List of metadata
     Document:
       type: object
       properties:
@@ -1390,45 +1414,6 @@ components:
           example: 5068
       description: DocumentData model.
       readOnly: true
-    ConfidentialityUpdateRequest:
-      required:
-        - changedBy
-        - confidential
-      type: object
-      properties:
-        confidential:
-          type: boolean
-          description: |
-            A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
-            If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
-            Please note: This will affect all revisions, not just the latest revision.
-          example: false
-        legalCitation:
-          type: string
-          description: Legal citation
-          example: 25 kap. 1 § OSL
-        changedBy:
-          type: string
-          description: Actor that performed this change
-          example: username123
-      description: ConfidentialityUpdateRequest model.
-    DocumentTypeUpdateRequest:
-      required:
-        - updatedBy
-      type: object
-      properties:
-        displayName:
-          type: string
-          description: Display name for the document type
-          example: Anställningsbevis
-        type:
-          type: string
-          description: Identifier for the document type
-          example: EMPLOYMENT_CERTIFICATE
-        updatedBy:
-          type: string
-          description: Identifier for performing person
-          example: username123
     PagedDocumentResponse:
       type: object
       properties:
@@ -1474,79 +1459,95 @@ components:
           readOnly: true
           example: 23
       description: PagingMetaData model
-    Direction:
-      type: string
-      description: The sort order direction
-      example: ASC
-      enum:
-        - ASC
-        - DESC
-    DocumentParameters:
+    DocumentTypeCreateRequest:
+      required:
+        - createdBy
+        - displayName
+        - type
       type: object
       properties:
-        page:
-          minimum: 1
-          type: integer
-          description: Page number
-          format: int32
-          example: 1
-          default: 1
-        limit:
-          minimum: 1
-          type: integer
-          description: Result size per page. Maximum allowed value is dynamically
-            configured
-          format: int32
-          example: 15
-        sortBy:
-          type: array
-          items:
-            type: string
-            description: The properties to sort on
-            example: propertyName
-        sortDirection:
-          $ref: "#/components/schemas/Direction"
-        municipalityId:
+        type:
           type: string
-          description: Municipality identifier
-          readOnly: true
-          example: "1234"
-        includeConfidential:
-          type: boolean
-          description: Should the search include confidential documents?
-          example: true
-          default: false
-        onlyLatestRevision:
-          type: boolean
-          description: Should the search include only the latest revision of the documents?
-          example: true
-          default: false
-        documentTypes:
-          type: array
-          description: List of document types
-          items:
-            type: string
-            description: List of document types
-        metaData:
-          type: array
-          items:
-            $ref: "#/components/schemas/MetaData"
-    MetaData:
+          description: Identifier for the document type
+          example: EMPLOYMENT_CERTIFICATE
+        displayName:
+          type: string
+          description: Display name for the document type
+          example: Anställningsbevis
+        createdBy:
+          type: string
+          description: Identifier for performing person
+          example: username123
+    DocumentUpdateRequest:
+      required:
+        - createdBy
       type: object
       properties:
-        key:
+        createdBy:
           type: string
-          description: Metadata key
-          example: Some key
-        matchesAny:
+          description: Actor that created this revision (all modifications will create
+            new revisions).
+          example: username123
+        description:
+          maxLength: 8192
+          minLength: 0
+          type: string
+          description: Document description
+          example: A brief description of this object. Maximum 8192 characters.
+        archive:
+          type: boolean
+          description: Tells if the document is eligible for archiving
+          example: false
+        metadataList:
           type: array
+          description: List of DocumentMetadata objects.
           items:
-            type: string
-        matchesAll:
-          type: array
-          items:
-            type: string
-      description: List of metadata
+            $ref: "#/components/schemas/DocumentMetadata"
+        type:
+          type: string
+          description: The type of document (validated against a defined list of document
+            types).
+          example: EMPLOYMENT_CERTIFICATE
+      description: DocumentUpdateRequest model.
+    ConfidentialityUpdateRequest:
+      required:
+        - changedBy
+        - confidential
+      type: object
+      properties:
+        confidential:
+          type: boolean
+          description: |
+            A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
+            If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
+            Please note: This will affect all revisions, not just the latest revision.
+          example: false
+        legalCitation:
+          type: string
+          description: Legal citation
+          example: 25 kap. 1 § OSL
+        changedBy:
+          type: string
+          description: Actor that performed this change
+          example: username123
+      description: ConfidentialityUpdateRequest model.
+    DocumentTypeUpdateRequest:
+      required:
+        - updatedBy
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: Display name for the document type
+          example: Anställningsbevis
+        type:
+          type: string
+          description: Identifier for the document type
+          example: EMPLOYMENT_CERTIFICATE
+        updatedBy:
+          type: string
+          description: Identifier for performing person
+          example: username123
     DocumentType:
       required:
         - displayName

@@ -227,13 +227,13 @@ class DocumentResource {
 		return ok(documentService.search(query, includeConfidential, onlyLatestRevision, pageable, municipalityId));
 	}
 
-	@GetMapping(path = "/filter", produces = {
+	@PostMapping(path = "/filter", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
 	@Operation(summary = "Search documents by parameters")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	ResponseEntity<PagedDocumentResponse> searchByParameters(@PathVariable("municipalityId") final String municipalityId,
-		final DocumentParameters documentParameters) {
+		@RequestBody final DocumentParameters documentParameters) {
 
 		var decoratedRequest = documentParameters.withMunicipalityId(municipalityId);
 

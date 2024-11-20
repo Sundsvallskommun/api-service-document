@@ -1,0 +1,10 @@
+{
+	"metaData": [{
+		"matchesAny": ["Company B"],
+		"key": "EMPLOYEE_UNIT"
+	}],
+	"limit": 3,
+	"sortBy": ["id"],
+	"includeConfidential": true,
+	"onlyLatestRevision": true
+}

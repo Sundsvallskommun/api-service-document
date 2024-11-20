@@ -56,7 +56,8 @@ class DocumentIT extends AbstractAppTest {
 	void test01_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -72,7 +73,8 @@ class DocumentIT extends AbstractAppTest {
 	void test02_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -88,7 +90,8 @@ class DocumentIT extends AbstractAppTest {
 	void test03_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?onlyLatestRevision=true&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -104,7 +107,8 @@ class DocumentIT extends AbstractAppTest {
 	void test04_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -121,7 +125,8 @@ class DocumentIT extends AbstractAppTest {
 	void test05_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&documentTypes=EMPLOYEE_CERTIFICATE&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -138,7 +143,8 @@ class DocumentIT extends AbstractAppTest {
 	void test06_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&documentTypes=EMPLOYEE_CERTIFICATE,HOLIDAY_EXCHANGE&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -155,7 +161,8 @@ class DocumentIT extends AbstractAppTest {
 	void test07_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].matchesAny=Company B&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -172,7 +179,8 @@ class DocumentIT extends AbstractAppTest {
 	void test08_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].matchesAny=Company B,Company C&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -181,7 +189,7 @@ class DocumentIT extends AbstractAppTest {
 	/**
 	 * # includeConfidential - true
 	 * # onlyLatestRevision - true
-	 * # metaData { key = null, matchesAll = Company B,Manager }
+	 * # metaData { key = null, matchesAll = Startup Y,Analyst }
 	 * # limit - 3
 	 */
 	@Test
@@ -189,7 +197,8 @@ class DocumentIT extends AbstractAppTest {
 	void test09_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].matchesAll=Startup Y,Analyst&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -206,7 +215,8 @@ class DocumentIT extends AbstractAppTest {
 	void test10_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -224,7 +234,8 @@ class DocumentIT extends AbstractAppTest {
 	void test11_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&metaData[1].key=EMPLOYEE_TYPE&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -241,7 +252,8 @@ class DocumentIT extends AbstractAppTest {
 	void test12_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&metaData[0].matchesAny=Company B&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
@@ -259,7 +271,8 @@ class DocumentIT extends AbstractAppTest {
 	void test13_searchByParameters() {
 		setupCall()
 			.withServicePath(FILTER_PATH + "?includeConfidential=true&onlyLatestRevision=true&metaData[0].key=EMPLOYEE_UNIT&metaData[0].matchesAny=Company B&metaData[1].key=EMPLOYEE_TYPE&metaData[2].matchesAny=Developer&limit=3&sortBy=id")
-			.withHttpMethod(GET)
+			.withHttpMethod(POST)
+			.withRequest(REQUEST_FILE)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();

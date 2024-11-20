@@ -1,11 +1,15 @@
 package se.sundsvall.document.integration.db.specification;
 
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 import se.sundsvall.document.api.model.DocumentParameters;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity_;
+import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 import se.sundsvall.document.integration.db.model.DocumentTypeEntity_;
 
 import java.util.List;
@@ -63,13 +67,21 @@ public interface SearchSpecification {
 			if (metaData.getKey() == null || metaData.getMatchesAll() == null || metaData.getMatchesAll().isEmpty()) {
 				return cb.and();
 			}
-			var allValuePredicates = metaData.getMatchesAll().stream()
-				.map(value -> cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(VALUE)), value.toLowerCase()))
-				.toList();
 
-			return cb.and(
-				cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(KEY)), metaData.getKey().toLowerCase()),
-				cb.and(allValuePredicates.toArray(new Predicate[0])));
+			Subquery<Long> subquery = query.subquery(Long.class);
+			Root<DocumentEntity> subRoot = subquery.from(DocumentEntity.class);
+			Join<DocumentEntity, DocumentMetadataEmbeddable> subMetadataJoin = subRoot.join(METADATA, JoinType.INNER);
+
+			subquery.select(cb.count(subMetadataJoin.get(VALUE)));
+			subquery.where(
+				cb.equal(subRoot, root),
+				cb.equal(cb.lower(subMetadataJoin.get(KEY)), metaData.getKey().toLowerCase()),
+				subMetadataJoin.get(VALUE).in(
+					metaData.getMatchesAll().stream()
+						.map(String::toLowerCase)
+						.toList()));
+
+			return cb.equal(subquery, (long) metaData.getMatchesAll().size());
 		};
 	}
 
@@ -78,12 +90,15 @@ public interface SearchSpecification {
 			if (metaData.getKey() == null || metaData.getMatchesAny() == null || metaData.getMatchesAny().isEmpty()) {
 				return cb.and();
 			}
+
+			Join<DocumentEntity, DocumentMetadataEmbeddable> metadataJoin = root.join(METADATA, JoinType.INNER);
+
 			var anyValuePredicates = metaData.getMatchesAny().stream()
-				.map(value -> cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(VALUE)), value.toLowerCase()))
+				.map(value -> cb.equal(cb.lower(metadataJoin.get(VALUE)), value.toLowerCase()))
 				.toList();
 
 			return cb.and(
-				cb.equal(cb.lower(root.join(METADATA, JoinType.INNER).get(KEY)), metaData.getKey().toLowerCase()),
+				cb.equal(cb.lower(metadataJoin.get(KEY)), metaData.getKey().toLowerCase()),
 				cb.or(anyValuePredicates.toArray(new Predicate[0])));
 		};
 	}
