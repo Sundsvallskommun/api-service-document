@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "3.0"
 servers:
-  - url: http://localhost:52675
+  - url: http://localhost:61471
     description: Generated server url
 tags:
   - name: Document revisions
@@ -54,8 +54,6 @@ paths:
                   type: string
                   format: binary
       responses:
-        "200":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -64,6 +62,8 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "200":
+          description: Successful operation
         "404":
           description: Not found
           content:
@@ -81,6 +81,22 @@ paths:
       tags:
         - Documents
       summary: Search documents.
+      description: |+
+        Parameters:
+        - includeConfidential: Should the search include confidential documents? Datatype - boolean (default: false)
+        - boolean onlyLatestRevision: Should the search include only the latest revision of the documents? Datatype - boolean (default: false)
+        - query: Search query. Allows asterisk (*) as wildcard. Datatype - String
+
+        The search query is used to match in the following fields using a LIKE-TO-LOWER-CASE comparison:
+        - createdBy
+        - description
+        - municipalityId
+        - registrationNumber
+        - fileName
+        - mimeType
+        - metadataKey
+        - metadataValue
+
       operationId: search
       parameters:
         - name: municipalityId
@@ -139,6 +155,14 @@ paths:
             items:
               type: string
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -148,14 +172,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/PagedDocumentResponse"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -218,6 +234,19 @@ paths:
       tags:
         - Documents
       summary: Search documents by parameters
+      description: "Parameters:\n- includeConfidential: Should the search include\
+        \ confidential documents? Datatype - boolean (default: false)\n- onlyLatestRevision:\
+        \ Should the search include only the latest revision of the documents? Datatype\
+        \ - boolean (default: false)\n- documentTypes: Which document types to include\
+        \ in the search. Datatype - List of Strings\n- metaData: Uses the metadata\
+        \ object to search for documents with specific metadata. Datatype - List of\
+        \ metadata objects.\n- page: The page number to retrieve. Datatype - integer\
+        \ (default: 1)\n- limit: The number of documents to retrieve per page. Datatype\
+        \ - integer (default: 100)\n\nObjects:\n- MetaData: {\n\t- key: A given metadata\
+        \ key. Datatype - String\n\t- matchesAny: Returns documents where the given\
+        \ key(if present) have at least one of the matchesAny values. Datatype - List\
+        \ of Strings\n\t- matchesAll: Returns documents where the given key(if present)\
+        \ have all of the matchesAll values. Datatype - List of Strings\n}\n"
       operationId: searchByParameters
       parameters:
         - name: municipalityId
@@ -232,6 +261,14 @@ paths:
               $ref: "#/components/schemas/DocumentParameters"
         required: true
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -241,14 +278,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/PagedDocumentResponse"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -271,6 +300,14 @@ paths:
             type: string
           example: 2281
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -284,14 +321,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/DocumentType"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -370,6 +399,14 @@ paths:
             default: false
           example: true
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -379,14 +416,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Document"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -434,6 +463,14 @@ paths:
               $ref: "#/components/schemas/DocumentUpdateRequest"
         required: true
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -443,14 +480,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Document"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -491,8 +520,6 @@ paths:
               $ref: "#/components/schemas/ConfidentialityUpdateRequest"
         required: true
       responses:
-        "200":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -501,6 +528,8 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "200":
+          description: Successful operation
         "404":
           description: Not found
           content:
@@ -536,6 +565,14 @@ paths:
             type: string
           example: EMPLOYMENT_CERTIFICATE
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -545,14 +582,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/DocumentType"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -582,12 +611,6 @@ paths:
             type: string
           example: EMPLOYMENT_CERTIFICATE
       responses:
-        "404":
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -596,10 +619,16 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "204":
-          description: Successful operation
         "500":
           description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "204":
+          description: Successful operation
+        "404":
+          description: Not Found
           content:
             application/problem+json:
               schema:
@@ -632,12 +661,6 @@ paths:
               $ref: "#/components/schemas/DocumentTypeUpdateRequest"
         required: true
       responses:
-        "404":
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -646,10 +669,16 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "204":
-          description: Successful operation
         "500":
           description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "204":
+          description: Successful operation
+        "404":
+          description: Not Found
           content:
             application/problem+json:
               schema:
@@ -709,6 +738,14 @@ paths:
             items:
               type: string
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -718,14 +755,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/PagedDocumentResponse"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -771,6 +800,14 @@ paths:
             default: false
           example: true
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "200":
           description: Successful operation
           content:
@@ -780,14 +817,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Document"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -846,8 +875,6 @@ paths:
             default: false
           example: true
       responses:
-        "200":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -856,6 +883,8 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "200":
+          description: Successful operation
         "404":
           description: Not found
           content:
@@ -905,8 +934,6 @@ paths:
             default: false
           example: true
       responses:
-        "200":
-          description: Successful operation
         "400":
           description: Bad request
           content:
@@ -915,6 +942,8 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "200":
+          description: Successful operation
         "404":
           description: Not found
           content:
@@ -963,8 +992,6 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "204":
-          description: Successful operation
         "404":
           description: Not found
           content:
@@ -977,6 +1004,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "204":
+          description: Successful operation
   /api-docs:
     get:
       tags:
@@ -1018,12 +1047,12 @@ components:
           type: object
           additionalProperties:
             type: object
+        status:
+          $ref: "#/components/schemas/StatusType"
         detail:
           type: string
         title:
           type: string
-        status:
-          $ref: "#/components/schemas/StatusType"
     StatusType:
       type: object
       properties:
@@ -1153,12 +1182,12 @@ components:
           type: object
           additionalProperties:
             type: object
+        status:
+          $ref: "#/components/schemas/StatusType"
         detail:
           type: string
         title:
           type: string
-        status:
-          $ref: "#/components/schemas/StatusType"
         suppressed:
           type: array
           items:

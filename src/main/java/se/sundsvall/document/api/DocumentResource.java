@@ -61,6 +61,8 @@ import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static se.sundsvall.document.Constants.DOCUMENTS_BASE_PATH;
+import static se.sundsvall.document.service.Constants.SEARCH_BY_PARAMETERS_DOCUMENTATION;
+import static se.sundsvall.document.service.Constants.SEARCH_DOCUMENTATION;
 
 @RestController
 @Validated
@@ -215,7 +217,7 @@ class DocumentResource {
 	@GetMapping(produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Search documents.")
+	@Operation(summary = "Search documents.", description = SEARCH_DOCUMENTATION)
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	ResponseEntity<PagedDocumentResponse> search(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
@@ -230,7 +232,7 @@ class DocumentResource {
 	@PostMapping(path = "/filter", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Search documents by parameters")
+	@Operation(summary = "Search documents by parameters", description = SEARCH_BY_PARAMETERS_DOCUMENTATION)
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	ResponseEntity<PagedDocumentResponse> searchByParameters(@PathVariable("municipalityId") final String municipalityId,
 		@RequestBody final DocumentParameters documentParameters) {
