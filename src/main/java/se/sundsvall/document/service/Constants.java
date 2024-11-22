@@ -23,7 +23,7 @@ public final class Constants {
 		- includeConfidential: Should the search include confidential documents? Datatype - boolean (default: false)
 		- boolean onlyLatestRevision: Should the search include only the latest revision of the documents? Datatype - boolean (default: false)
 		- query: Search query. Allows asterisk (*) as wildcard. Datatype - String
-		
+
 		The search query is used to match in the following fields using a LIKE-TO-LOWER-CASE comparison:
 		- createdBy
 		- description
@@ -33,7 +33,7 @@ public final class Constants {
 		- mimeType
 		- metadataKey
 		- metadataValue
-		
+
 		""";
 
 	public static final String SEARCH_BY_PARAMETERS_DOCUMENTATION = """
@@ -44,7 +44,7 @@ public final class Constants {
 		- metaData: Uses the metadata object to search for documents with specific metadata. Datatype - List of metadata objects.
 		- page: The page number to retrieve. Datatype - integer (default: 1)
 		- limit: The number of documents to retrieve per page. Datatype - integer (default: 100)
-		
+
 		Objects:
 		- MetaData: {
 			- key: A given metadata key, this is optional. All metadata will be searched if key is not provided. Datatype - String
