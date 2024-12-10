@@ -7,7 +7,6 @@ import static org.apache.commons.lang3.ObjectUtils.anyNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import se.sundsvall.document.api.model.DocumentType;
 import se.sundsvall.document.api.model.DocumentTypeCreateRequest;
 import se.sundsvall.document.api.model.DocumentTypeUpdateRequest;

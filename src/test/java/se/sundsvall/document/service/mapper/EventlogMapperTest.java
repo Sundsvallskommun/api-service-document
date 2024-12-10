@@ -8,9 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
 
-import org.junit.jupiter.api.Test;
-
 import generated.se.sundsvall.eventlog.Metadata;
+import org.junit.jupiter.api.Test;
 
 class EventlogMapperTest {
 

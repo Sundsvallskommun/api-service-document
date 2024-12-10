@@ -5,16 +5,20 @@
 			"createdBy": "User3",
 			"registrationNumber": "2023-2281-123",
 			"created": "2023-06-28T12:03:00+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Document 1",
 			"archive": true,
 			"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
-			"documentData": [{
-				"fileName": "file3.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "file3.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "EMPLOYEE_CERTIFICATE",
 			"revision": 3,
 			"metadataList": [
@@ -41,16 +45,20 @@
 			"createdBy": "User2",
 			"registrationNumber": "2023-2281-123",
 			"created": "2023-06-28T12:02:00+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Document 1",
 			"archive": false,
 			"id": "8efd63a3-b525-4581-8b0b-9759f381a5a5",
-			"documentData": [{
-				"fileName": "file2.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "file2.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "EMPLOYEE_CERTIFICATE",
 			"revision": 2,
 			"metadataList": [
@@ -84,12 +92,14 @@
 			"description": "Document 2",
 			"archive": true,
 			"id": "03d33a6a-bc8c-410c-95f6-2c890822967d",
-			"documentData": [{
-				"fileName": "file4.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "8f7be4bb-ef79-4a16-95bf-a0619e320745",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "file4.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "8f7be4bb-ef79-4a16-95bf-a0619e320745",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "HOLIDAY_EXCHANGE",
 			"revision": 1,
 			"metadataList": [
@@ -127,12 +137,14 @@
 			"description": "Generated Document 20",
 			"archive": false,
 			"id": "8ad5ecbf-15e5-4572-9b80-96bbfc2145b6",
-			"documentData": [{
-				"fileName": "to-be-removed.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "abc078aa-9335-4b21-b04c-630e27ade51e",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "to-be-removed.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "abc078aa-9335-4b21-b04c-630e27ade51e",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "CONFIDENTIALITY_AGREEMENT",
 			"revision": 2,
 			"metadataList": []
@@ -149,12 +161,14 @@
 			"description": "Document 2",
 			"archive": true,
 			"id": "435bb041-2b02-4bb3-b3e7-3782a13f47d5",
-			"documentData": [{
-				"fileName": "file5.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "file5.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "HOLIDAY_EXCHANGE",
 			"revision": 2,
 			"metadataList": [
@@ -181,16 +195,20 @@
 			"createdBy": "User1",
 			"registrationNumber": "2023-2281-123",
 			"created": "2023-06-28T12:01:00+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Document 1",
 			"archive": false,
 			"id": "159c10bf-1b32-471b-b2d3-c4b4b13ea152",
-			"documentData": [{
-				"fileName": "file1.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "faa3547e-f775-4799-9ac0-e07fab1df362",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "file1.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "faa3547e-f775-4799-9ac0-e07fab1df362",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "EMPLOYEE_CERTIFICATE",
 			"revision": 1,
 			"metadataList": [
@@ -308,7 +326,9 @@
 			"createdBy": "User2",
 			"registrationNumber": "2024-2281-403",
 			"created": "2024-02-22T08:31:00+01:00",
-			"confidentiality": {"confidential": true},
+			"confidentiality": {
+				"confidential": true
+			},
 			"description": "Generated Document 2",
 			"archive": false,
 			"id": "34095a16-68c5-48f8-ac1e-9d6b7dd08562",
@@ -409,7 +429,9 @@
 			"createdBy": "User4",
 			"registrationNumber": "2024-2281-465",
 			"created": "2024-08-03T08:33:07+02:00",
-			"confidentiality": {"confidential": true},
+			"confidentiality": {
+				"confidential": true
+			},
 			"description": "Generated Document 19",
 			"archive": false,
 			"id": "5a728f56-2fb1-460e-9158-7a4d5775e80f",
@@ -527,7 +549,9 @@
 			"createdBy": "User4",
 			"registrationNumber": "2024-2281-639",
 			"created": "2024-08-29T08:31:00+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Generated Document 6",
 			"archive": false,
 			"id": "84ae9dbe-159a-472f-9dc7-8ecb03c2c3c1",

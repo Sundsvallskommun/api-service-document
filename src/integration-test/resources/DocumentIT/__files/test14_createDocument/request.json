@@ -4,8 +4,10 @@
 	"description": "This is a document",
 	"archive": true,
 	"type": "HOLIDAY_EXCHANGE",
-	"metadataList": [{
-		"value": "Some value",
-		"key": "Some key"
-	}]
+	"metadataList": [
+		{
+			"value": "Some value",
+			"key": "Some key"
+		}
+	]
 }

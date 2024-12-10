@@ -31,7 +31,9 @@
 			"createdBy": "User4",
 			"registrationNumber": "2024-2281-639",
 			"created": "2024-08-29T08:31:00+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Generated Document 6",
 			"archive": false,
 			"id": "84ae9dbe-159a-472f-9dc7-8ecb03c2c3c1",

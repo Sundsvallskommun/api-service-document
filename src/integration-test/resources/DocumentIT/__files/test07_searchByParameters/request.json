@@ -1,7 +1,15 @@
 {
-	"metaData": [{"matchesAny": ["Company B"]}],
+	"metaData": [
+		{
+			"matchesAny": [
+				"Company B"
+			]
+		}
+	],
 	"limit": 3,
-	"sortBy": ["id"],
+	"sortBy": [
+		"id"
+	],
 	"includeConfidential": true,
 	"onlyLatestRevision": true
 }

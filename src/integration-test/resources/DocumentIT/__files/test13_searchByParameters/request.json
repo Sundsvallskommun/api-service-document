@@ -1,16 +1,22 @@
 {
 	"metaData": [
 		{
-			"matchesAny": ["Company B"],
+			"matchesAny": [
+				"Company B"
+			],
 			"key": "EMPLOYEE_UNIT"
 		},
 		{
-			"matchesAny": ["Developer"],
+			"matchesAny": [
+				"Developer"
+			],
 			"key": "EMPLOYEE_TYPE"
 		}
 	],
 	"limit": 3,
-	"sortBy": ["id"],
+	"sortBy": [
+		"id"
+	],
 	"includeConfidential": true,
 	"onlyLatestRevision": true
 }

@@ -10,9 +10,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import se.sundsvall.dept44.models.api.paging.PagingMetaData;
 
 class PagedDocumentResponseTest {

@@ -10,12 +10,14 @@
 	"description": "Document 2",
 	"archive": true,
 	"id": "435bb041-2b02-4bb3-b3e7-3782a13f47d5",
-	"documentData": [{
-		"fileName": "file5.jpg",
-		"fileSizeInBytes": 5068,
-		"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
-		"mimeType": "image/jpeg"
-	}],
+	"documentData": [
+		{
+			"fileName": "file5.jpg",
+			"fileSizeInBytes": 5068,
+			"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
+			"mimeType": "image/jpeg"
+		}
+	],
 	"type": "HOLIDAY_EXCHANGE",
 	"revision": 2,
 	"metadataList": [

@@ -2,10 +2,9 @@ package se.sundsvall.document.api.model;
 
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import se.sundsvall.dept44.models.api.paging.AbstractParameterPagingAndSortingBase;
-
 import java.util.List;
 import java.util.Objects;
+import se.sundsvall.dept44.models.api.paging.AbstractParameterPagingAndSortingBase;
 
 public class DocumentParameters extends AbstractParameterPagingAndSortingBase {
 

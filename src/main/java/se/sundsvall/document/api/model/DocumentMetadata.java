@@ -2,10 +2,9 @@ package se.sundsvall.document.api.model;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
-import java.util.Objects;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import java.util.Objects;
 
 @Schema(description = "DocumentMetadata model")
 public class DocumentMetadata {

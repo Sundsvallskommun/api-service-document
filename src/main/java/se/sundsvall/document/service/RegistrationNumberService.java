@@ -5,12 +5,10 @@ import static java.time.ZoneId.systemDefault;
 import static org.apache.commons.lang3.ObjectUtils.allNull;
 import static se.sundsvall.document.service.Constants.TEMPLATE_REGISTRATION_NUMBER;
 
+import jakarta.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.Optional;
-
 import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
 import se.sundsvall.document.integration.db.RegistrationNumberSequenceRepository;
 import se.sundsvall.document.integration.db.model.RegistrationNumberSequenceEntity;
 

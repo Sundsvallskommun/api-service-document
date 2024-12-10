@@ -3,20 +3,26 @@
 	"createdBy": "user-x",
 	"registrationNumber": "2024-2282-666",
 	"created": "${json-unit.any-string}",
-	"confidentiality": {"confidential": true},
+	"confidentiality": {
+		"confidential": true
+	},
 	"description": "Document 3",
 	"archive": true,
 	"id": "${json-unit.any-string}",
-	"documentData": [{
-		"fileName": "file6.jpg",
-		"fileSizeInBytes": 5068,
-		"id": "${json-unit.any-string}",
-		"mimeType": "image/jpeg"
-	}],
+	"documentData": [
+		{
+			"fileName": "file6.jpg",
+			"fileSizeInBytes": 5068,
+			"id": "${json-unit.any-string}",
+			"mimeType": "image/jpeg"
+		}
+	],
 	"type": "CONFIDENTIALITY_AGREEMENT",
 	"revision": 2,
-	"metadataList": [{
-		"value": "value-1",
-		"key": "document3-key1"
-	}]
+	"metadataList": [
+		{
+			"value": "value-1",
+			"key": "document3-key1"
+		}
+	]
 }

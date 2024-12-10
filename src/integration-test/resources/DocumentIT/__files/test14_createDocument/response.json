@@ -3,20 +3,26 @@
 	"createdBy": "username123",
 	"registrationNumber": "${json-unit.any-string}",
 	"created": "${json-unit.any-string}",
-	"confidentiality": {"confidential": false},
+	"confidentiality": {
+		"confidential": false
+	},
 	"description": "This is a document",
 	"archive": true,
 	"id": "${json-unit.any-string}",
-	"documentData": [{
-		"fileName": "image.png",
-		"fileSizeInBytes": 227546,
-		"id": "${json-unit.any-string}",
-		"mimeType": "image/png"
-	}],
+	"documentData": [
+		{
+			"fileName": "image.png",
+			"fileSizeInBytes": 227546,
+			"id": "${json-unit.any-string}",
+			"mimeType": "image/png"
+		}
+	],
 	"type": "HOLIDAY_EXCHANGE",
 	"revision": 0,
-	"metadataList": [{
-		"value": "Some value",
-		"key": "Some key"
-	}]
+	"metadataList": [
+		{
+			"value": "Some value",
+			"key": "Some key"
+		}
+	]
 }

@@ -31,7 +31,9 @@
 			"createdBy": "User2",
 			"registrationNumber": "2024-2281-403",
 			"created": "2024-02-22T08:31:00+01:00",
-			"confidentiality": {"confidential": true},
+			"confidentiality": {
+				"confidential": true
+			},
 			"description": "Generated Document 2",
 			"archive": false,
 			"id": "34095a16-68c5-48f8-ac1e-9d6b7dd08562",
@@ -54,7 +56,9 @@
 			"createdBy": "User4",
 			"registrationNumber": "2024-2281-465",
 			"created": "2024-08-03T08:33:07+02:00",
-			"confidentiality": {"confidential": true},
+			"confidentiality": {
+				"confidential": true
+			},
 			"description": "Generated Document 19",
 			"archive": false,
 			"id": "5a728f56-2fb1-460e-9158-7a4d5775e80f",

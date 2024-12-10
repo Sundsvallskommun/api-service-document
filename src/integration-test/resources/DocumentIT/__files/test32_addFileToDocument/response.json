@@ -10,12 +10,14 @@
 	"description": "Generated Document 7",
 	"archive": false,
 	"id": "${json-unit.any-string}",
-	"documentData": [{
-		"fileName": "image.png",
-		"fileSizeInBytes": 227546,
-		"id": "${json-unit.any-string}",
-		"mimeType": "image/png"
-	}],
+	"documentData": [
+		{
+			"fileName": "image.png",
+			"fileSizeInBytes": 227546,
+			"id": "${json-unit.any-string}",
+			"mimeType": "image/png"
+		}
+	],
 	"type": "HOLIDAY_EXCHANGE",
 	"revision": 2,
 	"metadataList": [
