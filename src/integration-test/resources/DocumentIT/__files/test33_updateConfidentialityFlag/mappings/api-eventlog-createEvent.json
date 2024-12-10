@@ -1,30 +1,38 @@
 {
 	"request": {
-		"headers": {"Authorization": {"equalTo": "Bearer 0000000000000000AAAAAAAAAAAAAAAA"}},
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer 0000000000000000AAAAAAAAAAAAAAAA"
+			}
+		},
 		"method": "POST",
-		"bodyPatterns": [{
-			"equalToJson": {
-				"owner": "Document",
-				"expires": "${json-unit.any-string}",
-				"metadata": [
-					{
-						"value": "username123",
-						"key": "ExecutedBy"
-					},
-					{
-						"value": "2023-2281-123",
-						"key": "RegistrationNumber"
-					}
-				],
-				"type": "UPDATE",
-				"message": "Confidentiality flag updated to: 'true' with legal citation: '25 kap. 1 § OSL' for document with registrationNumber: '2023-2281-123'. Action performed by: 'username123'"
-			},
-			"ignoreArrayOrder": true
-		}],
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"owner": "Document",
+					"expires": "${json-unit.any-string}",
+					"metadata": [
+						{
+							"value": "username123",
+							"key": "ExecutedBy"
+						},
+						{
+							"value": "2023-2281-123",
+							"key": "RegistrationNumber"
+						}
+					],
+					"type": "UPDATE",
+					"message": "Confidentiality flag updated to: 'true' with legal citation: '25 kap. 1 § OSL' for document with registrationNumber: '2023-2281-123'. Action performed by: 'username123'"
+				},
+				"ignoreArrayOrder": true
+			}
+		],
 		"urlPath": "/api-eventlog/2281/00000000-0000-0000-0000-000000000000"
 	},
 	"response": {
-		"headers": {"Content-Type": "application/json"},
+		"headers": {
+			"Content-Type": "application/json"
+		},
 		"status": 202
 	},
 	"name": "api-eventlog-createEvent"

@@ -1,12 +1,10 @@
 package se.sundsvall.document.api.validation;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-
 import org.springframework.web.multipart.MultipartFile;
 
 public class NoDuplicateFileNamesConstraintValidator implements ConstraintValidator<NoDuplicateFileNames, List<MultipartFile>> {

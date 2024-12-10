@@ -1,5 +1,18 @@
 package se.sundsvall.document.api;
 
+import static jakarta.validation.Validation.buildDefaultValidatorFactory;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.MediaType.ALL_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static org.springframework.http.ResponseEntity.created;
+import static org.springframework.http.ResponseEntity.noContent;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
+import static se.sundsvall.document.Constants.DOCUMENTS_BASE_PATH;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +28,8 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Set;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -45,22 +60,6 @@ import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.api.validation.DocumentTypeValidator;
 import se.sundsvall.document.service.DocumentService;
-
-import java.util.List;
-import java.util.Set;
-
-import static jakarta.validation.Validation.buildDefaultValidatorFactory;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
-import static org.springframework.http.ResponseEntity.created;
-import static org.springframework.http.ResponseEntity.noContent;
-import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.web.util.UriComponentsBuilder.fromPath;
-import static se.sundsvall.document.Constants.DOCUMENTS_BASE_PATH;
 
 @RestController
 @Validated

@@ -1,4 +1,6 @@
 {
 	"limit": 3,
-	"sortBy": ["id"]
+	"sortBy": [
+		"id"
+	]
 }

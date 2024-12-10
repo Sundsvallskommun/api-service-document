@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -19,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.document.api.model.DocumentTypeCreateRequest;
 import se.sundsvall.document.api.model.DocumentTypeUpdateRequest;
 import se.sundsvall.document.integration.db.DocumentTypeRepository;

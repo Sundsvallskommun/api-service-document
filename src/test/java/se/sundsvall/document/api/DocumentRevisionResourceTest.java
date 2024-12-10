@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +20,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.PagedDocumentResponse;

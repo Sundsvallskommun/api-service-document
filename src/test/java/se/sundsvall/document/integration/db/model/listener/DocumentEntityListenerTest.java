@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 import org.junit.jupiter.api.Test;
-
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 
 class DocumentEntityListenerTest {

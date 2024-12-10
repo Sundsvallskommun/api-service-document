@@ -1,8 +1,7 @@
 package se.sundsvall.document.api.model;
 
-import java.util.Objects;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Objects;
 
 @Schema(description = "Confidentiality model.")
 public class Confidentiality {
