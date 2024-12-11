@@ -51,7 +51,7 @@ public class DocumentTypeAdministrationResource {
 
 	private final DocumentTypeService service;
 
-	DocumentTypeAdministrationResource(DocumentTypeService service) {
+	DocumentTypeAdministrationResource(final DocumentTypeService service) {
 		this.service = service;
 	}
 
@@ -60,10 +60,11 @@ public class DocumentTypeAdministrationResource {
 	}, produces = {
 		ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Create new document type", description = "Creates a new document type in the provided municipality.")
-	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
+	@Operation(summary = "Create new document type", description = "Creates a new document type in the provided municipality.", responses = {
+		@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
+	})
 	ResponseEntity<Void> createDocumentType(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
 		@Valid @NotNull @RequestBody final DocumentTypeCreateRequest body) {
 
 		final var result = service.create(municipalityId, body);
@@ -76,8 +77,9 @@ public class DocumentTypeAdministrationResource {
 	@GetMapping(produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Get document types", description = "Get all existing document types defined in provided municipality.")
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
+	@Operation(summary = "Get document types", description = "Get all existing document types defined in provided municipality.", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
+	})
 	ResponseEntity<List<DocumentType>> readDocumentTypes(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId) {
 
@@ -87,8 +89,9 @@ public class DocumentTypeAdministrationResource {
 	@GetMapping(path = "/{type}", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Get document type", description = "Get document type matching provided type and municipality.")
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
+	@Operation(summary = "Get document type", description = "Get document type matching provided type and municipality.", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
+	})
 	ResponseEntity<DocumentType> readDocumentType(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "type", description = "The type to update", example = "EMPLOYMENT_CERTIFICATE") @PathVariable final String type) {
@@ -99,9 +102,10 @@ public class DocumentTypeAdministrationResource {
 	@PatchMapping(path = "/{type}", consumes = APPLICATION_JSON_VALUE, produces = {
 		APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Update document type", description = "Updates an existing document type in the provided municipality.")
-	@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@Operation(summary = "Update document type", description = "Updates an existing document type in the provided municipality.", responses = {
+		@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	})
 	ResponseEntity<Void> updateDocumentType(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "type", description = "The type to update", example = "EMPLOYMENT_CERTIFICATE") @PathVariable final String type,
@@ -118,9 +122,10 @@ public class DocumentTypeAdministrationResource {
 	})
 	@Operation(summary = "Delete document type", description = """
 		Deletes an existing document type matching provided type and municipality, but only if the type is not used by any existing document. If type is used then an exception will be returned.
-		""")
-	@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+		""", responses = {
+		@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	})
 	ResponseEntity<Void> deleteDocumentType(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "type", description = "the type to delete", example = "EMPLOYMENT_CERTIFICATE") @PathVariable final String type) {
