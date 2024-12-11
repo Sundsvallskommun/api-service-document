@@ -24,11 +24,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.document.Application;
@@ -48,10 +48,10 @@ import se.sundsvall.document.service.DocumentService;
 @ActiveProfiles("junit")
 class DocumentResourceTest {
 
-	@MockBean
+	@MockitoBean
 	private DocumentService documentServiceMock;
 
-	@MockBean
+	@MockitoBean
 	private DocumentTypeValidator validationUtilityMock;
 
 	@Autowired
