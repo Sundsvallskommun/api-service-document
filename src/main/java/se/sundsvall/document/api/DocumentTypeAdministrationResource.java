@@ -75,7 +75,7 @@ public class DocumentTypeAdministrationResource {
 	}
 
 	@GetMapping(produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Get document types", description = "Get all existing document types defined in provided municipality.", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
@@ -87,7 +87,7 @@ public class DocumentTypeAdministrationResource {
 	}
 
 	@GetMapping(path = "/{type}", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Get document type", description = "Get document type matching provided type and municipality.", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)

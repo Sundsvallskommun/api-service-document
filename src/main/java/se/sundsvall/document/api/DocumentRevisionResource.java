@@ -47,7 +47,7 @@ public class DocumentRevisionResource {
 	}
 
 	@GetMapping(produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Read document revisions.", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
@@ -63,7 +63,7 @@ public class DocumentRevisionResource {
 	}
 
 	@GetMapping(path = "/{revision}", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Read document revision.", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),

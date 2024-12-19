@@ -12,6 +12,8 @@ import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static se.sundsvall.document.Constants.DOCUMENTS_BASE_PATH;
+import static se.sundsvall.document.service.Constants.SEARCH_BY_PARAMETERS_DOCUMENTATION;
+import static se.sundsvall.document.service.Constants.SEARCH_DOCUMENTATION;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,7 +118,7 @@ class DocumentResource {
 	@PatchMapping(path = "/{registrationNumber}", consumes = {
 		APPLICATION_JSON_VALUE
 	}, produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Update document.", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
@@ -150,7 +152,7 @@ class DocumentResource {
 	}
 
 	@GetMapping(path = "/{registrationNumber}", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Read document (latest revision).", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
@@ -223,9 +225,9 @@ class DocumentResource {
 	}
 
 	@GetMapping(produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
-	@Operation(summary = "Search documents.", responses = {
+	@Operation(summary = "Search documents.", description = SEARCH_DOCUMENTATION, responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	})
 	ResponseEntity<PagedDocumentResponse> search(
@@ -239,9 +241,9 @@ class DocumentResource {
 	}
 
 	@PostMapping(path = "/filter", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
-	@Operation(summary = "Search documents by parameters", responses = {
+	@Operation(summary = "Search documents by parameters", description = SEARCH_BY_PARAMETERS_DOCUMENTATION, responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	})
 	ResponseEntity<PagedDocumentResponse> searchByParameters(@PathVariable("municipalityId") final String municipalityId,
