@@ -169,7 +169,9 @@
 			"createdBy": "User3",
 			"registrationNumber": "2024-2281-370",
 			"created": "2024-09-10T08:31:00+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Generated Document 3",
 			"archive": true,
 			"id": "c3ee6cd8-d9e1-499c-b483-a9956b43ab7d",
@@ -192,7 +194,9 @@
 			"createdBy": "User1",
 			"registrationNumber": "2024-2281-232",
 			"created": "2024-08-31T08:33:07+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Generated Document 13",
 			"archive": false,
 			"id": "9f2e05c4-a06d-4fed-b487-2003c591bc6a",
@@ -215,16 +219,20 @@
 			"createdBy": "User2",
 			"registrationNumber": "2023-2281-123",
 			"created": "2023-06-28T12:02:00+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Document 1",
 			"archive": false,
 			"id": "8efd63a3-b525-4581-8b0b-9759f381a5a5",
-			"documentData": [{
-				"fileName": "file2.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "file2.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "50167fa9-6b50-428e-9383-b6cbfaffc63b",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "EMPLOYEE_CERTIFICATE",
 			"revision": 2,
 			"metadataList": [
@@ -258,12 +266,14 @@
 			"description": "Generated Document 20",
 			"archive": false,
 			"id": "8ad5ecbf-15e5-4572-9b80-96bbfc2145b6",
-			"documentData": [{
-				"fileName": "to-be-removed.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "abc078aa-9335-4b21-b04c-630e27ade51e",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "to-be-removed.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "abc078aa-9335-4b21-b04c-630e27ade51e",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "CONFIDENTIALITY_AGREEMENT",
 			"revision": 2,
 			"metadataList": []
@@ -273,7 +283,9 @@
 			"createdBy": "User4",
 			"registrationNumber": "2024-2281-639",
 			"created": "2024-08-29T08:31:00+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Generated Document 6",
 			"archive": false,
 			"id": "84ae9dbe-159a-472f-9dc7-8ecb03c2c3c1",
@@ -365,16 +377,20 @@
 			"createdBy": "User3",
 			"registrationNumber": "2023-2281-123",
 			"created": "2023-06-28T12:03:00+02:00",
-			"confidentiality": {"confidential": false},
+			"confidentiality": {
+				"confidential": false
+			},
 			"description": "Document 1",
 			"archive": true,
 			"id": "612dc8d0-e6b7-426c-abcc-c9b49ae1e7e2",
-			"documentData": [{
-				"fileName": "file3.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "file3.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "4f0a04af-942d-4ad2-b2d9-151887fc995c",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "EMPLOYEE_CERTIFICATE",
 			"revision": 3,
 			"metadataList": [

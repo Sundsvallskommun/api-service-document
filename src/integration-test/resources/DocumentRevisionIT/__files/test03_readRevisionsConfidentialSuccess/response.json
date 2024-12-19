@@ -12,12 +12,14 @@
 			"description": "Document 2",
 			"archive": true,
 			"id": "03d33a6a-bc8c-410c-95f6-2c890822967d",
-			"documentData": [{
-				"fileName": "file4.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "8f7be4bb-ef79-4a16-95bf-a0619e320745",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "file4.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "8f7be4bb-ef79-4a16-95bf-a0619e320745",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "HOLIDAY_EXCHANGE",
 			"revision": 1,
 			"metadataList": [
@@ -55,12 +57,14 @@
 			"description": "Document 2",
 			"archive": true,
 			"id": "435bb041-2b02-4bb3-b3e7-3782a13f47d5",
-			"documentData": [{
-				"fileName": "file5.jpg",
-				"fileSizeInBytes": 5068,
-				"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
-				"mimeType": "image/jpeg"
-			}],
+			"documentData": [
+				{
+					"fileName": "file5.jpg",
+					"fileSizeInBytes": 5068,
+					"id": "bd239ee1-27b8-43e7-bb0d-e4ba09b7220e",
+					"mimeType": "image/jpeg"
+				}
+			],
 			"type": "HOLIDAY_EXCHANGE",
 			"revision": 2,
 			"metadataList": [

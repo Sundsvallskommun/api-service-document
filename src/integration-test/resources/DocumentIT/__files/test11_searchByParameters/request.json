@@ -1,10 +1,16 @@
 {
 	"metaData": [
-		{"key": "EMPLOYEE_UNIT"},
-		{"key": "EMPLOYEE_TYPE"}
+		{
+			"key": "EMPLOYEE_UNIT"
+		},
+		{
+			"key": "EMPLOYEE_TYPE"
+		}
 	],
 	"limit": 3,
-	"sortBy": ["id"],
+	"sortBy": [
+		"id"
+	],
 	"includeConfidential": true,
 	"onlyLatestRevision": true
 }

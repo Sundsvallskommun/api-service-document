@@ -4,14 +4,6 @@ import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.EAGER;
 import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
-import java.io.Serializable;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Objects;
-
-import org.hibernate.annotations.TimeZoneStorage;
-import org.hibernate.annotations.UuidGenerator;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -26,6 +18,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Objects;
+import org.hibernate.annotations.TimeZoneStorage;
+import org.hibernate.annotations.UuidGenerator;
 import se.sundsvall.document.integration.db.model.listener.DocumentEntityListener;
 
 @Entity

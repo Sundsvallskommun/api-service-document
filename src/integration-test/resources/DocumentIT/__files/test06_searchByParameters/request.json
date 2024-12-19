@@ -4,7 +4,9 @@
 		"HOLIDAY_EXCHANGE"
 	],
 	"limit": 3,
-	"sortBy": ["id"],
+	"sortBy": [
+		"id"
+	],
 	"includeConfidential": true,
 	"onlyLatestRevision": true
 }

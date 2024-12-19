@@ -16,23 +16,21 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.web.reactive.function.BodyInserters.fromMultipartData;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
@@ -50,10 +48,10 @@ import se.sundsvall.document.service.DocumentService;
 @ActiveProfiles("junit")
 class DocumentResourceTest {
 
-	@MockBean
+	@MockitoBean
 	private DocumentService documentServiceMock;
 
-	@MockBean
+	@MockitoBean
 	private DocumentTypeValidator validationUtilityMock;
 
 	@Autowired

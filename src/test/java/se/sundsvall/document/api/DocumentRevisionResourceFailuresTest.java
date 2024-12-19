@@ -10,12 +10,11 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 import org.zalando.problem.violations.Violation;
-
 import se.sundsvall.document.Application;
 import se.sundsvall.document.service.DocumentService;
 
@@ -23,7 +22,7 @@ import se.sundsvall.document.service.DocumentService;
 @ActiveProfiles("junit")
 class DocumentRevisionResourceFailuresTest {
 
-	@MockBean
+	@MockitoBean
 	private DocumentService documentServiceMock;
 
 	@Autowired

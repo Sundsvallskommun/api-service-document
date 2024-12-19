@@ -8,13 +8,11 @@ import static se.sundsvall.document.service.mapper.DocumentTypeMapper.toDocument
 import static se.sundsvall.document.service.mapper.DocumentTypeMapper.updateDocumentTypeEntity;
 
 import java.util.List;
-
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
-
 import se.sundsvall.document.api.model.DocumentType;
 import se.sundsvall.document.api.model.DocumentTypeCreateRequest;
 import se.sundsvall.document.api.model.DocumentTypeUpdateRequest;

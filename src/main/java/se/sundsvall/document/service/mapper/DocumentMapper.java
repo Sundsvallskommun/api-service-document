@@ -9,10 +9,8 @@ import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
-
 import se.sundsvall.dept44.models.api.paging.PagingMetaData;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;

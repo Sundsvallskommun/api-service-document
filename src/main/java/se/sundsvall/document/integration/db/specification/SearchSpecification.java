@@ -1,21 +1,5 @@
 package se.sundsvall.document.integration.db.specification;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
-import org.springframework.data.jpa.domain.Specification;
-import se.sundsvall.document.api.model.DocumentParameters;
-import se.sundsvall.document.integration.db.model.DocumentEntity;
-import se.sundsvall.document.integration.db.model.DocumentEntity_;
-import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
-import se.sundsvall.document.integration.db.model.DocumentTypeEntity_;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import static jakarta.persistence.criteria.JoinType.LEFT;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable_.CONFIDENTIAL;
@@ -31,6 +15,21 @@ import static se.sundsvall.document.integration.db.model.DocumentEntity_.REGISTR
 import static se.sundsvall.document.integration.db.model.DocumentEntity_.REVISION;
 import static se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable_.KEY;
 import static se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable_.VALUE;
+
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import org.springframework.data.jpa.domain.Specification;
+import se.sundsvall.document.api.model.DocumentParameters;
+import se.sundsvall.document.integration.db.model.DocumentEntity;
+import se.sundsvall.document.integration.db.model.DocumentEntity_;
+import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
+import se.sundsvall.document.integration.db.model.DocumentTypeEntity_;
 
 public interface SearchSpecification {
 

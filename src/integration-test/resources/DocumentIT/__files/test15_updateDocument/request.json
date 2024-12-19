@@ -1,8 +1,10 @@
 {
 	"createdBy": "user-x",
 	"archive": false,
-	"metadataList": [{
-		"value": "Updated value",
-		"key": "Updated key"
-	}]
+	"metadataList": [
+		{
+			"value": "Updated value",
+			"key": "Updated key"
+		}
+	]
 }

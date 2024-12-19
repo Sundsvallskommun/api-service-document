@@ -5,11 +5,9 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.util.List;
-
 import org.springframework.stereotype.Component;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 import org.zalando.problem.violations.Violation;
-
 import se.sundsvall.document.api.model.DocumentType;
 import se.sundsvall.document.service.DocumentTypeService;
 

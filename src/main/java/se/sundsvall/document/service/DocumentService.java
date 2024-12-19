@@ -1,36 +1,5 @@
 package se.sundsvall.document.service;
 
-import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import org.zalando.problem.Problem;
-import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
-import se.sundsvall.document.api.model.Document;
-import se.sundsvall.document.api.model.DocumentCreateRequest;
-import se.sundsvall.document.api.model.DocumentDataCreateRequest;
-import se.sundsvall.document.api.model.DocumentFiles;
-import se.sundsvall.document.api.model.DocumentParameters;
-import se.sundsvall.document.api.model.DocumentUpdateRequest;
-import se.sundsvall.document.api.model.PagedDocumentResponse;
-import se.sundsvall.document.integration.db.DatabaseHelper;
-import se.sundsvall.document.integration.db.DocumentRepository;
-import se.sundsvall.document.integration.db.DocumentTypeRepository;
-import se.sundsvall.document.integration.db.model.DocumentDataEntity;
-import se.sundsvall.document.integration.db.model.DocumentEntity;
-import se.sundsvall.document.integration.eventlog.EventLogClient;
-import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
-import se.sundsvall.document.service.mapper.DocumentMapper;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Optional;
-
 import static generated.se.sundsvall.eventlog.EventType.UPDATE;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
@@ -58,6 +27,36 @@ import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentEnti
 import static se.sundsvall.document.service.mapper.DocumentMapper.toInclusionFilter;
 import static se.sundsvall.document.service.mapper.DocumentMapper.toPagedDocumentResponse;
 import static se.sundsvall.document.service.mapper.EventlogMapper.toEvent;
+
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.zalando.problem.Problem;
+import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
+import se.sundsvall.document.api.model.Document;
+import se.sundsvall.document.api.model.DocumentCreateRequest;
+import se.sundsvall.document.api.model.DocumentDataCreateRequest;
+import se.sundsvall.document.api.model.DocumentFiles;
+import se.sundsvall.document.api.model.DocumentParameters;
+import se.sundsvall.document.api.model.DocumentUpdateRequest;
+import se.sundsvall.document.api.model.PagedDocumentResponse;
+import se.sundsvall.document.integration.db.DatabaseHelper;
+import se.sundsvall.document.integration.db.DocumentRepository;
+import se.sundsvall.document.integration.db.DocumentTypeRepository;
+import se.sundsvall.document.integration.db.model.DocumentDataEntity;
+import se.sundsvall.document.integration.db.model.DocumentEntity;
+import se.sundsvall.document.integration.eventlog.EventLogClient;
+import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
+import se.sundsvall.document.service.mapper.DocumentMapper;
 
 @Service
 @Transactional

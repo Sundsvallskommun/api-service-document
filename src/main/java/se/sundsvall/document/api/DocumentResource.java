@@ -1,5 +1,20 @@
 package se.sundsvall.document.api;
 
+import static jakarta.validation.Validation.buildDefaultValidatorFactory;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.MediaType.ALL_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static org.springframework.http.ResponseEntity.created;
+import static org.springframework.http.ResponseEntity.noContent;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
+import static se.sundsvall.document.Constants.DOCUMENTS_BASE_PATH;
+import static se.sundsvall.document.service.Constants.SEARCH_BY_PARAMETERS_DOCUMENTATION;
+import static se.sundsvall.document.service.Constants.SEARCH_DOCUMENTATION;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +30,8 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Set;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -46,24 +63,6 @@ import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.api.validation.DocumentTypeValidator;
 import se.sundsvall.document.service.DocumentService;
 
-import java.util.List;
-import java.util.Set;
-
-import static jakarta.validation.Validation.buildDefaultValidatorFactory;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
-import static org.springframework.http.ResponseEntity.created;
-import static org.springframework.http.ResponseEntity.noContent;
-import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.web.util.UriComponentsBuilder.fromPath;
-import static se.sundsvall.document.Constants.DOCUMENTS_BASE_PATH;
-import static se.sundsvall.document.service.Constants.SEARCH_BY_PARAMETERS_DOCUMENTATION;
-import static se.sundsvall.document.service.Constants.SEARCH_DOCUMENTATION;
-
 @RestController
 @Validated
 @RequestMapping(DOCUMENTS_BASE_PATH)
@@ -78,7 +77,7 @@ class DocumentResource {
 	private final DocumentTypeValidator documentTypeValidator;
 	private final ObjectMapper objectMapper;
 
-	DocumentResource(DocumentService documentService, ObjectMapper objectMapper, DocumentTypeValidator documentTypeValidator) {
+	DocumentResource(final DocumentService documentService, final ObjectMapper objectMapper, final DocumentTypeValidator documentTypeValidator) {
 		this.documentService = documentService;
 		this.objectMapper = objectMapper;
 		this.documentTypeValidator = documentTypeValidator;
@@ -89,12 +88,17 @@ class DocumentResource {
 	}, produces = {
 		ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Create document.")
-	@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
+	@Operation(summary = "Create document.", responses = {
+		@ApiResponse(
+			responseCode = "201",
+			headers = @Header(name = LOCATION, schema = @Schema(type = "string")),
+			description = "Successful operation",
+			useReturnTypeSchema = true)
+	})
 	ResponseEntity<Void> create(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
-		@RequestPart("document") @Schema(description = "Document", implementation = DocumentCreateRequest.class) String documentString,
-		@RequestPart(value = "documentFiles") List<MultipartFile> documentFiles) throws JsonProcessingException {
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
+		@RequestPart("document") @Schema(description = "Document", implementation = DocumentCreateRequest.class) final String documentString,
+		@RequestPart(value = "documentFiles") final List<MultipartFile> documentFiles) throws JsonProcessingException {
 
 		// If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		final var body = objectMapper.readValue(documentString, DocumentCreateRequest.class);
@@ -116,14 +120,15 @@ class DocumentResource {
 	}, produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Update document.")
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@Operation(summary = "Update document.", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	})
 	ResponseEntity<Document> update(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
-		@NotNull @Valid @RequestBody DocumentUpdateRequest body) {
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") final String registrationNumber,
+		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") final boolean includeConfidential,
+		@NotNull @Valid @RequestBody final DocumentUpdateRequest body) {
 
 		documentTypeValidator.validate(municipalityId, body.getType());
 
@@ -133,13 +138,14 @@ class DocumentResource {
 	@PatchMapping(path = "/{registrationNumber}/confidentiality", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Update document confidentiality (on all revisions).")
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@Operation(summary = "Update document confidentiality (on all revisions).", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	})
 	ResponseEntity<Void> updateConfidentiality(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@NotNull @Valid @RequestBody ConfidentialityUpdateRequest body) {
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") final String registrationNumber,
+		@NotNull @Valid @RequestBody final ConfidentialityUpdateRequest body) {
 
 		documentService.updateConfidentiality(registrationNumber, body, municipalityId);
 		return noContent().build();
@@ -148,13 +154,14 @@ class DocumentResource {
 	@GetMapping(path = "/{registrationNumber}", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Read document (latest revision).")
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@Operation(summary = "Read document (latest revision).", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	})
 	ResponseEntity<Document> read(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential) {
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") final String registrationNumber,
+		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") final boolean includeConfidential) {
 
 		return ok(documentService.read(registrationNumber, includeConfidential, municipalityId));
 	}
@@ -162,15 +169,16 @@ class DocumentResource {
 	@GetMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Read document file (latest revision).")
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@Operation(summary = "Read document file (latest revision).", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	})
 	ResponseEntity<Void> readFile(
-		HttpServletResponse response,
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "documentDataId", description = "Document data ID", example = "082ba08f-03c7-409f-b8a6-940a1397ba38") @PathVariable("documentDataId") @ValidUuid String documentDataId,
-		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential) {
+		final HttpServletResponse response,
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") final String registrationNumber,
+		@Parameter(name = "documentDataId", description = "Document data ID", example = "082ba08f-03c7-409f-b8a6-940a1397ba38") @PathVariable("documentDataId") @ValidUuid final String documentDataId,
+		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") final boolean includeConfidential) {
 
 		documentService.readFile(registrationNumber, documentDataId, includeConfidential, response, municipalityId);
 		return ok().build();
@@ -181,14 +189,15 @@ class DocumentResource {
 	}, produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Add document file data (or replace existing if filename already exists on the document object)")
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@Operation(summary = "Add document file data (or replace existing if filename already exists on the document object)", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	})
 	ResponseEntity<Void> addOrReplaceFile(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@RequestPart("document") @Schema(description = "Document", implementation = DocumentDataCreateRequest.class) String documentDataString,
-		@RequestPart(value = "documentFile") MultipartFile documentFile) throws JsonProcessingException {
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") final String registrationNumber,
+		@RequestPart("document") @Schema(description = "Document", implementation = DocumentDataCreateRequest.class) final String documentDataString,
+		@RequestPart(value = "documentFile") final MultipartFile documentFile) throws JsonProcessingException {
 
 		// If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		final var documentDataCreateRequest = objectMapper.readValue(documentDataString, DocumentDataCreateRequest.class);
@@ -202,13 +211,14 @@ class DocumentResource {
 	@DeleteMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Delete document file.")
-	@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@Operation(summary = "Delete document file.", responses = {
+		@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	})
 	ResponseEntity<Void> deleteFile(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
-		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") String registrationNumber,
-		@Parameter(name = "documentDataId", description = "Document data ID", example = "082ba08f-03c7-409f-b8a6-940a1397ba38") @PathVariable("documentDataId") @ValidUuid String documentDataId) {
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
+		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") final String registrationNumber,
+		@Parameter(name = "documentDataId", description = "Document data ID", example = "082ba08f-03c7-409f-b8a6-940a1397ba38") @PathVariable("documentDataId") @ValidUuid final String documentDataId) {
 
 		documentService.deleteFile(registrationNumber, documentDataId, municipalityId);
 		return noContent().build();
@@ -217,14 +227,15 @@ class DocumentResource {
 	@GetMapping(produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Search documents.", description = SEARCH_DOCUMENTATION)
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
+	@Operation(summary = "Search documents.", description = SEARCH_DOCUMENTATION, responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
+	})
 	ResponseEntity<PagedDocumentResponse> search(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId String municipalityId,
-		@Parameter(name = "query", description = "Search query. Use asterisk-character [*] as wildcard.", example = "hello*") @RequestParam(value = "query", required = true) @NotBlank String query,
-		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") boolean includeConfidential,
-		@Parameter(name = "onlyLatestRevision", description = "Only perform search against the latest document revision", example = "true") @RequestParam(name = "onlyLatestRevision", defaultValue = "false") boolean onlyLatestRevision,
-		@ParameterObject Pageable pageable) {
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
+		@Parameter(name = "query", description = "Search query. Use asterisk-character [*] as wildcard.", example = "hello*") @RequestParam(value = "query", required = true) @NotBlank final String query,
+		@Parameter(name = "includeConfidential", description = "Include confidential records", example = "true") @RequestParam(name = "includeConfidential", defaultValue = "false") final boolean includeConfidential,
+		@Parameter(name = "onlyLatestRevision", description = "Only perform search against the latest document revision", example = "true") @RequestParam(name = "onlyLatestRevision", defaultValue = "false") final boolean onlyLatestRevision,
+		@ParameterObject final Pageable pageable) {
 
 		return ok(documentService.search(query, includeConfidential, onlyLatestRevision, pageable, municipalityId));
 	}
@@ -232,17 +243,19 @@ class DocumentResource {
 	@PostMapping(path = "/filter", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Search documents by parameters", description = SEARCH_BY_PARAMETERS_DOCUMENTATION)
+	@Operation(summary = "Search documents by parameters", description = SEARCH_BY_PARAMETERS_DOCUMENTATION, responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
+	})
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	ResponseEntity<PagedDocumentResponse> searchByParameters(@PathVariable("municipalityId") final String municipalityId,
 		@RequestBody final DocumentParameters documentParameters) {
 
-		var decoratedRequest = documentParameters.withMunicipalityId(municipalityId);
+		final var decoratedRequest = documentParameters.withMunicipalityId(municipalityId);
 
 		return ok(documentService.searchByParameters(decoratedRequest));
 	}
 
-	private <T> void validate(T t) {
+	private <T> void validate(final T t) {
 		final var validator = buildDefaultValidatorFactory().getValidator();
 		final Set<ConstraintViolation<T>> violations = validator.validate(t);
 		if (!violations.isEmpty()) {
