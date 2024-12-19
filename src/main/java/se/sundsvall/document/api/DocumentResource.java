@@ -118,7 +118,7 @@ class DocumentResource {
 	@PatchMapping(path = "/{registrationNumber}", consumes = {
 		APPLICATION_JSON_VALUE
 	}, produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Update document.", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
@@ -152,7 +152,7 @@ class DocumentResource {
 	}
 
 	@GetMapping(path = "/{registrationNumber}", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Read document (latest revision).", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
@@ -225,7 +225,7 @@ class DocumentResource {
 	}
 
 	@GetMapping(produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Search documents.", description = SEARCH_DOCUMENTATION, responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
@@ -241,12 +241,11 @@ class DocumentResource {
 	}
 
 	@PostMapping(path = "/filter", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Search documents by parameters", description = SEARCH_BY_PARAMETERS_DOCUMENTATION, responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	})
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	ResponseEntity<PagedDocumentResponse> searchByParameters(@PathVariable("municipalityId") final String municipalityId,
 		@RequestBody final DocumentParameters documentParameters) {
 
