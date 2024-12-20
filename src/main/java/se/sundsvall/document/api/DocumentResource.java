@@ -136,7 +136,7 @@ class DocumentResource {
 	}
 
 	@PatchMapping(path = "/{registrationNumber}/confidentiality", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Update document confidentiality (on all revisions).", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
@@ -167,7 +167,7 @@ class DocumentResource {
 	}
 
 	@GetMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Read document file (latest revision).", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
@@ -187,10 +187,10 @@ class DocumentResource {
 	@PutMapping(path = "/{registrationNumber}/files", consumes = {
 		MULTIPART_FORM_DATA_VALUE
 	}, produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Add document file data (or replace existing if filename already exists on the document object)", responses = {
-		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true),
 		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	})
 	ResponseEntity<Void> addOrReplaceFile(
@@ -209,7 +209,7 @@ class DocumentResource {
 	}
 
 	@DeleteMapping(path = "/{registrationNumber}/files/{documentDataId}", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Delete document file.", responses = {
 		@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true),

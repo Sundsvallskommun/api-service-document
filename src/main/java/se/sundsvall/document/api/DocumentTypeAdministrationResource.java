@@ -58,7 +58,7 @@ public class DocumentTypeAdministrationResource {
 	@PostMapping(consumes = {
 		APPLICATION_JSON_VALUE
 	}, produces = {
-		ALL_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		ALL_VALUE
 	})
 	@Operation(summary = "Create new document type", description = "Creates a new document type in the provided municipality.", responses = {
 		@ApiResponse(responseCode = "201", headers = @Header(name = LOCATION, schema = @Schema(type = "string")), description = "Successful operation", useReturnTypeSchema = true)
@@ -100,7 +100,7 @@ public class DocumentTypeAdministrationResource {
 	}
 
 	@PatchMapping(path = "/{type}", consumes = APPLICATION_JSON_VALUE, produces = {
-		APPLICATION_PROBLEM_JSON_VALUE
+		ALL_VALUE
 	})
 	@Operation(summary = "Update document type", description = "Updates an existing document type in the provided municipality.", responses = {
 		@ApiResponse(responseCode = "204", description = "Successful operation", useReturnTypeSchema = true),
@@ -118,7 +118,7 @@ public class DocumentTypeAdministrationResource {
 	}
 
 	@DeleteMapping(path = "/{type}", produces = {
-		APPLICATION_PROBLEM_JSON_VALUE
+		ALL_VALUE
 	})
 	@Operation(summary = "Delete document type", description = """
 		Deletes an existing document type matching provided type and municipality, but only if the type is not used by any existing document. If type is used then an exception will be returned.
