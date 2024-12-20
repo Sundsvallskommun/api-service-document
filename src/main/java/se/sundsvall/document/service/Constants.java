@@ -16,4 +16,40 @@ public final class Constants {
 	public static final String ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND = "No document file content with registrationNumber: '%s' and revision: '%s' could be found!";
 	public static final String ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND = "No document file content with ID: '%s' could be found!";
 	public static final String ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_COULD_NOT_READ = "Could not read file content for document data with ID: '%s'!";
+
+	// API documentation
+	public static final String SEARCH_DOCUMENTATION = """
+		Parameters:
+		- includeConfidential: Should the search include confidential documents? Datatype - boolean (default: false)
+		- boolean onlyLatestRevision: Should the search include only the latest revision of the documents? Datatype - boolean (default: false)
+		- query: Search query. Allows asterisk (*) as wildcard. Datatype - String
+
+		The search query is used to match in the following fields using a LIKE-TO-LOWER-CASE comparison:
+		- createdBy
+		- description
+		- municipalityId
+		- registrationNumber
+		- fileName
+		- mimeType
+		- metadataKey
+		- metadataValue
+
+		""";
+
+	public static final String SEARCH_BY_PARAMETERS_DOCUMENTATION = """
+		Parameters:
+		- includeConfidential: Should the search include confidential documents? Datatype - boolean (default: false)
+		- onlyLatestRevision: Should the search include only the latest revision of the documents? Datatype - boolean (default: false)
+		- documentTypes: Which document types to include in the search. Datatype - List of Strings
+		- metaData: Uses the metadata object to search for documents with specific metadata. Datatype - List of metadata objects.
+		- page: The page number to retrieve. Datatype - integer (default: 1)
+		- limit: The number of documents to retrieve per page. Datatype - integer (default: 100)
+
+		Objects:
+		- MetaData: {
+			- key: A given metadata key, this is optional. All metadata will be searched if key is not provided. Datatype - String
+			- matchesAny: Returns documents where metadata entry with the given key have at least one of the matchesAny values (if key is present), or if the complete set of metadata have at least one of the matchesAny (when no key is present). Datatype - List of Strings
+			- matchesAll: Returns documents where metadata entry with the given key have at least one of the matchesAny values (if key is present), or if the complete set of metadata have at least one of the matchesAny (when no key is present). Datatype - List of Strings
+		}
+		""";
 }
