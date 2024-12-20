@@ -80,7 +80,7 @@ public class DocumentRevisionResource {
 	}
 
 	@GetMapping(path = "/{revision}/files/{documentDataId}", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		APPLICATION_JSON_VALUE
 	})
 	@Operation(summary = "Read document file revision.", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
