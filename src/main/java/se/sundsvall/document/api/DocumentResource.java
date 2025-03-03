@@ -100,10 +100,6 @@ class DocumentResource {
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
 		@RequestPart("document") @Schema(description = "Document", implementation = DocumentCreateRequest.class) final String documentString,
 		@RequestPart(value = "documentFiles") @ValidContentType final List<MultipartFile> documentFiles) throws JsonProcessingException {
-
-		documentFiles.stream()
-			.map(MultipartFile::getContentType)
-			.forEach(System.out::println);
 		// If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		final var body = objectMapper.readValue(documentString, DocumentCreateRequest.class);
 		validate(body);
