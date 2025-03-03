@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -73,6 +74,42 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getDetail()).isEqualTo("Required part 'documentFiles' is not present.");
+
+		verifyNoInteractions(documentServiceMock);
+	}
+
+	@Test
+	void createWithInvalidContentType() {
+		final var documentCreateRequest = DocumentCreateRequest.create()
+			.withConfidentiality(Confidentiality.create().withConfidential(true).withLegalCitation("legalCitation"))
+			.withCreatedBy("user")
+			.withDescription("description")
+			.withMetadataList(List.of(DocumentMetadata.create()
+				.withKey("key")
+				.withValue("value")))
+			.withType("type");
+
+		final var multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.part("documentFiles", "file-content").filename("filename").contentType(APPLICATION_OCTET_STREAM);
+		multipartBodyBuilder.part("document", documentCreateRequest);
+
+		final var response = webTestClient.post()
+			.uri("/2281/documents")
+			.contentType(MULTIPART_FORM_DATA)
+			.body(fromMultipartData(multipartBodyBuilder.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).isNotNull().satisfies(problem -> {
+			assertThat(problem.getTitle()).isEqualTo("Constraint Violation");
+			assertThat(problem.getStatus()).isEqualTo(BAD_REQUEST);
+			assertThat(problem.getViolations()).extracting("field", "message")
+				.containsExactlyInAnyOrder(tuple("create.documentFiles", "content type must not be application/octet-stream"));
+		});
 
 		verifyNoInteractions(documentServiceMock);
 	}
