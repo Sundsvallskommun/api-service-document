@@ -61,6 +61,7 @@ import se.sundsvall.document.api.model.DocumentParameters;
 import se.sundsvall.document.api.model.DocumentUpdateRequest;
 import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.api.validation.DocumentTypeValidator;
+import se.sundsvall.document.api.validation.ValidContentType;
 import se.sundsvall.document.service.DocumentService;
 
 @RestController
@@ -98,8 +99,7 @@ class DocumentResource {
 	ResponseEntity<Void> create(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
 		@RequestPart("document") @Schema(description = "Document", implementation = DocumentCreateRequest.class) final String documentString,
-		@RequestPart(value = "documentFiles") final List<MultipartFile> documentFiles) throws JsonProcessingException {
-
+		@RequestPart(value = "documentFiles") @ValidContentType final List<MultipartFile> documentFiles) throws JsonProcessingException {
 		// If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		final var body = objectMapper.readValue(documentString, DocumentCreateRequest.class);
 		validate(body);
