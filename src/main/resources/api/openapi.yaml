@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "3.0"
 servers:
-  - url: http://localhost:58730
+  - url: http://localhost:55470
     description: Generated server url
 tags:
   - name: Document revisions
@@ -111,6 +111,7 @@ paths:
           description: "Search query. Use asterisk-character [*] as wildcard."
           required: true
           schema:
+            minLength: 1
             type: string
           example: hello*
         - name: includeConfidential
@@ -1036,6 +1037,7 @@ components:
       type: object
       properties:
         createdBy:
+          minLength: 1
           type: string
           description: Actor that created this revision
           example: username123
@@ -1230,6 +1232,7 @@ components:
       type: object
       properties:
         createdBy:
+          minLength: 1
           type: string
           description: Actor that created this revision (all modifications will create
             new revisions)
@@ -1247,11 +1250,13 @@ components:
           description: Document description
           example: A brief description of this object. Maximum 8192 characters.
         metadataList:
+          minItems: 1
           type: array
           description: List of DocumentMetadata objects.
           items:
             $ref: "#/components/schemas/DocumentMetadata"
         type:
+          minLength: 1
           type: string
           description: The type of document (validated against a defined list of document
             types).
@@ -1264,10 +1269,12 @@ components:
       type: object
       properties:
         key:
+          minLength: 1
           type: string
           description: Metadata key
           example: Some key
         value:
+          minLength: 1
           type: string
           description: Metadata value
           example: Some value
@@ -1475,14 +1482,17 @@ components:
       type: object
       properties:
         type:
+          minLength: 1
           type: string
           description: Identifier for the document type
           example: EMPLOYMENT_CERTIFICATE
         displayName:
+          minLength: 1
           type: string
           description: Display name for the document type
           example: Anställningsbevis
         createdBy:
+          minLength: 1
           type: string
           description: Identifier for performing person
           example: username123
@@ -1492,6 +1502,7 @@ components:
       type: object
       properties:
         createdBy:
+          minLength: 1
           type: string
           description: Actor that created this revision (all modifications will create
             new revisions).
@@ -1535,6 +1546,7 @@ components:
           description: Legal citation
           example: 25 kap. 1 § OSL
         changedBy:
+          minLength: 1
           type: string
           description: Actor that performed this change
           example: username123
@@ -1553,6 +1565,7 @@ components:
           description: Identifier for the document type
           example: EMPLOYMENT_CERTIFICATE
         updatedBy:
+          minLength: 1
           type: string
           description: Identifier for performing person
           example: username123
@@ -1563,10 +1576,12 @@ components:
       type: object
       properties:
         type:
+          minLength: 1
           type: string
           description: Identifier for the document type
           example: EMPLOYMENT_CERTIFICATE
         displayName:
+          minLength: 1
           type: string
           description: Display name for the document type
           example: Anställningsbevis
