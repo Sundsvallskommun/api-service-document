@@ -15,10 +15,14 @@ public class EventlogConfiguration {
 
 	@Bean
 	FeignBuilderCustomizer feignBuilderCustomizer(EventlogProperties eventlogProperties, ClientRegistrationRepository clientRegistrationRepository) {
-		return FeignMultiCustomizer.create()
+		var feignMultiCustomizer = FeignMultiCustomizer.create()
 			.withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID))
-			.withRequestTimeoutsInSeconds(eventlogProperties.connectTimeout(), eventlogProperties.readTimeout())
-			.withRetryableOAuth2InterceptorForClientRegistration(clientRegistrationRepository.findByRegistrationId(CLIENT_ID))
-			.composeCustomizersToOne();
+			.withRequestTimeoutsInSeconds(eventlogProperties.connectTimeout(), eventlogProperties.readTimeout());
+
+		if (clientRegistrationRepository.findByRegistrationId(CLIENT_ID) != null) {
+			feignMultiCustomizer.withRetryableOAuth2InterceptorForClientRegistration(clientRegistrationRepository.findByRegistrationId(CLIENT_ID));
+		}
+
+		return feignMultiCustomizer.composeCustomizersToOne();
 	}
 }
