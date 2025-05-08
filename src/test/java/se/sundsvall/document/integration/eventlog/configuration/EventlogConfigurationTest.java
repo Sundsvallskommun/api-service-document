@@ -115,7 +115,7 @@ class EventlogConfigurationTest {
 
 			verify(feignMultiCustomizerSpy).withErrorDecoder(errorDecoderCaptor.capture());
 			verify(clientRegistrationRepositoryMock, never()).findByRegistrationId(CLIENT_ID);
-			verify(feignMultiCustomizerSpy, never()).withRetryableOAuth2InterceptorForClientRegistration(same(clientRegistrationMock));
+			verify(feignMultiCustomizerSpy, never()).withRetryableOAuth2InterceptorForClientRegistration(any());
 			verify(propertiesMock).connectTimeout();
 			verify(propertiesMock).readTimeout();
 			verify(feignMultiCustomizerSpy).withRequestTimeoutsInSeconds(1, 2);
