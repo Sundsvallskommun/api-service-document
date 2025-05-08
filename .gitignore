@@ -50,5 +50,8 @@ target/
 # Local environment
 .env
 
-# Spring
-application-default.properties
+# Spring default profile
+application-default.*
+
+# Docker file
+Dockerfile*
