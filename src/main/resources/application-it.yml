@@ -23,5 +23,7 @@ spring:
             token-uri: http://localhost:${wiremock.server.port:}/api-gateway/token
         registration:
           eventlog:
+            authorization-grant-type: client_credentials
+            provider: eventlog
             client-id: the-client-id
             client-secret: the-client-secret

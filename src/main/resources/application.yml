@@ -38,13 +38,6 @@ spring:
     cache-names: documentTypeCache
     caffeine:
       spec: maximumSize=500, expireAfterWrite=600s
-  security:
-    oauth2:
-      client:
-        registration:
-          eventlog:
-            authorization-grant-type: client_credentials
-            provider: eventlog
   servlet:
     multipart:
       max-file-size: 60MB

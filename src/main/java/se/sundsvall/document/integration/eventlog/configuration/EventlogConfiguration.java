@@ -1,5 +1,8 @@
 package se.sundsvall.document.integration.eventlog.configuration;
 
+import static java.util.Objects.nonNull;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -14,12 +17,12 @@ public class EventlogConfiguration {
 	public static final String CLIENT_ID = "eventlog";
 
 	@Bean
-	FeignBuilderCustomizer feignBuilderCustomizer(EventlogProperties eventlogProperties, ClientRegistrationRepository clientRegistrationRepository) {
-		var feignMultiCustomizer = FeignMultiCustomizer.create()
+	FeignBuilderCustomizer feignBuilderCustomizer(EventlogProperties eventlogProperties, @Autowired(required = false) ClientRegistrationRepository clientRegistrationRepository) {
+		final var feignMultiCustomizer = FeignMultiCustomizer.create()
 			.withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID))
 			.withRequestTimeoutsInSeconds(eventlogProperties.connectTimeout(), eventlogProperties.readTimeout());
 
-		if (clientRegistrationRepository.findByRegistrationId(CLIENT_ID) != null) {
+		if (nonNull(clientRegistrationRepository)) {
 			feignMultiCustomizer.withRetryableOAuth2InterceptorForClientRegistration(clientRegistrationRepository.findByRegistrationId(CLIENT_ID));
 		}
 

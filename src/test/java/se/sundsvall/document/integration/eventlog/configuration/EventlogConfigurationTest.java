@@ -4,7 +4,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.document.integration.eventlog.configuration.EventlogConfiguration.CLIENT_ID;
@@ -58,7 +57,7 @@ class EventlogConfigurationTest {
 			final ArgumentCaptor<ProblemErrorDecoder> errorDecoderCaptor = ArgumentCaptor.forClass(ProblemErrorDecoder.class);
 
 			verify(feignMultiCustomizerSpy).withErrorDecoder(errorDecoderCaptor.capture());
-			verify(clientRegistrationRepositoryMock, times(2)).findByRegistrationId(CLIENT_ID);
+			verify(clientRegistrationRepositoryMock).findByRegistrationId(CLIENT_ID);
 			verify(feignMultiCustomizerSpy).withRetryableOAuth2InterceptorForClientRegistration(same(clientRegistrationMock));
 			verify(propertiesMock).connectTimeout();
 			verify(propertiesMock).readTimeout();
@@ -88,6 +87,34 @@ class EventlogConfigurationTest {
 
 			verify(feignMultiCustomizerSpy).withErrorDecoder(errorDecoderCaptor.capture());
 			verify(clientRegistrationRepositoryMock).findByRegistrationId(CLIENT_ID);
+			verify(feignMultiCustomizerSpy).withRetryableOAuth2InterceptorForClientRegistration(null);
+			verify(propertiesMock).connectTimeout();
+			verify(propertiesMock).readTimeout();
+			verify(feignMultiCustomizerSpy).withRequestTimeoutsInSeconds(1, 2);
+			verify(feignMultiCustomizerSpy).composeCustomizersToOne();
+
+			assertThat(errorDecoderCaptor.getValue()).hasFieldOrPropertyWithValue("integrationName", CLIENT_ID);
+			assertThat(customizer).isSameAs(feignBuilderCustomizerMock);
+		}
+	}
+
+	@Test
+	void testFeignBuilderCustomizer_noClientRegistrationRepositoryBean() {
+		final var configuration = new EventlogConfiguration();
+
+		when(propertiesMock.connectTimeout()).thenReturn(1);
+		when(propertiesMock.readTimeout()).thenReturn(2);
+		when(feignMultiCustomizerSpy.composeCustomizersToOne()).thenReturn(feignBuilderCustomizerMock);
+
+		try (MockedStatic<FeignMultiCustomizer> feignMultiCustomizerMock = Mockito.mockStatic(FeignMultiCustomizer.class)) {
+			feignMultiCustomizerMock.when(FeignMultiCustomizer::create).thenReturn(feignMultiCustomizerSpy);
+
+			final var customizer = configuration.feignBuilderCustomizer(propertiesMock, null);
+
+			final ArgumentCaptor<ProblemErrorDecoder> errorDecoderCaptor = ArgumentCaptor.forClass(ProblemErrorDecoder.class);
+
+			verify(feignMultiCustomizerSpy).withErrorDecoder(errorDecoderCaptor.capture());
+			verify(clientRegistrationRepositoryMock, never()).findByRegistrationId(CLIENT_ID);
 			verify(feignMultiCustomizerSpy, never()).withRetryableOAuth2InterceptorForClientRegistration(same(clientRegistrationMock));
 			verify(propertiesMock).connectTimeout();
 			verify(propertiesMock).readTimeout();
