@@ -52,6 +52,3 @@ target/
 
 # Spring default profile
 application-default.*
-
-# Docker file
-Dockerfile*
