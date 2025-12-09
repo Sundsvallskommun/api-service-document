@@ -8,14 +8,14 @@ import java.util.Objects;
 
 public class DocumentTypeUpdateRequest {
 
-	@Schema(description = "Display name for the document type", example = "Anställningsbevis")
+	@Schema(description = "Display name for the document type", examples = "Anställningsbevis")
 	private String displayName;
 
-	@Schema(description = "Identifier for the document type", example = "EMPLOYMENT_CERTIFICATE")
+	@Schema(description = "Identifier for the document type", examples = "EMPLOYMENT_CERTIFICATE")
 	private String type;
 
 	@NotBlank
-	@Schema(description = "Identifier for performing person", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Identifier for performing person", examples = "username123", requiredMode = REQUIRED)
 	private String updatedBy;
 
 	public static DocumentTypeUpdateRequest create() {

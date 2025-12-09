@@ -12,32 +12,32 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 @Schema(description = "Document model.", accessMode = READ_ONLY)
 public class Document {
 
-	@Schema(description = "ID of the document.", example = "0d64c132-3aea-11ec-8d3d-0242ac130003")
+	@Schema(description = "ID of the document.", examples = "0d64c132-3aea-11ec-8d3d-0242ac130003")
 	private String id;
 
-	@Schema(description = "Municipality ID", example = "2281")
+	@Schema(description = "Municipality ID", examples = "2281")
 	private String municipalityId;
 
-	@Schema(description = "Registration number on the format [YYYY-nnnn-nnnn].", example = "2023-2281-1337")
+	@Schema(description = "Registration number on the format [YYYY-nnnn-nnnn].", examples = "2023-2281-1337")
 	private String registrationNumber;
 
-	@Schema(description = "Document revision.", example = "2")
+	@Schema(description = "Document revision.", examples = "2")
 	private int revision;
 
 	@Schema(description = "Confidentiality")
 	private Confidentiality confidentiality;
 
-	@Schema(description = "Document description", example = "A brief description of this object.")
+	@Schema(description = "Document description", examples = "A brief description of this object.")
 	private String description;
 
-	@Schema(description = "Timestamp when document revision was created.", example = "2023-08-31T01:30:00.000+02:00")
+	@Schema(description = "Timestamp when document revision was created.", examples = "2023-08-31T01:30:00.000+02:00")
 	@DateTimeFormat(iso = ISO.DATE_TIME)
 	private OffsetDateTime created;
 
-	@Schema(description = "Actor that created this revision.", example = "username123")
+	@Schema(description = "Actor that created this revision.", examples = "username123")
 	private String createdBy;
 
-	@Schema(description = "Tells if the document is eligible for archiving", example = "false")
+	@Schema(description = "Tells if the document is eligible for archiving", examples = "false")
 	private boolean archive;
 
 	@Schema(description = "List of DocumentMetadata objects.")
@@ -46,7 +46,7 @@ public class Document {
 	@Schema(description = "Document data")
 	private List<DocumentData> documentData;
 
-	@Schema(description = "Document type", example = "Type for the document.")
+	@Schema(description = "Document type", examples = "Type for the document.")
 	private String type;
 
 	public static Document create() {

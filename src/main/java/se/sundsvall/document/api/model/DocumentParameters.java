@@ -8,13 +8,13 @@ import se.sundsvall.dept44.models.api.paging.AbstractParameterPagingAndSortingBa
 
 public class DocumentParameters extends AbstractParameterPagingAndSortingBase {
 
-	@Schema(description = "Municipality identifier", example = "1234", accessMode = Schema.AccessMode.READ_ONLY)
+	@Schema(description = "Municipality identifier", examples = "1234", accessMode = Schema.AccessMode.READ_ONLY)
 	private String municipalityId;
 
-	@Schema(description = "Should the search include confidential documents?", example = "true", defaultValue = "false")
+	@Schema(description = "Should the search include confidential documents?", examples = "true", defaultValue = "false")
 	private boolean includeConfidential;
 
-	@Schema(description = "Should the search include only the latest revision of the documents?", example = "true", defaultValue = "false")
+	@Schema(description = "Should the search include only the latest revision of the documents?", examples = "true", defaultValue = "false")
 	private boolean onlyLatestRevision;
 
 	@Schema(description = "List of document types")
@@ -25,7 +25,7 @@ public class DocumentParameters extends AbstractParameterPagingAndSortingBase {
 
 	public static class MetaData {
 
-		@Schema(description = "Metadata key", example = "Some key")
+		@Schema(description = "Metadata key", examples = "Some key")
 		private String key;
 
 		@ArraySchema(schema = @Schema(description = "List of metadata values", implementation = String.class))

@@ -9,10 +9,10 @@ public class Confidentiality {
 	@Schema(description = """
 		A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
 		If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
-		""", example = "true")
+		""", examples = "true")
 	private boolean confidential;
 
-	@Schema(description = "Legal citation", example = "25 kap. 1 § OSL")
+	@Schema(description = "Legal citation", examples = "25 kap. 1 § OSL")
 	private String legalCitation;
 
 	public static Confidentiality create() {

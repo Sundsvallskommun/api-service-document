@@ -10,11 +10,11 @@ import java.util.Objects;
 public class DocumentMetadata {
 
 	@NotBlank
-	@Schema(description = "Metadata key", example = "Some key", requiredMode = REQUIRED)
+	@Schema(description = "Metadata key", examples = "Some key", requiredMode = REQUIRED)
 	private String key;
 
 	@NotBlank
-	@Schema(description = "Metadata value", example = "Some value", requiredMode = REQUIRED)
+	@Schema(description = "Metadata value", examples = "Some value", requiredMode = REQUIRED)
 	private String value;
 
 	public static DocumentMetadata create() {
