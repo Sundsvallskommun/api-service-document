@@ -13,20 +13,20 @@ import java.util.Objects;
 public class DocumentUpdateRequest {
 
 	@NotBlank
-	@Schema(description = "Actor that created this revision (all modifications will create new revisions).", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Actor that created this revision (all modifications will create new revisions).", examples = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
 	@Size(max = 8192)
-	@Schema(description = "Document description", example = "A brief description of this object. Maximum 8192 characters.")
+	@Schema(description = "Document description", examples = "A brief description of this object. Maximum 8192 characters.")
 	private String description;
 
-	@Schema(description = "Tells if the document is eligible for archiving", example = "false")
+	@Schema(description = "Tells if the document is eligible for archiving", examples = "false")
 	private Boolean archive;
 
 	@Schema(description = "List of DocumentMetadata objects.")
 	private List<@Valid DocumentMetadata> metadataList;
 
-	@Schema(description = "The type of document (validated against a defined list of document types).", example = "EMPLOYMENT_CERTIFICATE")
+	@Schema(description = "The type of document (validated against a defined list of document types).", examples = "EMPLOYMENT_CERTIFICATE")
 	private String type;
 
 	public static DocumentUpdateRequest create() {

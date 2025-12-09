@@ -15,14 +15,14 @@ public class ConfidentialityUpdateRequest {
 		A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
 		If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
 		Please note: This will affect all revisions, not just the latest revision.
-		""", example = "false", requiredMode = REQUIRED)
+		""", examples = "false", requiredMode = REQUIRED)
 	private Boolean confidential;
 
-	@Schema(description = "Legal citation", example = "25 kap. 1 § OSL")
+	@Schema(description = "Legal citation", examples = "25 kap. 1 § OSL")
 	private String legalCitation;
 
 	@NotBlank
-	@Schema(description = "Actor that performed this change", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Actor that performed this change", examples = "username123", requiredMode = REQUIRED)
 	private String changedBy;
 
 	public static ConfidentialityUpdateRequest create() {

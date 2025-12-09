@@ -10,11 +10,11 @@ import java.util.Objects;
 public class DocumentType {
 
 	@NotBlank
-	@Schema(description = "Identifier for the document type", example = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
+	@Schema(description = "Identifier for the document type", examples = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
 	private String type;
 
 	@NotBlank
-	@Schema(description = "Display name for the document type", example = "Anställningsbevis", requiredMode = REQUIRED)
+	@Schema(description = "Display name for the document type", examples = "Anställningsbevis", requiredMode = REQUIRED)
 	private String displayName;
 
 	public static DocumentType create() {

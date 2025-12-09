@@ -14,18 +14,18 @@ import java.util.Objects;
 public class DocumentCreateRequest {
 
 	@NotBlank
-	@Schema(description = "Actor that created this revision (all modifications will create new revisions)", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Actor that created this revision (all modifications will create new revisions)", examples = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
 	@Schema(description = "Confidentiality")
 	private Confidentiality confidentiality;
 
-	@Schema(description = "Tells if the document is eligible for archiving", example = "false")
+	@Schema(description = "Tells if the document is eligible for archiving", examples = "false")
 	private boolean archive;
 
 	@NotBlank
 	@Size(max = 8192)
-	@Schema(description = "Document description", example = "A brief description of this object. Maximum 8192 characters.", requiredMode = REQUIRED)
+	@Schema(description = "Document description", examples = "A brief description of this object. Maximum 8192 characters.", requiredMode = REQUIRED)
 	private String description;
 
 	@NotEmpty
@@ -33,7 +33,7 @@ public class DocumentCreateRequest {
 	private List<@Valid DocumentMetadata> metadataList;
 
 	@NotBlank
-	@Schema(description = "The type of document (validated against a defined list of document types).", example = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
+	@Schema(description = "The type of document (validated against a defined list of document types).", examples = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
 	private String type;
 
 	public static DocumentCreateRequest create() {

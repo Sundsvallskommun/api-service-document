@@ -8,16 +8,16 @@ import java.util.Objects;
 @Schema(description = "DocumentData model.", accessMode = READ_ONLY)
 public class DocumentData {
 
-	@Schema(description = "ID of the document data.", example = "082ba08f-03c7-409f-b8a6-940a1397ba38")
+	@Schema(description = "ID of the document data.", examples = "082ba08f-03c7-409f-b8a6-940a1397ba38")
 	private String id;
 
-	@Schema(description = "File name.", example = "my-file.pdf")
+	@Schema(description = "File name.", examples = "my-file.pdf")
 	private String fileName;
 
-	@Schema(description = "The mime type of the file.", example = "application/pdf")
+	@Schema(description = "The mime type of the file.", examples = "application/pdf")
 	private String mimeType;
 
-	@Schema(description = "File size in bytes", example = "5068")
+	@Schema(description = "File size in bytes", examples = "5068")
 	private long fileSizeInBytes;
 
 	public static DocumentData create() {

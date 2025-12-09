@@ -9,15 +9,15 @@ import java.util.Objects;
 public class DocumentTypeCreateRequest {
 
 	@NotBlank
-	@Schema(description = "Identifier for the document type", example = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
+	@Schema(description = "Identifier for the document type", examples = "EMPLOYMENT_CERTIFICATE", requiredMode = REQUIRED)
 	private String type;
 
 	@NotBlank
-	@Schema(description = "Display name for the document type", example = "Anställningsbevis", requiredMode = REQUIRED)
+	@Schema(description = "Display name for the document type", examples = "Anställningsbevis", requiredMode = REQUIRED)
 	private String displayName;
 
 	@NotBlank
-	@Schema(description = "Identifier for performing person", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Identifier for performing person", examples = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
 	public static DocumentTypeCreateRequest create() {

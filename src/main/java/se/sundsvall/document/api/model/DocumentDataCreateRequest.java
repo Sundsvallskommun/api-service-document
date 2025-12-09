@@ -10,7 +10,7 @@ import java.util.Objects;
 public class DocumentDataCreateRequest {
 
 	@NotBlank
-	@Schema(description = "Actor that created this revision", example = "username123", requiredMode = REQUIRED)
+	@Schema(description = "Actor that created this revision", examples = "username123", requiredMode = REQUIRED)
 	private String createdBy;
 
 	public static DocumentDataCreateRequest create() {
