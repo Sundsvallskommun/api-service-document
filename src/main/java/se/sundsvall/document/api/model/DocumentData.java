@@ -1,9 +1,9 @@
 package se.sundsvall.document.api.model;
 
-import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Objects;
+
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @Schema(description = "DocumentData model.", accessMode = READ_ONLY)
 public class DocumentData {

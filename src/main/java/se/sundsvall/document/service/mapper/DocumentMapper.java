@@ -1,11 +1,5 @@
 package se.sundsvall.document.service.mapper;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toCollection;
-import static org.apache.commons.lang3.ObjectUtils.anyNull;
-import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
-import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +21,12 @@ import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
 import se.sundsvall.document.integration.db.model.DocumentDataEntity;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toCollection;
+import static org.apache.commons.lang3.ObjectUtils.anyNull;
+import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
+import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
 
 public class DocumentMapper {
 
