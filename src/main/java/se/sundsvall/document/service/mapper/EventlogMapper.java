@@ -1,16 +1,16 @@
 package se.sundsvall.document.service.mapper;
 
-import static java.time.OffsetDateTime.now;
-import static java.time.ZoneId.systemDefault;
-import static java.util.Collections.emptyMap;
-import static java.util.Optional.ofNullable;
-
 import generated.se.sundsvall.eventlog.Event;
 import generated.se.sundsvall.eventlog.EventType;
 import generated.se.sundsvall.eventlog.Metadata;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneId.systemDefault;
+import static java.util.Collections.emptyMap;
+import static java.util.Optional.ofNullable;
 
 public class EventlogMapper {
 

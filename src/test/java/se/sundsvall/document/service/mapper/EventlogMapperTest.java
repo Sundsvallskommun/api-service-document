@@ -1,5 +1,8 @@
 package se.sundsvall.document.service.mapper;
 
+import generated.se.sundsvall.eventlog.Metadata;
+import org.junit.jupiter.api.Test;
+
 import static generated.se.sundsvall.eventlog.EventType.UPDATE;
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
@@ -7,9 +10,6 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
-
-import generated.se.sundsvall.eventlog.Metadata;
-import org.junit.jupiter.api.Test;
 
 class EventlogMapperTest {
 

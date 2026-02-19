@@ -1,33 +1,5 @@
 package se.sundsvall.document.service;
 
-import static generated.se.sundsvall.eventlog.EventType.UPDATE;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
-import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.util.CollectionUtils.isEmpty;
-import static org.springframework.util.StreamUtils.copy;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND;
-import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND;
-import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND;
-import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND;
-import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_COULD_NOT_READ;
-import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND;
-import static se.sundsvall.document.service.Constants.TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE;
-import static se.sundsvall.document.service.Constants.TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_DOCUMENT;
-import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
-import static se.sundsvall.document.service.mapper.DocumentMapper.copyDocumentEntity;
-import static se.sundsvall.document.service.mapper.DocumentMapper.toConfidentialityEmbeddable;
-import static se.sundsvall.document.service.mapper.DocumentMapper.toDocument;
-import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntities;
-import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntity;
-import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentEntity;
-import static se.sundsvall.document.service.mapper.DocumentMapper.toInclusionFilter;
-import static se.sundsvall.document.service.mapper.DocumentMapper.toPagedDocumentResponse;
-import static se.sundsvall.document.service.mapper.EventlogMapper.toEvent;
-
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -57,6 +29,34 @@ import se.sundsvall.document.integration.db.model.DocumentEntity;
 import se.sundsvall.document.integration.eventlog.EventLogClient;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
 import se.sundsvall.document.service.mapper.DocumentMapper;
+
+import static generated.se.sundsvall.eventlog.EventType.UPDATE;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.util.CollectionUtils.isEmpty;
+import static org.springframework.util.StreamUtils.copy;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND;
+import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_BY_REGISTRATION_NUMBER_NOT_FOUND;
+import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_ID_NOT_FOUND;
+import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_AND_REVISION_NOT_FOUND;
+import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_COULD_NOT_READ;
+import static se.sundsvall.document.service.Constants.ERROR_DOCUMENT_FILE_BY_REGISTRATION_NUMBER_NOT_FOUND;
+import static se.sundsvall.document.service.Constants.TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE;
+import static se.sundsvall.document.service.Constants.TEMPLATE_EVENTLOG_MESSAGE_CONFIDENTIALITY_UPDATED_ON_DOCUMENT;
+import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
+import static se.sundsvall.document.service.mapper.DocumentMapper.copyDocumentEntity;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toConfidentialityEmbeddable;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toDocument;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntities;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentDataEntity;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toDocumentEntity;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toInclusionFilter;
+import static se.sundsvall.document.service.mapper.DocumentMapper.toPagedDocumentResponse;
+import static se.sundsvall.document.service.mapper.EventlogMapper.toEvent;
 
 @Service
 @Transactional

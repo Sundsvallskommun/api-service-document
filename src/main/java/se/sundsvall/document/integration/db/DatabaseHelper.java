@@ -1,7 +1,5 @@
 package se.sundsvall.document.integration.db;
 
-import static org.zalando.fauxpas.FauxPas.throwingFunction;
-
 import jakarta.persistence.EntityManager;
 import java.io.IOException;
 import java.sql.Blob;
@@ -9,6 +7,8 @@ import java.util.Optional;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import static org.zalando.fauxpas.FauxPas.throwingFunction;
 
 @Component
 public class DatabaseHelper {

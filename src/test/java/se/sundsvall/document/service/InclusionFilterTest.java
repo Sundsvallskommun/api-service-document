@@ -1,10 +1,10 @@
 package se.sundsvall.document.service;
 
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
 import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
-
-import org.junit.jupiter.api.Test;
 
 class InclusionFilterTest {
 

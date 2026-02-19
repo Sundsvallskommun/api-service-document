@@ -1,12 +1,12 @@
 package se.sundsvall.document.integration.db.model.listener;
 
-import static java.time.OffsetDateTime.now;
-import static java.time.ZoneId.systemDefault;
-import static java.time.temporal.ChronoUnit.MILLIS;
-
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import se.sundsvall.document.integration.db.model.DocumentTypeEntity;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoUnit.MILLIS;
 
 public class DocumentTypeEntityListener {
 

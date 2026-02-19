@@ -1,9 +1,5 @@
 package se.sundsvall.document.service.mapper;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.ObjectUtils.anyNull;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -11,6 +7,10 @@ import se.sundsvall.document.api.model.DocumentType;
 import se.sundsvall.document.api.model.DocumentTypeCreateRequest;
 import se.sundsvall.document.api.model.DocumentTypeUpdateRequest;
 import se.sundsvall.document.integration.db.model.DocumentTypeEntity;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.anyNull;
 
 public class DocumentTypeMapper {
 

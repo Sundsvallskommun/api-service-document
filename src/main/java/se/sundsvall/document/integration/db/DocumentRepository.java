@@ -1,8 +1,5 @@
 package se.sundsvall.document.integration.db;
 
-import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchParameters;
-import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchQuery;
-
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import se.sundsvall.document.api.model.DocumentParameters;
 import se.sundsvall.document.integration.db.model.DocumentEntity;
+
+import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchParameters;
+import static se.sundsvall.document.integration.db.specification.SearchSpecification.withSearchQuery;
 
 @CircuitBreaker(name = "documentRepository")
 public interface DocumentRepository extends JpaRepository<DocumentEntity, String>, JpaSpecificationExecutor<DocumentEntity> {

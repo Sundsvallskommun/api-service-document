@@ -1,32 +1,5 @@
 package se.sundsvall.document.service;
 
-import static generated.se.sundsvall.eventlog.EventType.UPDATE;
-import static java.time.OffsetDateTime.now;
-import static java.time.ZoneId.systemDefault;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.empty;
-import static java.util.UUID.randomUUID;
-import static org.apache.commons.io.IOUtils.toByteArray;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.assertj.core.api.Assertions.within;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.data.domain.Sort.Direction.DESC;
-import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
-import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
-
 import generated.se.sundsvall.eventlog.Event;
 import generated.se.sundsvall.eventlog.Metadata;
 import jakarta.servlet.ServletOutputStream;
@@ -73,6 +46,33 @@ import se.sundsvall.document.integration.db.model.DocumentMetadataEmbeddable;
 import se.sundsvall.document.integration.db.model.DocumentTypeEntity;
 import se.sundsvall.document.integration.eventlog.EventLogClient;
 import se.sundsvall.document.integration.eventlog.configuration.EventlogProperties;
+
+import static generated.se.sundsvall.eventlog.EventType.UPDATE;
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
+import static java.util.UUID.randomUUID;
+import static org.apache.commons.io.IOUtils.toByteArray;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.within;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static se.sundsvall.document.service.InclusionFilter.CONFIDENTIAL_AND_PUBLIC;
+import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
