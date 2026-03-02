@@ -1,7 +1,5 @@
 package se.sundsvall.document.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -33,10 +31,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.zalando.problem.Problem;
-import org.zalando.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
 import se.sundsvall.document.api.model.Document;
 import se.sundsvall.document.api.model.DocumentCreateRequest;
@@ -48,6 +46,7 @@ import se.sundsvall.document.api.model.PagedDocumentResponse;
 import se.sundsvall.document.api.validation.DocumentTypeValidator;
 import se.sundsvall.document.api.validation.ValidContentType;
 import se.sundsvall.document.service.DocumentService;
+import tools.jackson.databind.ObjectMapper;
 
 import static jakarta.validation.Validation.buildDefaultValidatorFactory;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -99,7 +98,7 @@ class DocumentResource {
 	ResponseEntity<Void> create(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
 		@RequestPart("document") @Schema(description = "Document", implementation = DocumentCreateRequest.class) final String documentString,
-		@RequestPart(value = "documentFiles") @ValidContentType final List<MultipartFile> documentFiles) throws JsonProcessingException {
+		@RequestPart(value = "documentFiles") @ValidContentType final List<MultipartFile> documentFiles) {
 		// If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		final var body = objectMapper.readValue(documentString, DocumentCreateRequest.class);
 		validate(body);
@@ -197,7 +196,7 @@ class DocumentResource {
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable("municipalityId") @ValidMunicipalityId final String municipalityId,
 		@Parameter(name = "registrationNumber", description = "Document registration number", example = "2023-2281-1337") @PathVariable("registrationNumber") final String registrationNumber,
 		@RequestPart("document") @Schema(description = "Document", implementation = DocumentDataCreateRequest.class) final String documentDataString,
-		@RequestPart(value = "documentFile") final MultipartFile documentFile) throws JsonProcessingException {
+		@RequestPart(value = "documentFile") final MultipartFile documentFile) {
 
 		// If parameter isn't a String an exception (bad content type) will be thrown. Manual deserialization is necessary.
 		final var documentDataCreateRequest = objectMapper.readValue(documentDataString, DocumentDataCreateRequest.class);

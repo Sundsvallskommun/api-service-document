@@ -1,14 +1,15 @@
 package openapi;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 import net.javacrumbs.jsonunit.core.Option;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,6 +24,7 @@ import static java.nio.file.Files.writeString;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 @ActiveProfiles("it")
+@AutoConfigureTestRestTemplate
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = Application.class, properties = {
 	"spring.main.banner-mode=off",
 	"logging.level.se.sundsvall.dept44.payload=OFF",
@@ -78,7 +80,7 @@ class OpenApiSpecificationIT {
 	private String toJson(final String yaml) {
 		try {
 			return YAML_MAPPER.readTree(yaml).toString();
-		} catch (final JsonProcessingException e) {
+		} catch (final JacksonException e) {
 			throw new IllegalStateException("Unable to convert YAML to JSON", e);
 		}
 	}

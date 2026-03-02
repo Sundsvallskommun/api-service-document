@@ -11,15 +11,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mariadb.jdbc.MariaDbBlob;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.document.api.model.DocumentParameters;
 import se.sundsvall.document.integration.db.model.ConfidentialityEmbeddable;
 import se.sundsvall.document.integration.db.model.DocumentDataBinaryEntity;
@@ -33,9 +32,10 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
+import static org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.document.service.InclusionFilter.PUBLIC;
 
 /**
@@ -477,7 +477,7 @@ class DocumentRepositoryTest {
 	private DocumentEntity createDocumentEntity(String registrationNumber) {
 
 		final var documentType = documentTypeRepository.findByMunicipalityIdAndType(MUNICIPALITY_ID, DOCUMENT_TYPE)
-			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, "Document type '%s' not found within municipality %s".formatted(DOCUMENT_TYPE, MUNICIPALITY_ID)));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Document type '%s' not found within municipality %s".formatted(DOCUMENT_TYPE, MUNICIPALITY_ID)));
 
 		return DocumentEntity.create()
 			.withCreatedBy(CREATED_BY)

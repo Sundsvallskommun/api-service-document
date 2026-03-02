@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "3.0"
 servers:
-  - url: http://localhost:64382
+  - url: http://localhost:50931
     description: Generated server url
 tags:
   - name: Document revisions
@@ -113,7 +113,6 @@ paths:
           required: true
           schema:
             type: string
-            minLength: 1
           example: hello*
         - name: includeConfidential
           in: query
@@ -1009,11 +1008,9 @@ components:
     Problem:
       type: object
       properties:
-        status:
-          $ref: "#/components/schemas/StatusType"
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
         instance:
           type: string
@@ -1021,17 +1018,9 @@ components:
         type:
           type: string
           format: uri
-        parameters:
-          type: object
-          additionalProperties: { }
-    StatusType:
-      type: object
-      properties:
-        statusCode:
+        status:
           type: integer
           format: int32
-        reasonPhrase:
-          type: string
     DocumentDataCreateRequest:
       type: object
       description: DocumentDataCreateRequest model.
@@ -1041,166 +1030,47 @@ components:
           description: Actor that created this revision
           examples:
             - username123
-          minLength: 1
       required:
         - createdBy
     ConstraintViolationProblem:
       type: object
       properties:
-        cause:
-          $ref: "#/components/schemas/ThrowableProblem"
-        stackTrace:
-          type: array
-          items:
-            type: object
-            properties:
-              classLoaderName:
-                type: string
-              moduleName:
-                type: string
-              moduleVersion:
-                type: string
-              methodName:
-                type: string
-              fileName:
-                type: string
-              lineNumber:
-                type: integer
-                format: int32
-              className:
-                type: string
-              nativeMethod:
-                type: boolean
         type:
           type: string
           format: uri
         status:
-          $ref: "#/components/schemas/StatusType"
+          type: integer
+          format: int32
         violations:
           type: array
           items:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
-        message:
-          type: string
         detail:
           type: string
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
         instance:
           type: string
           format: uri
-        parameters:
-          type: object
-          additionalProperties: { }
-        suppressed:
-          type: array
-          items:
-            type: object
-            properties:
-              stackTrace:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    classLoaderName:
-                      type: string
-                    moduleName:
-                      type: string
-                    moduleVersion:
-                      type: string
-                    methodName:
-                      type: string
-                    fileName:
-                      type: string
-                    lineNumber:
-                      type: integer
-                      format: int32
-                    className:
-                      type: string
-                    nativeMethod:
-                      type: boolean
-              message:
-                type: string
-              localizedMessage:
-                type: string
-        localizedMessage:
-          type: string
     ThrowableProblem:
       type: object
       properties:
-        cause: { }
-        stackTrace:
-          type: array
-          items:
-            type: object
-            properties:
-              classLoaderName:
-                type: string
-              moduleName:
-                type: string
-              moduleVersion:
-                type: string
-              methodName:
-                type: string
-              fileName:
-                type: string
-              lineNumber:
-                type: integer
-                format: int32
-              className:
-                type: string
-              nativeMethod:
-                type: boolean
-        message:
+        type:
           type: string
-        status:
-          $ref: "#/components/schemas/StatusType"
+          format: uri
         title:
           type: string
+        status:
+          type: integer
+          format: int32
         detail:
           type: string
         instance:
           type: string
           format: uri
-        type:
-          type: string
-          format: uri
-        parameters:
-          type: object
-          additionalProperties: { }
-        suppressed:
-          type: array
-          items:
-            type: object
-            properties:
-              stackTrace:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    classLoaderName:
-                      type: string
-                    moduleName:
-                      type: string
-                    moduleVersion:
-                      type: string
-                    methodName:
-                      type: string
-                    fileName:
-                      type: string
-                    lineNumber:
-                      type: integer
-                      format: int32
-                    className:
-                      type: string
-                    nativeMethod:
-                      type: boolean
-              message:
-                type: string
-              localizedMessage:
-                type: string
-        localizedMessage:
-          type: string
+        causeAsProblem: { }
     Violation:
       type: object
       properties:
@@ -1234,7 +1104,6 @@ components:
             new revisions)
           examples:
             - username123
-          minLength: 1
         confidentiality:
           $ref: "#/components/schemas/Confidentiality"
           description: Confidentiality
@@ -1255,14 +1124,12 @@ components:
           description: List of DocumentMetadata objects.
           items:
             $ref: "#/components/schemas/DocumentMetadata"
-          minItems: 1
         type:
           type: string
           description: The type of document (validated against a defined list of document
             types).
           examples:
             - EMPLOYMENT_CERTIFICATE
-          minLength: 1
       required:
         - createdBy
         - description
@@ -1277,13 +1144,11 @@ components:
           description: Metadata key
           examples:
             - Some key
-          minLength: 1
         value:
           type: string
           description: Metadata value
           examples:
             - Some value
-          minLength: 1
       required:
         - key
         - value
@@ -1518,19 +1383,16 @@ components:
           description: Identifier for the document type
           examples:
             - EMPLOYMENT_CERTIFICATE
-          minLength: 1
         displayName:
           type: string
           description: Display name for the document type
           examples:
             - Anställningsbevis
-          minLength: 1
         createdBy:
           type: string
           description: Identifier for performing person
           examples:
             - username123
-          minLength: 1
       required:
         - createdBy
         - displayName
@@ -1545,7 +1407,6 @@ components:
             new revisions).
           examples:
             - username123
-          minLength: 1
         description:
           type: string
           description: Document description
@@ -1593,7 +1454,6 @@ components:
           description: Actor that performed this change
           examples:
             - username123
-          minLength: 1
       required:
         - changedBy
         - confidential
@@ -1615,7 +1475,6 @@ components:
           description: Identifier for performing person
           examples:
             - username123
-          minLength: 1
       required:
         - updatedBy
     DocumentType:
@@ -1627,13 +1486,11 @@ components:
           description: Identifier for the document type
           examples:
             - EMPLOYMENT_CERTIFICATE
-          minLength: 1
         displayName:
           type: string
           description: Display name for the document type
           examples:
             - Anställningsbevis
-          minLength: 1
       required:
         - displayName
         - type

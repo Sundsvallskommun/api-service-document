@@ -9,8 +9,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 import se.sundsvall.document.api.model.DocumentTypeCreateRequest;
 import se.sundsvall.document.api.model.DocumentTypeUpdateRequest;
 import se.sundsvall.document.integration.db.DocumentTypeRepository;
@@ -22,6 +21,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentTypeServiceTest {
@@ -78,7 +79,7 @@ class DocumentTypeServiceTest {
 		final var e = assertThrows(ThrowableProblem.class, () -> service.create(MUNICIPALITY_ID, request));
 
 		// Assert
-		assertThat(e.getStatus()).isEqualTo(Status.BAD_REQUEST);
+		assertThat(e.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(e.getMessage()).isEqualTo("Bad Request: Document type with identifier TYPE already exists in municipality with id municipalityId");
 		verify(documentTypeRepositoryMock).existsByMunicipalityIdAndType(MUNICIPALITY_ID, TYPE);
 		verifyNoMoreInteractions(documentTypeRepositoryMock);
@@ -108,7 +109,7 @@ class DocumentTypeServiceTest {
 		final var e = assertThrows(ThrowableProblem.class, () -> service.read(MUNICIPALITY_ID, TYPE));
 
 		// Assert
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getMessage()).isEqualTo("Not Found: Document type with identifier type was not found within municipality with id municipalityId");
 		verify(documentTypeRepositoryMock).findByMunicipalityIdAndType(MUNICIPALITY_ID, TYPE);
 		verifyNoMoreInteractions(documentTypeRepositoryMock);
@@ -185,7 +186,7 @@ class DocumentTypeServiceTest {
 		final var e = assertThrows(ThrowableProblem.class, () -> service.update(MUNICIPALITY_ID, TYPE, request));
 
 		// Assert
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getMessage()).isEqualTo("Not Found: Document type with identifier type was not found within municipality with id municipalityId");
 		verify(documentTypeRepositoryMock).findByMunicipalityIdAndType(MUNICIPALITY_ID, TYPE);
 		verifyNoMoreInteractions(documentTypeRepositoryMock);
@@ -214,7 +215,7 @@ class DocumentTypeServiceTest {
 		final var e = assertThrows(ThrowableProblem.class, () -> service.delete(MUNICIPALITY_ID, TYPE));
 
 		// Assert
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getMessage()).isEqualTo("Not Found: Document type with identifier type was not found within municipality with id municipalityId");
 		verify(documentTypeRepositoryMock).findByMunicipalityIdAndType(MUNICIPALITY_ID, TYPE);
 		verifyNoMoreInteractions(documentTypeRepositoryMock);
