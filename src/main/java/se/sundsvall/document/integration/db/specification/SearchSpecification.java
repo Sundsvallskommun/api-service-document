@@ -172,7 +172,7 @@ public interface SearchSpecification {
 
 	private static Specification<DocumentEntity> onlyLatestRevisionOfDocuments(boolean onlyLatestRevision) {
 		if (!onlyLatestRevision) {
-			return Specification.where(null); // Do not add any filter to return all documents regardless of revision
+			return (root, query, cb) -> cb.and(); // Do not add any filter to return all documents regardless of revision
 		}
 
 		return (root, query, cb) -> {
@@ -187,7 +187,7 @@ public interface SearchSpecification {
 
 	private static Specification<DocumentEntity> includeConfidentialDocuments(boolean includeConfidential) {
 		if (includeConfidential) {
-			return null; // Do not add any filter to return all documents regardless of whether they are confidential or not
+			return (entity, cq, cb) -> cb.and(); // Do not add any filter to return all documents regardless of whether they are confidential or not
 		}
 		return (entity, cq, cb) -> cb.equal(entity.get(CONFIDENTIALITY).get(CONFIDENTIAL), false); // Return non-confidential documents only
 	}
@@ -231,7 +231,7 @@ public interface SearchSpecification {
 	private static Specification<DocumentEntity> distinct() {
 		return (entity, cq, cb) -> {
 			cq.distinct(true);
-			return null;
+			return cb.and();
 		};
 	}
 

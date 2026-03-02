@@ -6,8 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.document.api.model.DocumentType;
 import se.sundsvall.document.service.DocumentTypeService;
 
@@ -15,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentTypeValidatorTest {
@@ -55,10 +55,10 @@ class DocumentTypeValidatorTest {
 		// Act and assert
 		final var e = assertThrows(ConstraintViolationProblem.class, () -> validator.validate(municipalityId, type));
 
-		assertThat(e.getStatus()).isEqualTo(Status.BAD_REQUEST);
+		assertThat(e.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(e.getViolations()).hasSize(1).satisfiesExactly(violation -> {
-			assertThat(violation.getField()).isEqualTo("type");
-			assertThat(violation.getMessage()).isEqualTo("document type 'type' must match one of [othertype]");
+			assertThat(violation.field()).isEqualTo("type");
+			assertThat(violation.message()).isEqualTo("document type 'type' must match one of [othertype]");
 		});
 	}
 }

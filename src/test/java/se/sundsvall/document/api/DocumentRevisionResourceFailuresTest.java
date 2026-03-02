@@ -3,11 +3,12 @@ package se.sundsvall.document.api;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.zalando.problem.violations.ConstraintViolationProblem;
-import org.zalando.problem.violations.Violation;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.dept44.problem.violations.Violation;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.service.DocumentService;
 
@@ -20,6 +21,7 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
+@AutoConfigureWebTestClient
 class DocumentRevisionResourceFailuresTest {
 
 	@MockitoBean
@@ -44,7 +46,7 @@ class DocumentRevisionResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("readRevision.revision", "must be greater than or equal to 0"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -69,7 +71,7 @@ class DocumentRevisionResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("readFileRevision.revision", "must be greater than or equal to 0"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -94,7 +96,7 @@ class DocumentRevisionResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("readFileRevision.documentDataId", "not a valid UUID"));
 
 		verifyNoInteractions(documentServiceMock);

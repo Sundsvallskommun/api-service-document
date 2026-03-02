@@ -4,13 +4,14 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.zalando.problem.Problem;
-import org.zalando.problem.violations.ConstraintViolationProblem;
-import org.zalando.problem.violations.Violation;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.dept44.problem.violations.Violation;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.Confidentiality;
 import se.sundsvall.document.api.model.ConfidentialityUpdateRequest;
@@ -31,16 +32,17 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.web.reactive.function.BodyInserters.fromMultipartData;
-import static org.zalando.problem.Status.BAD_REQUEST;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
+@AutoConfigureWebTestClient
 class DocumentResourceFailuresTest {
 
 	@MockitoBean
@@ -205,7 +207,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(
 				tuple("description", "must not be blank"),
 				tuple("type", "must not be blank"));
@@ -242,7 +244,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("description", "size must be between 0 and 8192"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -275,7 +277,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("metadataList", "must not be empty"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -307,7 +309,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("metadataList", "must not be empty"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -344,7 +346,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("type", "error"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -378,7 +380,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("create.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -411,7 +413,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("metadataList[0].key", "must not be blank"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -444,7 +446,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("metadataList[0].value", "must not be blank"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -476,7 +478,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("createdBy", "must not be blank"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -509,7 +511,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("description", "size must be between 0 and 8192"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -540,7 +542,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("type", "error"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -568,7 +570,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("confidential", "must not be null"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -598,7 +600,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("changedBy", "must not be blank"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -619,7 +621,7 @@ class DocumentResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getDetail()).isEqualTo("Required request parameter 'query' for method parameter type String is not present");
+		assertThat(response.getDetail()).isEqualTo("Required parameter 'query' is not present.");
 
 		verifyNoInteractions(documentServiceMock);
 	}
@@ -642,7 +644,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("search.query", "must not be blank"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -667,7 +669,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("readFile.documentDataId", "not a valid UUID"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -692,7 +694,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("deleteFile.documentDataId", "not a valid UUID"));
 
 		verifyNoInteractions(documentServiceMock);
@@ -726,7 +728,7 @@ class DocumentResourceFailuresTest {
 		// Assert
 		assertThat(response).isNotNull();
 		assertThat(response.getViolations())
-			.extracting(Violation::getField, Violation::getMessage)
+			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("createdBy", "must not be blank"));
 
 		verifyNoInteractions(documentServiceMock);

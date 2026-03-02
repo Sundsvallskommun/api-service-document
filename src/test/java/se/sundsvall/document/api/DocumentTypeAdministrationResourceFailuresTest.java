@@ -4,12 +4,12 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.document.Application;
 import se.sundsvall.document.api.model.DocumentTypeCreateRequest;
 import se.sundsvall.document.api.model.DocumentTypeUpdateRequest;
@@ -18,11 +18,13 @@ import se.sundsvall.document.service.DocumentTypeService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
+@AutoConfigureWebTestClient
 class DocumentTypeAdministrationResourceFailuresTest {
 
 	private static final String BASE_PATH = "/{municipalityId}/admin/documenttypes";
@@ -52,10 +54,10 @@ class DocumentTypeAdministrationResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST);
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations()).isNotEmpty().satisfiesExactlyInAnyOrder(violation -> {
-			assertThat(violation.getField()).isEqualTo("createDocumentType.municipalityId");
-			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
+			assertThat(violation.field()).isEqualTo("createDocumentType.municipalityId");
+			assertThat(violation.message()).isEqualTo("not a valid municipality ID");
 		});
 
 		verifyNoInteractions(serviceMock);
@@ -76,10 +78,8 @@ class DocumentTypeAdministrationResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST);
-		assertThat(response.getDetail()).isEqualTo("""
-			Required request body is missing: org.springframework.http.ResponseEntity<java.lang.Void> \
-			se.sundsvall.document.api.DocumentTypeAdministrationResource.createDocumentType(java.lang.String,se.sundsvall.document.api.model.DocumentTypeCreateRequest)""");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getDetail()).isEqualTo("Failed to read request");
 
 		verifyNoInteractions(serviceMock);
 	}
@@ -100,16 +100,16 @@ class DocumentTypeAdministrationResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST);
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations()).isNotEmpty().satisfiesExactlyInAnyOrder(violation -> {
-			assertThat(violation.getField()).isEqualTo("createdBy");
-			assertThat(violation.getMessage()).isEqualTo("must not be blank");
+			assertThat(violation.field()).isEqualTo("createdBy");
+			assertThat(violation.message()).isEqualTo("must not be blank");
 		}, violation -> {
-			assertThat(violation.getField()).isEqualTo("displayName");
-			assertThat(violation.getMessage()).isEqualTo("must not be blank");
+			assertThat(violation.field()).isEqualTo("displayName");
+			assertThat(violation.message()).isEqualTo("must not be blank");
 		}, violation -> {
-			assertThat(violation.getField()).isEqualTo("type");
-			assertThat(violation.getMessage()).isEqualTo("must not be blank");
+			assertThat(violation.field()).isEqualTo("type");
+			assertThat(violation.message()).isEqualTo("must not be blank");
 		});
 
 		verifyNoInteractions(serviceMock);
@@ -129,10 +129,10 @@ class DocumentTypeAdministrationResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST);
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations()).isNotEmpty().satisfiesExactlyInAnyOrder(violation -> {
-			assertThat(violation.getField()).isEqualTo("readDocumentTypes.municipalityId");
-			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
+			assertThat(violation.field()).isEqualTo("readDocumentTypes.municipalityId");
+			assertThat(violation.message()).isEqualTo("not a valid municipality ID");
 		});
 
 		verifyNoInteractions(serviceMock);
@@ -152,10 +152,10 @@ class DocumentTypeAdministrationResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST);
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations()).isNotEmpty().satisfiesExactlyInAnyOrder(violation -> {
-			assertThat(violation.getField()).isEqualTo("readDocumentType.municipalityId");
-			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
+			assertThat(violation.field()).isEqualTo("readDocumentType.municipalityId");
+			assertThat(violation.message()).isEqualTo("not a valid municipality ID");
 		});
 
 		verifyNoInteractions(serviceMock);
@@ -179,10 +179,10 @@ class DocumentTypeAdministrationResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST);
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations()).isNotEmpty().satisfiesExactlyInAnyOrder(violation -> {
-			assertThat(violation.getField()).isEqualTo("updateDocumentType.municipalityId");
-			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
+			assertThat(violation.field()).isEqualTo("updateDocumentType.municipalityId");
+			assertThat(violation.message()).isEqualTo("not a valid municipality ID");
 		});
 
 		verifyNoInteractions(serviceMock);
@@ -203,10 +203,8 @@ class DocumentTypeAdministrationResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST);
-		assertThat(response.getDetail()).isEqualTo("""
-			Required request body is missing: org.springframework.http.ResponseEntity<java.lang.Void> \
-			se.sundsvall.document.api.DocumentTypeAdministrationResource.updateDocumentType(java.lang.String,java.lang.String,se.sundsvall.document.api.model.DocumentTypeUpdateRequest)""");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getDetail()).isEqualTo("Failed to read request");
 
 		verifyNoInteractions(serviceMock);
 	}
@@ -227,10 +225,10 @@ class DocumentTypeAdministrationResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST);
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations()).isNotEmpty().satisfiesExactlyInAnyOrder(violation -> {
-			assertThat(violation.getField()).isEqualTo("updatedBy");
-			assertThat(violation.getMessage()).isEqualTo("must not be blank");
+			assertThat(violation.field()).isEqualTo("updatedBy");
+			assertThat(violation.message()).isEqualTo("must not be blank");
 		});
 
 		verifyNoInteractions(serviceMock);
@@ -250,10 +248,10 @@ class DocumentTypeAdministrationResourceFailuresTest {
 
 		// Assert
 		assertThat(response).isNotNull();
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST);
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations()).isNotEmpty().satisfiesExactlyInAnyOrder(violation -> {
-			assertThat(violation.getField()).isEqualTo("deleteDocumentType.municipalityId");
-			assertThat(violation.getMessage()).isEqualTo("not a valid municipality ID");
+			assertThat(violation.field()).isEqualTo("deleteDocumentType.municipalityId");
+			assertThat(violation.message()).isEqualTo("not a valid municipality ID");
 		});
 
 		verifyNoInteractions(serviceMock);
