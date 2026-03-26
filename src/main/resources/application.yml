@@ -34,10 +34,6 @@ spring:
             database:
               action: none
     show-sql: false
-  cache:
-    cache-names: documentTypeCache
-    caffeine:
-      spec: maximumSize=500, expireAfterWrite=600s
   servlet:
     multipart:
       max-file-size: 60MB
