@@ -1,9 +1,6 @@
 package se.sundsvall.document.service;
 
 import java.util.List;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.document.api.model.DocumentType;
@@ -21,7 +18,6 @@ import static se.sundsvall.document.service.mapper.DocumentTypeMapper.updateDocu
 
 @Service
 public class DocumentTypeService {
-	private static final String CACHE_NAME = "documentTypeCache";
 	private static final String ERROR_DOCUMENT_TYPE_NOT_FOUND = "Document type with identifier %s was not found within municipality with id %s";
 	private static final String ERROR_DOCUMENT_TYPE_ALREADY_EXISTS = "Document type with identifier %s already exists in municipality with id %s";
 
@@ -31,10 +27,6 @@ public class DocumentTypeService {
 		this.documentTypeRepository = documentTypeRepository;
 	}
 
-	@Caching(evict = {
-		@CacheEvict(value = CACHE_NAME, key = "{'read', #municipalityId}"),
-		@CacheEvict(value = CACHE_NAME, key = "{'read', #municipalityId, #type}")
-	})
 	public DocumentType create(final String municipalityId, final DocumentTypeCreateRequest documentTypeCreateRequest) {
 
 		if (documentTypeRepository.existsByMunicipalityIdAndType(municipalityId, documentTypeCreateRequest.getType())) {
@@ -45,23 +37,17 @@ public class DocumentTypeService {
 		return toDocumentType(documentTypeRepository.save(documentTypeEntity));
 	}
 
-	@Cacheable(value = CACHE_NAME, key = "{#root.methodName, #municipalityId}")
 	public List<DocumentType> read(final String municipalityId) {
 		final var matches = documentTypeRepository.findAllByMunicipalityId(municipalityId);
 		return toDocumentTypes(matches);
 	}
 
-	@Cacheable(value = CACHE_NAME, key = "{#root.methodName, #municipalityId, #type}")
 	public DocumentType read(final String municipalityId, final String type) {
 		return documentTypeRepository.findByMunicipalityIdAndType(municipalityId, type)
 			.map(DocumentTypeMapper::toDocumentType)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_TYPE_NOT_FOUND.formatted(type, municipalityId)));
 	}
 
-	@Caching(evict = {
-		@CacheEvict(value = CACHE_NAME, key = "{'read', #municipalityId}"),
-		@CacheEvict(value = CACHE_NAME, key = "{'read', #municipalityId, #type}")
-	})
 	public DocumentType update(final String municipalityId, final String type, DocumentTypeUpdateRequest documentTypeUpdateRequest) {
 		return documentTypeRepository.findByMunicipalityIdAndType(municipalityId, type)
 			.map(existingEntity -> updateDocumentTypeEntity(existingEntity, documentTypeUpdateRequest))
@@ -70,10 +56,6 @@ public class DocumentTypeService {
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_DOCUMENT_TYPE_NOT_FOUND.formatted(type, municipalityId)));
 	}
 
-	@Caching(evict = {
-		@CacheEvict(value = CACHE_NAME, key = "{'read', #municipalityId}"),
-		@CacheEvict(value = CACHE_NAME, key = "{'read', #municipalityId, #type}")
-	})
 	public void delete(final String municipalityId, final String type) {
 		documentTypeRepository.findByMunicipalityIdAndType(municipalityId, type)
 			.ifPresentOrElse(documentTypeRepository::delete, () -> {
