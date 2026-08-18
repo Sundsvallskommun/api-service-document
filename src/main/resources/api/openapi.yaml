@@ -1090,7 +1090,7 @@ components:
             A flag that can be set to alert administrative users handling the information that there are some special privacy policies to follow for the person in question.
             If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
           examples:
-          - "true"
+          - true
         legalCitation:
           type: string
           description: Legal citation
@@ -1114,7 +1114,7 @@ components:
           type: boolean
           description: Tells if the document is eligible for archiving
           examples:
-          - "false"
+          - false
         description:
           type: string
           description: Document description
@@ -1206,13 +1206,13 @@ components:
           default: false
           description: Should the search include confidential documents?
           examples:
-          - "true"
+          - true
         onlyLatestRevision:
           type: boolean
           default: false
           description: Should the search include only the latest revision of the documents?
           examples:
-          - "true"
+          - true
         documentTypes:
           type: array
           description: List of document types
@@ -1289,7 +1289,7 @@ components:
           type: boolean
           description: Tells if the document is eligible for archiving
           examples:
-          - "false"
+          - false
         metadataList:
           type: array
           description: List of DocumentMetadata objects.
@@ -1429,7 +1429,7 @@ components:
           type: boolean
           description: Tells if the document is eligible for archiving
           examples:
-          - "false"
+          - false
         metadataList:
           type: array
           description: List of DocumentMetadata objects.
@@ -1454,7 +1454,7 @@ components:
             If there are special privacy policies to follow for this record, this flag should be set to 'true', otherwise 'false'.
             Please note: This will affect all revisions, not just the latest revision.
           examples:
-          - "false"
+          - false
         legalCitation:
           type: string
           description: Legal citation
